@@ -744,14 +744,24 @@ st.markdown("""
 <div class="phi-notice">
     <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">
         <span style="font-size:20px;">🔐</span>
-        <span style="font-size:15px;font-weight:800;letter-spacing:1px;">Privacy & Data Handling Notice</span>
+        <span style="font-size:15px;font-weight:800;letter-spacing:1px;">
+            Privacy & Data Handling Notice
+        </span>
     </div>
     <div style="font-size:13px;line-height:2.0;">
-        📋 This tool is designed for <b>internal QA and compatibility validation</b> purposes only.<br>
-        🔄 Uploaded files are processed <b>entirely in memory</b> and are <b>never stored, logged, or retained</b> on any server.<br>
-        🗑️ All data is <b>automatically cleared</b> when the session ends or the page is refreshed.<br>
-        ✅ Files containing <b>PHI</b> may be uploaded for validation — no data is persisted beyond the active session.<br>
-        ⚠️ <b>De-identified or anonymized DICOM files</b> are strongly recommended whenever possible.
+        📋 This tool is intended for <b>internal QA and compatibility validation</b> purposes only.<br>
+        💻 Files are processed <b>in-memory within your active session</b> —
+           no data is explicitly saved or written to disk by this application.<br>
+        🌐 However, uploaded data is transmitted to and temporarily held on
+           <b>Streamlit Cloud servers</b> (operated by Snowflake Inc.)
+           during your session.<br>
+        🗑️ Session data is released from memory when the session ends,
+           but <b>server-level logging or caching by the hosting provider
+           cannot be fully guaranteed by this application</b>.<br>
+        🔒 <b>For files containing real PHI, use only on a
+           self-hosted / on-premise deployment</b> of this tool.<br>
+        ✅ Always use <b>de-identified or anonymized DICOM files</b>
+           when using this cloud-hosted version.
     </div>
 </div>
 """, unsafe_allow_html=True)
