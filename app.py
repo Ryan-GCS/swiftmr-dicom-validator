@@ -93,7 +93,6 @@ st.markdown("""
         border: 1px solid rgba(0,180,255,0.3) !important;
     }
 }
-
 @media (prefers-color-scheme: light) {
     .stApp { background-color: #f0f4f8 !important; }
     .airs-header {
@@ -154,7 +153,6 @@ st.markdown("""
         border: 1px solid rgba(0,180,255,0.3) !important;
     }
 }
-
 .airs-header {
     display: flex; align-items: center; gap: 16px;
     padding: 20px 28px; margin-bottom: 24px;
@@ -210,11 +208,11 @@ st.markdown("""
     font-size: 12px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase;
     margin-bottom: 10px; padding-bottom: 6px;
 }
-.phi-notice { border-radius: 12px; padding: 16px 20px; margin-bottom: 20px; }
+.phi-notice    { border-radius: 12px; padding: 16px 20px; margin-bottom: 20px; }
 .file-problem-card { border-radius: 12px; padding: 12px 16px; margin-bottom: 8px; }
-.cat1-header { border-radius: 12px; padding: 14px 20px; margin-bottom: 12px; }
-.cat2-header { border-radius: 12px; padding: 14px 20px; margin-bottom: 12px; }
-.cat3-header { border-radius: 12px; padding: 14px 20px; margin-bottom: 12px; }
+.cat1-header   { border-radius: 12px; padding: 14px 20px; margin-bottom: 12px; }
+.cat2-header   { border-radius: 12px; padding: 14px 20px; margin-bottom: 12px; }
+.cat3-header   { border-radius: 12px; padding: 14px 20px; margin-bottom: 12px; }
 </style>
 """, unsafe_allow_html=True)
 
@@ -231,135 +229,131 @@ st.markdown(f"""
 """, unsafe_allow_html=True)
 
 # ════════════════════════════════════════════════════
-# 1. Mandatory-Public Tags
-#    o 표시 = mandatory / 나머지 = optional
+# Tag Definitions
 # ════════════════════════════════════════════════════
+
+# 1. Mandatory-Public
 CAT1_MANDATORY = [
-    {"name": "Instance Number",           "tag": "(0020,0013)", "vr": "IS", "purpose": "",        "mandatory": True},
-    {"name": "Series Number",             "tag": "(0020,0011)", "vr": "IS", "purpose": "Derived", "mandatory": True},
-    {"name": "Image Type",                "tag": "(0008,0008)", "vr": "CS", "purpose": "(3D)",    "mandatory": True},
-    {"name": "Series Description",        "tag": "(0008,103E)", "vr": "LO", "purpose": "SWI",     "mandatory": True},
-    {"name": "Pixel Data",                "tag": "(7FE0,0010)", "vr": "OB", "purpose": "",        "mandatory": True},
-    {"name": "Pixel Representation",      "tag": "(0028,0103)", "vr": "US", "purpose": "",        "mandatory": True},
-    {"name": "Bits Stored",               "tag": "(0028,0101)", "vr": "US", "purpose": "",        "mandatory": True},
-    {"name": "Rows",                      "tag": "(0028,0010)", "vr": "US", "purpose": "",        "mandatory": True},
-    {"name": "Columns",                   "tag": "(0028,0011)", "vr": "US", "purpose": "",        "mandatory": True},
-    {"name": "Pixel Spacing",             "tag": "(0028,0030)", "vr": "DS", "purpose": "",        "mandatory": True},
-    {"name": "Window Center",             "tag": "(0028,1050)", "vr": "DS", "purpose": "MIP",     "mandatory": True},
-    {"name": "Window Width",              "tag": "(0028,1051)", "vr": "DS", "purpose": "MIP",     "mandatory": True},
-    {"name": "Image Orientation Patient", "tag": "(0020,0037)", "vr": "DS", "purpose": "post",    "mandatory": True},
-    {"name": "Image Position Patient",    "tag": "(0020,0032)", "vr": "DS", "purpose": "",        "mandatory": True},
-    {"name": "Spacing Between Slices",    "tag": "(0018,0088)", "vr": "DS", "purpose": "post",    "mandatory": True},
-    {"name": "Slice Thickness",           "tag": "(0018,0050)", "vr": "DS", "purpose": "post",    "mandatory": True},
-    # optional (o 없음)
-    {"name": "Overlay Bits Allocated",    "tag": "(6000,0100)", "vr": "US", "purpose": "",        "mandatory": False},
-    {"name": "Overlay Bit Position",      "tag": "(6000,0102)", "vr": "US", "purpose": "",        "mandatory": False},
-    {"name": "Overlay Data",              "tag": "(6000,3000)", "vr": "OB", "purpose": "",        "mandatory": False},
-    {"name": "Overlay Rows",              "tag": "(6000,0010)", "vr": "US", "purpose": "",        "mandatory": False},
-    {"name": "Overlay Columns",           "tag": "(6000,0011)", "vr": "US", "purpose": "",        "mandatory": False},
-    {"name": "Diffusion b-value",         "tag": "(0018,9087)", "vr": "FD", "purpose": "",        "mandatory": False},
-    {"name": "Slice Location",            "tag": "(0020,1041)", "vr": "DS", "purpose": "Slice Interpol", "mandatory": False},
+    {"name": "Instance Number",           "tag": (0x0020,0x0013), "vr": "IS", "purpose": "",              "mandatory": True},
+    {"name": "Series Number",             "tag": (0x0020,0x0011), "vr": "IS", "purpose": "Derived",       "mandatory": True},
+    {"name": "Image Type",                "tag": (0x0008,0x0008), "vr": "CS", "purpose": "(3D)",          "mandatory": True},
+    {"name": "Series Description",        "tag": (0x0008,0x103E), "vr": "LO", "purpose": "SWI",           "mandatory": True},
+    {"name": "Pixel Data",                "tag": (0x7FE0,0x0010), "vr": "OB", "purpose": "",              "mandatory": True},
+    {"name": "Pixel Representation",      "tag": (0x0028,0x0103), "vr": "US", "purpose": "",              "mandatory": True},
+    {"name": "Bits Stored",               "tag": (0x0028,0x0101), "vr": "US", "purpose": "",              "mandatory": True},
+    {"name": "Rows",                      "tag": (0x0028,0x0010), "vr": "US", "purpose": "",              "mandatory": True},
+    {"name": "Columns",                   "tag": (0x0028,0x0011), "vr": "US", "purpose": "",              "mandatory": True},
+    {"name": "Pixel Spacing",             "tag": (0x0028,0x0030), "vr": "DS", "purpose": "",              "mandatory": True},
+    {"name": "Window Center",             "tag": (0x0028,0x1050), "vr": "DS", "purpose": "MIP",           "mandatory": True},
+    {"name": "Window Width",              "tag": (0x0028,0x1051), "vr": "DS", "purpose": "MIP",           "mandatory": True},
+    {"name": "Image Orientation Patient", "tag": (0x0020,0x0037), "vr": "DS", "purpose": "post",          "mandatory": True},
+    {"name": "Image Position Patient",    "tag": (0x0020,0x0032), "vr": "DS", "purpose": "",              "mandatory": True},
+    {"name": "Spacing Between Slices",    "tag": (0x0018,0x0088), "vr": "DS", "purpose": "post",          "mandatory": True},
+    {"name": "Slice Thickness",           "tag": (0x0018,0x0050), "vr": "DS", "purpose": "post",          "mandatory": True},
+    # optional
+    {"name": "Overlay Bits Allocated",    "tag": (0x6000,0x0100), "vr": "US", "purpose": "",              "mandatory": False},
+    {"name": "Overlay Bit Position",      "tag": (0x6000,0x0102), "vr": "US", "purpose": "",              "mandatory": False},
+    {"name": "Overlay Data",              "tag": (0x6000,0x3000), "vr": "OB", "purpose": "",              "mandatory": False},
+    {"name": "Overlay Rows",              "tag": (0x6000,0x0010), "vr": "US", "purpose": "",              "mandatory": False},
+    {"name": "Overlay Columns",           "tag": (0x6000,0x0011), "vr": "US", "purpose": "",              "mandatory": False},
+    {"name": "Diffusion b-value",         "tag": (0x0018,0x9087), "vr": "FD", "purpose": "",              "mandatory": False},
+    {"name": "Slice Location",            "tag": (0x0020,0x1041), "vr": "DS", "purpose": "Slice Interpol","mandatory": False},
 ]
 
-# ════════════════════════════════════════════════════
-# 2. Required-Public Tags
-# ════════════════════════════════════════════════════
+# 2. Required-Public
 CAT2_TAGS = [
-    {"name": "Manufacturer",                         "tag": "(0008,0070)", "vr": "LO", "purpose": "",             "note": ""},
-    {"name": "Number of Averages",                   "tag": "(0018,0083)", "vr": "DS", "purpose": "",             "note": ""},
-    {"name": "Percent Sampling",                     "tag": "(0018,0093)", "vr": "DS", "purpose": "",             "note": ""},
-    {"name": "Acquisition Matrix",                   "tag": "(0018,1310)", "vr": "US", "purpose": "",             "note": ""},
-    {"name": "Derivation Description",               "tag": "(0008,2111)", "vr": "ST", "purpose": "",             "note": ""},
-    {"name": "In-Plane Phase Encoding Direction",    "tag": "(0018,1312)", "vr": "CS", "purpose": "",             "note": ""},
-    {"name": "Rows",                                 "tag": "(0028,0010)", "vr": "US", "purpose": "",             "note": ""},
-    {"name": "Columns",                              "tag": "(0028,0011)", "vr": "US", "purpose": "",             "note": ""},
-    {"name": "Percent Phase Field of View",          "tag": "(0018,0094)", "vr": "DS", "purpose": "",             "note": ""},
-    {"name": "Spacing Between Slices",               "tag": "(0018,0088)", "vr": "DS", "purpose": "",             "note": ""},
-    {"name": "Slice Thickness",                      "tag": "(0018,0050)", "vr": "DS", "purpose": "",             "note": ""},
-    {"name": "Image Orientation Patient",            "tag": "(0020,0037)", "vr": "DS", "purpose": "",             "note": ""},
-    {"name": "Image Position Patient",               "tag": "(0020,0032)", "vr": "DS", "purpose": "",             "note": ""},
-    {"name": "Request Attributes Sequence",          "tag": "(0040,0275)", "vr": "SQ", "purpose": "",             "note": "Fonar / Other"},
-    {"name": "Per-frame Functional Groups Sequence", "tag": "(5200,9230)", "vr": "SQ", "purpose": "",             "note": "Fonar / Other"},
-    {"name": "Derivation Code Sequence",             "tag": "(0008,9215)", "vr": "SQ", "purpose": "",             "note": "GE / Subtraction"},
-    {"name": "Field of View Dimensions",             "tag": "(0018,1149)", "vr": "IS", "purpose": "",             "note": "Paramed"},
+    {"name": "Manufacturer",                         "tag": (0x0008,0x0070), "vr": "LO", "note": ""},
+    {"name": "Number of Averages",                   "tag": (0x0018,0x0083), "vr": "DS", "note": ""},
+    {"name": "Percent Sampling",                     "tag": (0x0018,0x0093), "vr": "DS", "note": ""},
+    {"name": "Acquisition Matrix",                   "tag": (0x0018,0x1310), "vr": "US", "note": ""},
+    {"name": "Derivation Description",               "tag": (0x0008,0x2111), "vr": "ST", "note": ""},
+    {"name": "In-Plane Phase Encoding Direction",    "tag": (0x0018,0x1312), "vr": "CS", "note": ""},
+    {"name": "Rows",                                 "tag": (0x0028,0x0010), "vr": "US", "note": ""},
+    {"name": "Columns",                              "tag": (0x0028,0x0011), "vr": "US", "note": ""},
+    {"name": "Percent Phase Field of View",          "tag": (0x0018,0x0094), "vr": "DS", "note": ""},
+    {"name": "Spacing Between Slices",               "tag": (0x0018,0x0088), "vr": "DS", "note": ""},
+    {"name": "Slice Thickness",                      "tag": (0x0018,0x0050), "vr": "DS", "note": ""},
+    {"name": "Image Orientation Patient",            "tag": (0x0020,0x0037), "vr": "DS", "note": ""},
+    {"name": "Image Position Patient",               "tag": (0x0020,0x0032), "vr": "DS", "note": ""},
+    {"name": "Request Attributes Sequence",          "tag": (0x0040,0x0275), "vr": "SQ", "note": "Fonar / Other"},
+    {"name": "Per-frame Functional Groups Sequence", "tag": (0x5200,0x9230), "vr": "SQ", "note": "Fonar / Other"},
+    {"name": "Derivation Code Sequence",             "tag": (0x0008,0x9215), "vr": "SQ", "note": "GE / Subtraction"},
+    {"name": "Field of View Dimensions",             "tag": (0x0018,0x1149), "vr": "IS", "note": "Paramed"},
 ]
 
-# ════════════════════════════════════════════════════
-# 3. Required-Private-MRI Tags
-#    제조사 구분 없이 전체 목록 + 제조사 컬럼
-# ════════════════════════════════════════════════════
+# 3. Required-Private-MRI
 CAT3_TAGS = [
     # Philips
-    {"name": "Volume Based Calculation Technique",       "tag": "(2005,140F)", "vr": "CS", "manufacturer": "Philips",         "note": "post / [0](0008,9207)"},
-    {"name": "Parallel Reduction Factor In-Plane",       "tag": "(2005,140F)", "vr": "FD", "manufacturer": "Philips",         "note": "[0](0018,9069)"},
-    {"name": "MR Acquisition Phase Encoding Steps",      "tag": "(2005,140F)", "vr": "US", "manufacturer": "Philips",         "note": "[0](0018,9058)"},
-    {"name": "MR Acquisition Frequency Encoding Steps",  "tag": "(2005,140F)", "vr": "US", "manufacturer": "Philips",         "note": "[0](0018,9058)"},
-    {"name": "Philips Private Creator",                  "tag": "(2005,0014)", "vr": "LO", "manufacturer": "Philips",         "note": ""},
-    {"name": "Image Plane Number",                       "tag": "(2001,100A)", "vr": "IS", "manufacturer": "Philips",         "note": ""},
-    {"name": "MRSeriesNrOfSlices",                       "tag": "(2001,1018)", "vr": "SL", "manufacturer": "Philips",         "note": ""},
-    {"name": "Stack",                                    "tag": "(2001,105F)", "vr": "SQ", "manufacturer": "Philips",         "note": ""},
-    {"name": "MRImageOffCentreAP",                       "tag": "(2005,1008)", "vr": "FL", "manufacturer": "Philips",         "note": ""},
-    {"name": "MRImageOffCentreFH",                       "tag": "(2005,1009)", "vr": "FL", "manufacturer": "Philips",         "note": ""},
-    {"name": "MRImageOffCentreRL",                       "tag": "(2005,100A)", "vr": "FL", "manufacturer": "Philips",         "note": ""},
-    {"name": "SeriesDerivationDescription",              "tag": "(2001,10CC)", "vr": "ST", "manufacturer": "Philips",         "note": ""},
+    {"name": "Volume Based Calculation Technique",      "tag": (0x2005,0x140F), "vr": "CS", "manufacturer": "Philips",         "note": "post / [0](0008,9207)"},
+    {"name": "Parallel Reduction Factor In-Plane",      "tag": (0x2005,0x140F), "vr": "FD", "manufacturer": "Philips",         "note": "[0](0018,9069)"},
+    {"name": "MR Acquisition Phase Encoding Steps",     "tag": (0x2005,0x140F), "vr": "US", "manufacturer": "Philips",         "note": "[0](0018,9058)"},
+    {"name": "MR Acquisition Frequency Encoding Steps", "tag": (0x2005,0x140F), "vr": "US", "manufacturer": "Philips",         "note": "[0](0018,9058)"},
+    {"name": "Philips Private Creator",                 "tag": (0x2005,0x0014), "vr": "LO", "manufacturer": "Philips",         "note": ""},
+    {"name": "Image Plane Number",                      "tag": (0x2001,0x100A), "vr": "IS", "manufacturer": "Philips",         "note": ""},
+    {"name": "MRSeriesNrOfSlices",                      "tag": (0x2001,0x1018), "vr": "SL", "manufacturer": "Philips",         "note": ""},
+    {"name": "Stack",                                   "tag": (0x2001,0x105F), "vr": "SQ", "manufacturer": "Philips",         "note": ""},
+    {"name": "MRImageOffCentreAP",                      "tag": (0x2005,0x1008), "vr": "FL", "manufacturer": "Philips",         "note": ""},
+    {"name": "MRImageOffCentreFH",                      "tag": (0x2005,0x1009), "vr": "FL", "manufacturer": "Philips",         "note": ""},
+    {"name": "MRImageOffCentreRL",                      "tag": (0x2005,0x100A), "vr": "FL", "manufacturer": "Philips",         "note": ""},
+    {"name": "SeriesDerivationDescription",             "tag": (0x2001,0x10CC), "vr": "ST", "manufacturer": "Philips",         "note": ""},
     # Siemens
-    {"name": "Siemens Private Creator",                  "tag": "(0051,0010)", "vr": "LO", "manufacturer": "Siemens",         "note": ""},
-    {"name": "Siemens Private Creator",                  "tag": "(0021,0010)", "vr": "LO", "manufacturer": "Siemens",         "note": ""},
-    {"name": "Siemens Private Creator",                  "tag": "(0019,0010)", "vr": "LO", "manufacturer": "Siemens",         "note": ""},
-    {"name": "pat factor",                               "tag": "(0051,1011)", "vr": "LO", "manufacturer": "Siemens",         "note": ""},
-    {"name": "pat factor",                               "tag": "(0021,1009)", "vr": "LO", "manufacturer": "Siemens",         "note": ""},
-    {"name": "acquisition matrix",                       "tag": "(0051,100B)", "vr": "LO", "manufacturer": "Siemens",         "note": ""},
-    {"name": "diffusion b-value",                        "tag": "(0019,100C)", "vr": "IS", "manufacturer": "Siemens",         "note": ""},
-    {"name": "CSA HEADER1",                              "tag": "(0029,1020)", "vr": "LO", "manufacturer": "Siemens",         "note": ""},
-    {"name": "CSA HEADER2",                              "tag": "(0021,1019)", "vr": "LO", "manufacturer": "Siemens",         "note": ""},
-    {"name": "psd name1",                                "tag": "(0019,109C)", "vr": "LO", "manufacturer": "Siemens",         "note": ""},
-    {"name": "psd name2",                                "tag": "(0019,109E)", "vr": "LO", "manufacturer": "Siemens",         "note": ""},
-    {"name": "pseq id1",                                 "tag": "(0019,1012)", "vr": "SS", "manufacturer": "Siemens",         "note": ""},
-    {"name": "pseq id2",                                 "tag": "(0025,1006)", "vr": "SS", "manufacturer": "Siemens",         "note": ""},
-    {"name": "pseq id3",                                 "tag": "(0027,1032)", "vr": "SS", "manufacturer": "Siemens",         "note": ""},
-    {"name": "slice resolution",                         "tag": "(0019,1017)", "vr": "DS", "manufacturer": "Siemens",         "note": ""},
-    {"name": "SQ Per-frame Functional Groups Sequence",  "tag": "(5200,9230)", "vr": "FD", "manufacturer": "Siemens",         "note": "[0](0018,9115)[0](0018,9069)"},
+    {"name": "Siemens Private Creator",                 "tag": (0x0051,0x0010), "vr": "LO", "manufacturer": "Siemens",         "note": ""},
+    {"name": "Siemens Private Creator",                 "tag": (0x0021,0x0010), "vr": "LO", "manufacturer": "Siemens",         "note": ""},
+    {"name": "Siemens Private Creator",                 "tag": (0x0019,0x0010), "vr": "LO", "manufacturer": "Siemens",         "note": ""},
+    {"name": "pat factor",                              "tag": (0x0051,0x1011), "vr": "LO", "manufacturer": "Siemens",         "note": ""},
+    {"name": "pat factor",                              "tag": (0x0021,0x1009), "vr": "LO", "manufacturer": "Siemens",         "note": ""},
+    {"name": "acquisition matrix",                     "tag": (0x0051,0x100B), "vr": "LO", "manufacturer": "Siemens",         "note": ""},
+    {"name": "diffusion b-value",                      "tag": (0x0019,0x100C), "vr": "IS", "manufacturer": "Siemens",         "note": ""},
+    {"name": "CSA HEADER1",                             "tag": (0x0029,0x1020), "vr": "LO", "manufacturer": "Siemens",         "note": ""},
+    {"name": "CSA HEADER2",                             "tag": (0x0021,0x1019), "vr": "LO", "manufacturer": "Siemens",         "note": ""},
+    {"name": "psd name1",                               "tag": (0x0019,0x109C), "vr": "LO", "manufacturer": "Siemens",         "note": ""},
+    {"name": "psd name2",                               "tag": (0x0019,0x109E), "vr": "LO", "manufacturer": "Siemens",         "note": ""},
+    {"name": "pseq id1",                                "tag": (0x0019,0x1012), "vr": "SS", "manufacturer": "Siemens",         "note": ""},
+    {"name": "pseq id2",                                "tag": (0x0025,0x1006), "vr": "SS", "manufacturer": "Siemens",         "note": ""},
+    {"name": "pseq id3",                                "tag": (0x0027,0x1032), "vr": "SS", "manufacturer": "Siemens",         "note": ""},
+    {"name": "slice resolution",                        "tag": (0x0019,0x1017), "vr": "DS", "manufacturer": "Siemens",         "note": ""},
+    {"name": "SQ Per-frame Functional Groups Sequence", "tag": (0x5200,0x9230), "vr": "FD", "manufacturer": "Siemens",         "note": "[0](0018,9115)[0](0018,9069)"},
     # GE
-    {"name": "GE Private Creator",                       "tag": "(0043,0010)", "vr": "LO", "manufacturer": "GE",              "note": ""},
-    {"name": "GE Private Creator",                       "tag": "(0027,0010)", "vr": "LO", "manufacturer": "GE",              "note": ""},
-    {"name": "pat type",                                 "tag": "(0043,1084)", "vr": "LO", "manufacturer": "GE",              "note": ""},
-    {"name": "pat factor",                               "tag": "(0043,1083)", "vr": "DS", "manufacturer": "GE",              "note": ""},
-    {"name": "number of frequency encoding steps",       "tag": "(0027,1060)", "vr": "FL", "manufacturer": "GE",              "note": ""},
-    {"name": "number of phase encoding steps in-plane",  "tag": "(0027,1061)", "vr": "FL", "manufacturer": "GE",              "note": ""},
-    {"name": "Image Type (real/imaginary/phase/mag)",    "tag": "(0043,102F)", "vr": "SS", "manufacturer": "GE",              "note": ""},
-    {"name": "Functional Protocol",                      "tag": "(0051,1006)", "vr": "LT", "manufacturer": "GE",              "note": "ADC source bvalue"},
-    {"name": "PDB Header",                               "tag": "(0025,101B)", "vr": "OB", "manufacturer": "GE",              "note": ""},
-    {"name": "Vas collapse flag",                        "tag": "(0043,1030)", "vr": "SS", "manufacturer": "GE",              "note": ""},
+    {"name": "GE Private Creator",                      "tag": (0x0043,0x0010), "vr": "LO", "manufacturer": "GE",              "note": ""},
+    {"name": "GE Private Creator",                      "tag": (0x0027,0x0010), "vr": "LO", "manufacturer": "GE",              "note": ""},
+    {"name": "pat type",                                "tag": (0x0043,0x1084), "vr": "LO", "manufacturer": "GE",              "note": ""},
+    {"name": "pat factor",                              "tag": (0x0043,0x1083), "vr": "DS", "manufacturer": "GE",              "note": ""},
+    {"name": "number of frequency encoding steps",      "tag": (0x0027,0x1060), "vr": "FL", "manufacturer": "GE",              "note": ""},
+    {"name": "number of phase encoding steps in-plane", "tag": (0x0027,0x1061), "vr": "FL", "manufacturer": "GE",              "note": ""},
+    {"name": "Image Type (real/imaginary/phase/mag)",   "tag": (0x0043,0x102F), "vr": "SS", "manufacturer": "GE",              "note": ""},
+    {"name": "Functional Protocol",                     "tag": (0x0051,0x1006), "vr": "LT", "manufacturer": "GE",              "note": "ADC source bvalue"},
+    {"name": "PDB Header",                              "tag": (0x0025,0x101B), "vr": "OB", "manufacturer": "GE",              "note": ""},
+    {"name": "Vas collapse flag",                       "tag": (0x0043,0x1030), "vr": "SS", "manufacturer": "GE",              "note": ""},
     # Canon (Toshiba)
-    {"name": "TOSHIBA_MEC",                              "tag": "(0029,1001)", "vr": "SQ", "manufacturer": "Canon (Toshiba)", "note": ""},
-    {"name": "TOSHIBA_MEC",                              "tag": "(0029,1002)", "vr": "SQ", "manufacturer": "Canon (Toshiba)", "note": ""},
-    {"name": "TOSHIBA_MEC",                              "tag": "(700D,0010)", "vr": "LO", "manufacturer": "Canon (Toshiba)", "note": ""},
-    {"name": "TOSHIBA_MEC",                              "tag": "(700D,1011)", "vr": "US", "manufacturer": "Canon (Toshiba)", "note": ""},
-    {"name": "TOSHIBA_MEC",                              "tag": "(700D,1014)", "vr": "SL", "manufacturer": "Canon (Toshiba)", "note": ""},
-    {"name": "TOSHIBA_MEC",                              "tag": "(700D,1016)", "vr": "LO", "manufacturer": "Canon (Toshiba)", "note": ""},
-    {"name": "TOSHIBA_MEC",                              "tag": "(700D,1018)", "vr": "SS", "manufacturer": "Canon (Toshiba)", "note": ""},
-    {"name": "TOSHIBA_MEC",                              "tag": "(700D,1019)", "vr": "OB", "manufacturer": "Canon (Toshiba)", "note": ""},
+    {"name": "TOSHIBA_MEC",                             "tag": (0x0029,0x1001), "vr": "SQ", "manufacturer": "Canon (Toshiba)", "note": ""},
+    {"name": "TOSHIBA_MEC",                             "tag": (0x0029,0x1002), "vr": "SQ", "manufacturer": "Canon (Toshiba)", "note": ""},
+    {"name": "TOSHIBA_MEC",                             "tag": (0x700D,0x0010), "vr": "LO", "manufacturer": "Canon (Toshiba)", "note": ""},
+    {"name": "TOSHIBA_MEC",                             "tag": (0x700D,0x1011), "vr": "US", "manufacturer": "Canon (Toshiba)", "note": ""},
+    {"name": "TOSHIBA_MEC",                             "tag": (0x700D,0x1014), "vr": "SL", "manufacturer": "Canon (Toshiba)", "note": ""},
+    {"name": "TOSHIBA_MEC",                             "tag": (0x700D,0x1016), "vr": "LO", "manufacturer": "Canon (Toshiba)", "note": ""},
+    {"name": "TOSHIBA_MEC",                             "tag": (0x700D,0x1018), "vr": "SS", "manufacturer": "Canon (Toshiba)", "note": ""},
+    {"name": "TOSHIBA_MEC",                             "tag": (0x700D,0x1019), "vr": "OB", "manufacturer": "Canon (Toshiba)", "note": ""},
     # Esaote
-    {"name": "V1",                                       "tag": "(0011,1001)", "vr": "OB", "manufacturer": "Esaote",          "note": ""},
-    {"name": "V1",                                       "tag": "(0011,1002)", "vr": "DS", "manufacturer": "Esaote",          "note": ""},
-    {"name": "V1",                                       "tag": "(0011,1003)", "vr": "DS", "manufacturer": "Esaote",          "note": ""},
-    {"name": "V1",                                       "tag": "(0011,1004)", "vr": "DS", "manufacturer": "Esaote",          "note": ""},
-    {"name": "V1",                                       "tag": "(0011,1008)", "vr": "DS", "manufacturer": "Esaote",          "note": ""},
+    {"name": "V1",                                      "tag": (0x0011,0x1001), "vr": "OB", "manufacturer": "Esaote",          "note": ""},
+    {"name": "V1",                                      "tag": (0x0011,0x1002), "vr": "DS", "manufacturer": "Esaote",          "note": ""},
+    {"name": "V1",                                      "tag": (0x0011,0x1003), "vr": "DS", "manufacturer": "Esaote",          "note": ""},
+    {"name": "V1",                                      "tag": (0x0011,0x1004), "vr": "DS", "manufacturer": "Esaote",          "note": ""},
+    {"name": "V1",                                      "tag": (0x0011,0x1008), "vr": "DS", "manufacturer": "Esaote",          "note": ""},
     # Fonar
-    {"name": "MMCPrivate",                               "tag": "(0029,102F)", "vr": "",   "manufacturer": "Fonar",           "note": ""},
-    {"name": "MMCPrivate",                               "tag": "(0029,1032)", "vr": "",   "manufacturer": "Fonar",           "note": ""},
-    {"name": "MMCPrivate",                               "tag": "(0029,10D7)", "vr": "",   "manufacturer": "Fonar",           "note": ""},
+    {"name": "MMCPrivate",                              "tag": (0x0029,0x102F), "vr": "",   "manufacturer": "Fonar",           "note": ""},
+    {"name": "MMCPrivate",                              "tag": (0x0029,0x1032), "vr": "",   "manufacturer": "Fonar",           "note": ""},
+    {"name": "MMCPrivate",                              "tag": (0x0029,0x10D7), "vr": "",   "manufacturer": "Fonar",           "note": ""},
     # Hyperfine
-    {"name": "Hyperfine Private Creator",                "tag": "(351B,0010)", "vr": "LO", "manufacturer": "Hyperfine",       "note": ""},
-    {"name": "Hyperfine Private Creator",                "tag": "(351B,1001)", "vr": "",   "manufacturer": "Hyperfine",       "note": ""},
-    {"name": "Hyperfine Private Creator",                "tag": "(351B,1002)", "vr": "",   "manufacturer": "Hyperfine",       "note": ""},
-    {"name": "Hyperfine Private Creator",                "tag": "(351B,1003)", "vr": "",   "manufacturer": "Hyperfine",       "note": ""},
-    {"name": "Hyperfine Private Creator",                "tag": "(351B,1004)", "vr": "",   "manufacturer": "Hyperfine",       "note": ""},
-    {"name": "Hyperfine Private Creator",                "tag": "(351B,1005)", "vr": "",   "manufacturer": "Hyperfine",       "note": ""},
-    {"name": "Hyperfine Private Creator",                "tag": "(351B,1006)", "vr": "",   "manufacturer": "Hyperfine",       "note": ""},
+    {"name": "Hyperfine Private Creator",               "tag": (0x351B,0x0010), "vr": "LO", "manufacturer": "Hyperfine",       "note": ""},
+    {"name": "Hyperfine Private Creator",               "tag": (0x351B,0x1001), "vr": "",   "manufacturer": "Hyperfine",       "note": ""},
+    {"name": "Hyperfine Private Creator",               "tag": (0x351B,0x1002), "vr": "",   "manufacturer": "Hyperfine",       "note": ""},
+    {"name": "Hyperfine Private Creator",               "tag": (0x351B,0x1003), "vr": "",   "manufacturer": "Hyperfine",       "note": ""},
+    {"name": "Hyperfine Private Creator",               "tag": (0x351B,0x1004), "vr": "",   "manufacturer": "Hyperfine",       "note": ""},
+    {"name": "Hyperfine Private Creator",               "tag": (0x351B,0x1005), "vr": "",   "manufacturer": "Hyperfine",       "note": ""},
+    {"name": "Hyperfine Private Creator",               "tag": (0x351B,0x1006), "vr": "",   "manufacturer": "Hyperfine",       "note": ""},
     # Paramed
-    {"name": "acquisition voxel size",                   "tag": "(0011,1017)", "vr": "LO", "manufacturer": "Paramed",         "note": ""},
-    {"name": "slice resolution",                         "tag": "(0021,101B)", "vr": "DS", "manufacturer": "Paramed",         "note": ""},
+    {"name": "acquisition voxel size",                  "tag": (0x0011,0x1017), "vr": "LO", "manufacturer": "Paramed",         "note": ""},
+    {"name": "slice resolution",                        "tag": (0x0021,0x101B), "vr": "DS", "manufacturer": "Paramed",         "note": ""},
 ]
 
 MANUFACTURER_KEYWORDS = {
@@ -374,29 +368,36 @@ MANUFACTURER_KEYWORDS = {
 }
 
 # ════════════════════════════════════════════════════
-# Utility Functions
+# Core Functions — pydicom Tag 객체 직접 사용
 # ════════════════════════════════════════════════════
-def parse_tag_str(tag_str):
-    tag_str = tag_str.strip("()")
-    group, element = tag_str.split(",")
-    return pydicom.tag.Tag(int(group, 16), int(element, 16))
-
-
-def get_tag_value(ds, tag_str):
+def get_tag_value(ds, tag_tuple):
+    """
+    tag_tuple: (0x0020, 0x0013) 형식의 tuple
+    pydicom Tag 객체로 직접 조회 → 공백/포맷 문제 완전 해결
+    """
     try:
-        tag = parse_tag_str(tag_str)
+        tag = pydicom.tag.Tag(tag_tuple[0], tag_tuple[1])
         if tag in ds:
             elem = ds[tag]
-            if isinstance(elem.value, bytes):
-                return f"[Binary {len(elem.value)} bytes]"
-            elif elem.VR == "SQ":
+            if elem.VR == "SQ":
                 return f"[Sequence {len(elem.value)} item(s)]"
-            else:
-                val = str(elem.value)
-                return val[:80] + "..." if len(val) > 80 else val
+            val = elem.value
+            if isinstance(val, bytes):
+                return f"[Binary {len(val)} bytes]"
+            if isinstance(val, pydicom.multival.MultiValue):
+                items = [str(v) for v in val]
+                joined = ", ".join(items)
+                return joined[:80] + "..." if len(joined) > 80 else joined
+            s = str(val)
+            return s[:80] + "..." if len(s) > 80 else s
         return None
     except Exception:
         return None
+
+
+def tag_to_str(tag_tuple):
+    """(0x0020, 0x0013) → '(0020,0013)' 표시용 문자열"""
+    return f"({tag_tuple[0]:04X},{tag_tuple[1]:04X})"
 
 
 def detect_manufacturer(ds):
@@ -413,17 +414,16 @@ def detect_manufacturer(ds):
 
 
 def validate_cat1(ds):
-    """1. Mandatory-Public 검증"""
     results = []
     for t in CAT1_MANDATORY:
         value   = get_tag_value(ds, t["tag"])
         present = value is not None
         results.append({
             "Name":      t["name"],
-            "Tag":       t["tag"],
+            "Tag":       tag_to_str(t["tag"]),
             "VR":        t["vr"],
             "Purpose":   t["purpose"],
-            "Mandatory": "🔴 Mandatory" if t["mandatory"] else "🟡 Optional",
+            "Type":      "🔴 Mandatory" if t["mandatory"] else "🟡 Optional",
             "Value":     value if present else "MISSING",
             "Status":    "✅  Present" if present else ("❌  Missing" if t["mandatory"] else "⚠️  Missing"),
             "_present":  present,
@@ -433,14 +433,13 @@ def validate_cat1(ds):
 
 
 def validate_cat2(ds):
-    """2. Required-Public 검증"""
     results = []
     for t in CAT2_TAGS:
         value   = get_tag_value(ds, t["tag"])
         present = value is not None
         results.append({
             "Name":    t["name"],
-            "Tag":     t["tag"],
+            "Tag":     tag_to_str(t["tag"]),
             "VR":      t["vr"],
             "Note":    t["note"],
             "Value":   value if present else "MISSING",
@@ -451,22 +450,20 @@ def validate_cat2(ds):
 
 
 def validate_cat3(ds, mfr_name):
-    """3. Required-Private-MRI 검증 (전체 + 감지된 제조사 강조)"""
     results = []
     for t in CAT3_TAGS:
         value   = get_tag_value(ds, t["tag"])
         present = value is not None
-        is_detected_mfr = (mfr_name and t["manufacturer"] == mfr_name)
         results.append({
             "Manufacturer": t["manufacturer"],
             "Name":         t["name"],
-            "Tag":          t["tag"],
+            "Tag":          tag_to_str(t["tag"]),
             "VR":           t["vr"],
             "Note":         t["note"],
             "Value":        value if present else "MISSING",
             "Status":       "✅  Present" if present else "⚠️  Missing",
             "_present":     present,
-            "_detected":    is_detected_mfr,
+            "_detected":    (mfr_name is not None and t["manufacturer"] == mfr_name),
         })
     return results
 
@@ -482,42 +479,38 @@ def validate_single_file(fname, file_bytes):
     cat2 = validate_cat2(ds)
     cat3 = validate_cat3(ds, mfr_name)
 
-    # 1번 mandatory 기준으로 PASS/FAIL 판정
-    cat1_mandatory_missing = sum(1 for r in cat1 if r["_mandatory"] and not r["_present"])
-    cat1_mandatory_total   = sum(1 for r in cat1 if r["_mandatory"])
-    cat1_optional_missing  = sum(1 for r in cat1 if not r["_mandatory"] and not r["_present"])
-    cat1_optional_total    = sum(1 for r in cat1 if not r["_mandatory"])
-
-    cat2_missing = sum(1 for r in cat2 if not r["_present"])
-    cat3_missing = sum(1 for r in cat3 if not r["_present"])
-
-    # 감지된 제조사 cat3 통계
-    cat3_mfr        = [r for r in cat3 if r["_detected"]]
-    cat3_mfr_missing = sum(1 for r in cat3_mfr if not r["_present"])
+    cat1_mand_missing = sum(1 for r in cat1 if r["_mandatory"] and not r["_present"])
+    cat1_mand_total   = sum(1 for r in cat1 if r["_mandatory"])
+    cat1_opt_total    = sum(1 for r in cat1 if not r["_mandatory"])
+    cat1_opt_present  = sum(1 for r in cat1 if not r["_mandatory"] and r["_present"])
+    cat2_missing      = sum(1 for r in cat2 if not r["_present"])
+    cat3_missing      = sum(1 for r in cat3 if not r["_present"])
+    cat3_mfr          = [r for r in cat3 if r["_detected"]]
+    cat3_mfr_missing  = sum(1 for r in cat3_mfr if not r["_present"])
 
     return {
-        "filename":              fname,
-        "error":                 None,
-        "status":                "PASS" if cat1_mandatory_missing == 0 else "FAIL",
-        "mfr_name":              mfr_name,
-        "mfr_raw":               mfr_raw,
-        "cat1":                  cat1,
-        "cat2":                  cat2,
-        "cat3":                  cat3,
-        "cat1_mandatory_total":  cat1_mandatory_total,
-        "cat1_mandatory_present":cat1_mandatory_total - cat1_mandatory_missing,
-        "cat1_mandatory_missing":cat1_mandatory_missing,
-        "cat1_optional_total":   cat1_optional_total,
-        "cat1_optional_present": cat1_optional_total - cat1_optional_missing,
-        "cat2_total":            len(cat2),
-        "cat2_present":          len(cat2) - cat2_missing,
-        "cat2_missing":          cat2_missing,
-        "cat3_total":            len(cat3),
-        "cat3_present":          len(cat3) - cat3_missing,
-        "cat3_missing":          cat3_missing,
-        "cat3_mfr_total":        len(cat3_mfr),
-        "cat3_mfr_present":      len(cat3_mfr) - cat3_mfr_missing,
-        "cat3_mfr_missing":      cat3_mfr_missing,
+        "filename":               fname,
+        "error":                  None,
+        "status":                 "PASS" if cat1_mand_missing == 0 else "FAIL",
+        "mfr_name":               mfr_name,
+        "mfr_raw":                mfr_raw,
+        "cat1":                   cat1,
+        "cat2":                   cat2,
+        "cat3":                   cat3,
+        "cat1_mandatory_total":   cat1_mand_total,
+        "cat1_mandatory_present": cat1_mand_total - cat1_mand_missing,
+        "cat1_mandatory_missing": cat1_mand_missing,
+        "cat1_optional_total":    cat1_opt_total,
+        "cat1_optional_present":  cat1_opt_present,
+        "cat2_total":             len(cat2),
+        "cat2_present":           len(cat2) - cat2_missing,
+        "cat2_missing":           cat2_missing,
+        "cat3_total":             len(cat3),
+        "cat3_present":           len(cat3) - cat3_missing,
+        "cat3_missing":           cat3_missing,
+        "cat3_mfr_total":         len(cat3_mfr),
+        "cat3_mfr_present":       len(cat3_mfr) - cat3_mfr_missing,
+        "cat3_mfr_missing":       cat3_mfr_missing,
     }
 
 
@@ -544,42 +537,39 @@ def load_files_from_upload(uploaded_file):
     return file_dict
 
 
-def style_df(df, col="Status"):
-    """Status 컬럼 기준 행 색상"""
+def to_display_df(results, cols):
+    df = pd.DataFrame(results)
+    return df[[c for c in cols if c in df.columns]]
+
+
+def style_df(df):
     def row_style(row):
-        s = row.get(col, "")
-        if "❌" in str(s):
+        s = str(row.get("Status", ""))
+        if "❌" in s:
             return ["background-color: rgba(255,60,60,0.15)"] * len(row)
-        elif "⚠️" in str(s):
+        elif "⚠️" in s:
             return ["background-color: rgba(255,180,0,0.10)"] * len(row)
         else:
             return ["background-color: rgba(0,200,100,0.08)"] * len(row)
     return df.style.apply(row_style, axis=1)
 
 
-def to_display_df(results, cols):
-    """결과 dict 리스트 → 표시용 DataFrame (내부 컬럼 제거)"""
-    df = pd.DataFrame(results)
-    return df[[c for c in cols if c in df.columns]]
-
-
-def build_export_df_all(result):
-    """전체 Export용 DataFrame"""
+def build_export_df(result):
     rows = []
     for r in result["cat1"]:
         rows.append({
             "File": result["filename"], "Category": "1. Mandatory-Public",
-            "Mandatory": "Mandatory" if r["_mandatory"] else "Optional",
+            "Type": "Mandatory" if r["_mandatory"] else "Optional",
             "Manufacturer": "—",
             "Name": r["Name"], "Tag": r["Tag"], "VR": r["VR"],
             "Purpose/Note": r["Purpose"],
-            "Status": "Present" if r["_present"] else "MISSING" if r["_mandatory"] else "Missing",
+            "Status": "Present" if r["_present"] else ("MISSING" if r["_mandatory"] else "Missing"),
             "Value": r["Value"],
         })
     for r in result["cat2"]:
         rows.append({
             "File": result["filename"], "Category": "2. Required-Public",
-            "Mandatory": "Required", "Manufacturer": "—",
+            "Type": "Required", "Manufacturer": "—",
             "Name": r["Name"], "Tag": r["Tag"], "VR": r["VR"],
             "Purpose/Note": r["Note"],
             "Status": "Present" if r["_present"] else "Missing",
@@ -588,7 +578,7 @@ def build_export_df_all(result):
     for r in result["cat3"]:
         rows.append({
             "File": result["filename"], "Category": "3. Required-Private-MRI",
-            "Mandatory": "Required", "Manufacturer": r["Manufacturer"],
+            "Type": "Required", "Manufacturer": r["Manufacturer"],
             "Name": r["Name"], "Tag": r["Tag"], "VR": r["VR"],
             "Purpose/Note": r["Note"],
             "Status": "Present" if r["_present"] else "Missing",
@@ -597,7 +587,7 @@ def build_export_df_all(result):
     return pd.DataFrame(rows)
 
 
-def excel_export(df):
+def excel_export(df, summary_df=None):
     buf = io.BytesIO()
     with pd.ExcelWriter(buf, engine="openpyxl") as writer:
         df.to_excel(writer, index=False, sheet_name="Tag Report")
@@ -613,6 +603,19 @@ def excel_export(df):
                 fill = PatternFill("solid", fgColor="CCFFDD")
             for cell in row:
                 cell.fill = fill
+        if summary_df is not None:
+            summary_df.to_excel(writer, index=False, sheet_name="Summary")
+            ws2 = writer.sheets["Summary"]
+            for row in ws2.iter_rows(min_row=2, max_row=ws2.max_row):
+                status = row[1].value if len(row) > 1 else ""
+                if status == "FAIL":
+                    fill = PatternFill("solid", fgColor="FFCCCC")
+                elif status == "PASS":
+                    fill = PatternFill("solid", fgColor="CCFFDD")
+                else:
+                    fill = PatternFill("solid", fgColor="FFE5CC")
+                for cell in row:
+                    cell.fill = fill
     return buf.getvalue()
 
 
@@ -692,10 +695,9 @@ if uploaded:
     fail_results  = [r for r in valid_results if r["status"] == "FAIL"]
     pass_results  = [r for r in valid_results if r["status"] == "PASS"]
     worst_files   = sorted(fail_results, key=lambda x: x["cat1_mandatory_missing"], reverse=True)
-
-    total_pass  = len(pass_results)
-    total_fail  = len(fail_results)
-    total_error = len(error_results)
+    total_pass    = len(pass_results)
+    total_fail    = len(fail_results)
+    total_error   = len(error_results)
 
     # ════════════════════════════════════════════════
     # Overall Summary
@@ -734,7 +736,6 @@ if uploaded:
 
     pass_rate  = int(total_pass / total_files * 100) if total_files > 0 else 0
     rate_color = "#00c864" if pass_rate == 100 else "#ffb400" if pass_rate > 0 else "#ff4444"
-
     c1, c2, c3, c4, c5 = st.columns(5)
     for col, val, label, color in [
         (c1, str(total_files), "Total Files", "#00d4ff"),
@@ -812,7 +813,7 @@ if uploaded:
             """, unsafe_allow_html=True)
 
     # ════════════════════════════════════════════════
-    # File-by-File Detail (Dropdown)
+    # File-by-File Detail
     # ════════════════════════════════════════════════
     st.markdown("""
     <div class="section-card">
@@ -874,49 +875,40 @@ if uploaded:
         """, unsafe_allow_html=True)
 
         # Manufacturer
-        if r["mfr_name"]:
-            st.markdown(f"""
-            <div style="margin-bottom:16px;">
-                <span class="manufacturer-badge">
-                    🏭 Detected Manufacturer: <b>{r['mfr_name']}</b>
-                    &nbsp;·&nbsp; Raw: <i>{r['mfr_raw']}</i>
-                </span>
-            </div>
-            """, unsafe_allow_html=True)
-        else:
-            st.markdown("""
-            <div style="margin-bottom:16px;">
-                <span class="manufacturer-badge">🏭 Manufacturer: <b>Unknown</b></span>
-            </div>
-            """, unsafe_allow_html=True)
+        mfr_display = r['mfr_name'] if r['mfr_name'] else "Unknown / Not Detected"
+        mfr_raw_display = r['mfr_raw'] if r['mfr_raw'] != "Unknown" else "—"
+        st.markdown(f"""
+        <div style="margin-bottom:16px;">
+            <span class="manufacturer-badge">
+                🏭 Detected Manufacturer: <b>{mfr_display}</b>
+                &nbsp;·&nbsp; Raw Value: <i>{mfr_raw_display}</i>
+            </span>
+        </div>
+        """, unsafe_allow_html=True)
 
-        # ────────────────────────────────────────────
-        # Category 1: Mandatory-Public
-        # ────────────────────────────────────────────
-        mand_present = r["cat1_mandatory_present"]
-        mand_total   = r["cat1_mandatory_total"]
-        opt1_present = r["cat1_optional_present"]
-        opt1_total   = r["cat1_optional_total"]
-        mand_color   = "#ff4444" if r["cat1_mandatory_missing"] > 0 else "#00c864"
-
+        # ── Category 1 ───────────────────────────────
+        mand_color = "#ff4444" if r["cat1_mandatory_missing"] > 0 else "#00c864"
         st.markdown(f"""
         <div class="cat1-header">
             <div style="font-size:17px;font-weight:800;margin-bottom:6px;">
                 🔴 Category 1 — Mandatory-Public
             </div>
-            <div style="font-size:13px;opacity:0.8;line-height:1.8;">
+            <div style="font-size:13px;opacity:0.85;line-height:1.8;">
                 Mandatory: <span style="color:{mand_color};font-weight:700;">
-                    {mand_present}/{mand_total} Present
+                    {r['cat1_mandatory_present']}/{r['cat1_mandatory_total']} Present
                 </span>
                 &nbsp;·&nbsp;
                 Optional: <span style="color:#ffb400;font-weight:600;">
-                    {opt1_present}/{opt1_total} Present
+                    {r['cat1_optional_present']}/{r['cat1_optional_total']} Present
+                </span>
+                &nbsp;·&nbsp;
+                <span style="opacity:0.7;font-size:12px;">
+                    PASS/FAIL is determined by Mandatory tags only
                 </span>
             </div>
         </div>
         """, unsafe_allow_html=True)
 
-        # Missing Mandatory 강조
         missing_mand = [x for x in r["cat1"] if x["_mandatory"] and not x["_present"]]
         if missing_mand:
             items = "".join([
@@ -929,12 +921,11 @@ if uploaded:
                 border-left:4px solid #ff4444;border-radius:12px;padding:14px 20px;margin-bottom:12px;">
                 <div style="font-weight:800;color:#ff4444;margin-bottom:8px;font-size:14px;">
                     ❌ Missing Mandatory Tags — SwiftMR Cannot Process This File
-                </div>
-                {items}
+                </div>{items}
             </div>
             """, unsafe_allow_html=True)
 
-        df_cat1 = to_display_df(r["cat1"], ["Name","Tag","VR","Purpose","Mandatory","Value","Status"])
+        df_cat1 = to_display_df(r["cat1"], ["Name","Tag","VR","Purpose","Type","Value","Status"])
         st.dataframe(
             style_df(df_cat1),
             use_container_width=True, hide_index=True,
@@ -943,18 +934,20 @@ if uploaded:
 
         st.markdown("<br>", unsafe_allow_html=True)
 
-        # ────────────────────────────────────────────
-        # Category 2: Required-Public
-        # ────────────────────────────────────────────
+        # ── Category 2 ───────────────────────────────
         cat2_color = "#ffb400" if r["cat2_missing"] > 0 else "#00c864"
         st.markdown(f"""
         <div class="cat2-header">
             <div style="font-size:17px;font-weight:800;margin-bottom:6px;">
                 🟠 Category 2 — Required-Public
             </div>
-            <div style="font-size:13px;opacity:0.8;">
+            <div style="font-size:13px;opacity:0.85;line-height:1.8;">
                 <span style="color:{cat2_color};font-weight:700;">
                     {r['cat2_present']}/{r['cat2_total']} Present
+                </span>
+                &nbsp;·&nbsp;
+                <span style="opacity:0.7;font-size:12px;">
+                    Missing tags may limit some SwiftMR features
                 </span>
             </div>
         </div>
@@ -969,16 +962,14 @@ if uploaded:
 
         st.markdown("<br>", unsafe_allow_html=True)
 
-        # ────────────────────────────────────────────
-        # Category 3: Required-Private-MRI
-        # ────────────────────────────────────────────
+        # ── Category 3 ───────────────────────────────
         cat3_color = "#ffb400" if r["cat3_missing"] > 0 else "#00c864"
         mfr_info   = ""
         if r["mfr_name"]:
-            mfr_color = "#ffb400" if r["cat3_mfr_missing"] > 0 else "#00c864"
-            mfr_info  = (
+            mfr_c    = "#ffb400" if r["cat3_mfr_missing"] > 0 else "#00c864"
+            mfr_info = (
                 f"&nbsp;·&nbsp; <b>{r['mfr_name']}</b> tags: "
-                f"<span style='color:{mfr_color};font-weight:700;'>"
+                f"<span style='color:{mfr_c};font-weight:700;'>"
                 f"{r['cat3_mfr_present']}/{r['cat3_mfr_total']} Present</span>"
             )
 
@@ -987,52 +978,47 @@ if uploaded:
             <div style="font-size:17px;font-weight:800;margin-bottom:6px;">
                 🔵 Category 3 — Required-Private-MRI
             </div>
-            <div style="font-size:13px;opacity:0.8;">
+            <div style="font-size:13px;opacity:0.85;line-height:1.8;">
                 All manufacturers: <span style="color:{cat3_color};font-weight:700;">
                     {r['cat3_present']}/{r['cat3_total']} Present
                 </span>
                 {mfr_info}
+                &nbsp;·&nbsp;
+                <span style="opacity:0.7;font-size:12px;">
+                    Detected manufacturer rows are highlighted
+                </span>
             </div>
         </div>
         """, unsafe_allow_html=True)
 
-        # 감지된 제조사 필터 옵션
-        mfr_list = sorted(set(t["manufacturer"] for t in CAT3_TAGS))
+        mfr_list       = sorted(set(t["manufacturer"] for t in CAT3_TAGS))
         filter_options = ["All Manufacturers"] + mfr_list
-        if r["mfr_name"] and r["mfr_name"] in filter_options:
-            default_filter = filter_options.index(r["mfr_name"])
-        else:
-            default_filter = 0
+        default_filter = filter_options.index(r["mfr_name"]) if r["mfr_name"] and r["mfr_name"] in filter_options else 0
 
-        selected_mfr = st.selectbox(
+        selected_mfr  = st.selectbox(
             "Filter by Manufacturer",
             options=filter_options,
             index=default_filter,
             key="cat3_mfr_filter"
         )
+        cat3_filtered = r["cat3"] if selected_mfr == "All Manufacturers" else [
+            x for x in r["cat3"] if x["Manufacturer"] == selected_mfr
+        ]
 
-        cat3_filtered = r["cat3"]
-        if selected_mfr != "All Manufacturers":
-            cat3_filtered = [x for x in r["cat3"] if x["Manufacturer"] == selected_mfr]
-
-        df_cat3 = to_display_df(cat3_filtered, ["Manufacturer","Name","Tag","VR","Note","Value","Status"])
-
-        # 감지된 제조사 행 강조
         def style_cat3(df):
             def row_style(row):
-                s = row.get("Status", "")
+                s        = str(row.get("Status", ""))
                 detected = row.get("Manufacturer", "") == r["mfr_name"]
-                if "⚠️" in str(s):
-                    bg = "rgba(255,180,0,0.10)"
-                elif "✅" in str(s):
-                    bg = "rgba(0,200,100,0.08)"
+                if "⚠️" in s:
+                    bg = "rgba(255,180,0,0.18)" if detected else "rgba(255,180,0,0.08)"
+                elif "✅" in s:
+                    bg = "rgba(0,200,100,0.15)" if detected else "rgba(0,200,100,0.06)"
                 else:
                     bg = ""
-                if detected:
-                    bg = bg.replace("0.08","0.15").replace("0.10","0.18")
                 return [f"background-color: {bg}"] * len(row)
             return df.style.apply(row_style, axis=1)
 
+        df_cat3 = to_display_df(cat3_filtered, ["Manufacturer","Name","Tag","VR","Note","Value","Status"])
         st.dataframe(
             style_cat3(df_cat3),
             use_container_width=True, hide_index=True,
@@ -1040,7 +1026,12 @@ if uploaded:
         )
 
         if r["mfr_name"]:
-            st.caption(f"💡 Detected manufacturer **{r['mfr_name']}** rows are highlighted with stronger color.")
+            st.caption(
+                f"💡 Detected manufacturer: **{r['mfr_name']}** — "
+                f"rows for this manufacturer are highlighted with stronger color."
+            )
+        else:
+            st.caption("ℹ️ Manufacturer not detected. All manufacturers shown without highlighting.")
 
         st.markdown("<br>", unsafe_allow_html=True)
 
@@ -1063,7 +1054,7 @@ if uploaded:
 
     with export_tab1:
         if not selected_result.get("error"):
-            df_export = build_export_df_all(selected_result)
+            df_export = build_export_df(selected_result)
             col1, col2 = st.columns(2)
             base = selected_result["filename"].replace(".dcm","")
             with col1:
@@ -1088,9 +1079,38 @@ if uploaded:
     with export_tab2:
         valid_for_export = [r for r in all_results if not r.get("error")]
         if valid_for_export:
-            all_dfs = [build_export_df_all(r) for r in valid_for_export]
-            df_all  = pd.concat(all_dfs, ignore_index=True)
+            all_dfs   = [build_export_df(r) for r in valid_for_export]
+            df_all    = pd.concat(all_dfs, ignore_index=True)
             base_name = uploaded.name.replace(".zip","").replace(".dcm","")
+
+            # Summary DataFrame
+            summary_rows = []
+            for res in all_results:
+                if res.get("error"):
+                    summary_rows.append({
+                        "Filename": res["filename"], "Status": "ERROR",
+                        "Manufacturer": "—",
+                        "Cat1 Mandatory Present": "—", "Cat1 Mandatory Missing": "—",
+                        "Cat1 Optional Present": "—",
+                        "Cat2 Present": "—", "Cat2 Missing": "—",
+                        "Cat3 Present": "—", "Cat3 Missing": "—",
+                        "Error": res["error"],
+                    })
+                else:
+                    summary_rows.append({
+                        "Filename": res["filename"], "Status": res["status"],
+                        "Manufacturer": res["mfr_raw"],
+                        "Cat1 Mandatory Present": res["cat1_mandatory_present"],
+                        "Cat1 Mandatory Missing": res["cat1_mandatory_missing"],
+                        "Cat1 Optional Present":  res["cat1_optional_present"],
+                        "Cat2 Present": res["cat2_present"],
+                        "Cat2 Missing": res["cat2_missing"],
+                        "Cat3 Present": res["cat3_present"],
+                        "Cat3 Missing": res["cat3_missing"],
+                        "Error": "",
+                    })
+            df_summary = pd.DataFrame(summary_rows)
+
             col1, col2 = st.columns(2)
             with col1:
                 st.download_button(
@@ -1101,66 +1121,9 @@ if uploaded:
                     use_container_width=True,
                 )
             with col2:
-                # Summary 시트 포함 Excel
-                all_buf = io.BytesIO()
-                with pd.ExcelWriter(all_buf, engine="openpyxl") as writer:
-                    df_all.to_excel(writer, index=False, sheet_name="All Tags")
-                    from openpyxl.styles import PatternFill
-                    ws = writer.sheets["All Tags"]
-                    for row in ws.iter_rows(min_row=2, max_row=ws.max_row):
-                        status = row[8].value if len(row) > 8 else ""
-                        if status == "MISSING":
-                            fill = PatternFill("solid", fgColor="FFCCCC")
-                        elif status == "Missing":
-                            fill = PatternFill("solid", fgColor="FFF3CC")
-                        else:
-                            fill = PatternFill("solid", fgColor="CCFFDD")
-                        for cell in row:
-                            cell.fill = fill
-
-                    # Summary 시트
-                    summary_rows = []
-                    for res in all_results:
-                        if res.get("error"):
-                            summary_rows.append({
-                                "Filename": res["filename"], "Status": "ERROR",
-                                "Manufacturer": "—",
-                                "Cat1 Mandatory Present": "—", "Cat1 Mandatory Missing": "—",
-                                "Cat1 Optional Present": "—",
-                                "Cat2 Present": "—", "Cat2 Missing": "—",
-                                "Cat3 Present": "—", "Cat3 Missing": "—",
-                                "Error": res["error"],
-                            })
-                        else:
-                            summary_rows.append({
-                                "Filename": res["filename"], "Status": res["status"],
-                                "Manufacturer": res["mfr_raw"],
-                                "Cat1 Mandatory Present": res["cat1_mandatory_present"],
-                                "Cat1 Mandatory Missing": res["cat1_mandatory_missing"],
-                                "Cat1 Optional Present":  res["cat1_optional_present"],
-                                "Cat2 Present": res["cat2_present"],
-                                "Cat2 Missing": res["cat2_missing"],
-                                "Cat3 Present": res["cat3_present"],
-                                "Cat3 Missing": res["cat3_missing"],
-                                "Error": "",
-                            })
-                    df_sum = pd.DataFrame(summary_rows)
-                    df_sum.to_excel(writer, index=False, sheet_name="Summary")
-                    ws2 = writer.sheets["Summary"]
-                    for row in ws2.iter_rows(min_row=2, max_row=ws2.max_row):
-                        status = row[1].value
-                        if status == "FAIL":
-                            fill = PatternFill("solid", fgColor="FFCCCC")
-                        elif status == "PASS":
-                            fill = PatternFill("solid", fgColor="CCFFDD")
-                        else:
-                            fill = PatternFill("solid", fgColor="FFE5CC")
-                        for cell in row:
-                            cell.fill = fill
-
                 st.download_button(
                     "⬇️ Download All Excel",
-                    data=all_buf.getvalue(),
+                    data=excel_export(df_all, df_summary),
                     file_name=f"tag_report_ALL_{base_name}.xlsx",
                     mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
                     use_container_width=True,
@@ -1194,19 +1157,19 @@ with st.sidebar:
         <div style="margin-bottom:8px;">
             <span style="color:#ff4444;font-weight:700;">🔴 Cat.1 Mandatory-Public</span><br>
             <span style="font-size:11px;opacity:0.7;">
-                PASS/FAIL 기준 · Mandatory 없으면 처리 불가
+                PASS/FAIL basis · Missing = cannot process
             </span>
         </div>
         <div style="margin-bottom:8px;">
             <span style="color:#ff8c00;font-weight:700;">🟠 Cat.2 Required-Public</span><br>
             <span style="font-size:11px;opacity:0.7;">
-                공개 표준 태그 · 없으면 일부 기능 제한
+                Public standard tags · Missing = limited features
             </span>
         </div>
         <div>
             <span style="color:#00d4ff;font-weight:700;">🔵 Cat.3 Required-Private-MRI</span><br>
             <span style="font-size:11px;opacity:0.7;">
-                제조사별 Private 태그 · 전체 + 감지 제조사 강조
+                Manufacturer private tags · All + detected highlighted
             </span>
         </div>
     </div>
@@ -1217,9 +1180,12 @@ with st.sidebar:
     st.markdown('<div class="sidebar-section-title">📊 Status Legend</div>', unsafe_allow_html=True)
     st.markdown("""
     <div style="font-size:13px;line-height:1.9;">
-        <span style="color:#ff4444;font-weight:700;">❌ Missing</span> — Mandatory tag absent<br>
-        <span style="color:#ffb400;font-weight:700;">⚠️ Missing</span> — Optional/Required tag absent<br>
-        <span style="color:#00c864;font-weight:700;">✅ Present</span> — Tag found
+        <span style="color:#ff4444;font-weight:700;">❌ Missing</span>
+        — Mandatory tag absent (FAIL)<br>
+        <span style="color:#ffb400;font-weight:700;">⚠️ Missing</span>
+        — Optional/Required tag absent<br>
+        <span style="color:#00c864;font-weight:700;">✅ Present</span>
+        — Tag found in DICOM file
     </div>
     """, unsafe_allow_html=True)
 
