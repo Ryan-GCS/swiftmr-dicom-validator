@@ -27,7 +27,6 @@ logo_b64          = get_image_base64("SwiftMR Logo.png")
 logo_html         = (f'<img src="data:image/png;base64,{logo_b64}" style="width:44px;height:44px;object-fit:contain;">' if logo_b64 else "🏥")
 sidebar_logo_html = (f'<img src="data:image/png;base64,{logo_b64}" style="width:48px;height:48px;object-fit:contain;">' if logo_b64 else "🏥")
 
-# ── CSS ──────────────────────────────────────────────
 st.markdown("""
 <style>
 @media (prefers-color-scheme: dark) {
@@ -47,6 +46,7 @@ st.markdown("""
     .cat1-header { background: linear-gradient(135deg,rgba(255,60,60,0.15),rgba(200,0,0,0.08)) !important; border: 1px solid rgba(255,60,60,0.3) !important; }
     .cat2-header { background: linear-gradient(135deg,rgba(255,140,0,0.15),rgba(200,100,0,0.08)) !important; border: 1px solid rgba(255,140,0,0.3) !important; }
     .cat3-header { background: linear-gradient(135deg,rgba(0,180,255,0.12),rgba(0,100,200,0.08)) !important; border: 1px solid rgba(0,180,255,0.3) !important; }
+    .no-mfr-box  { background: rgba(255,180,0,0.08) !important; border: 1px solid rgba(255,180,0,0.3) !important; }
 }
 @media (prefers-color-scheme: light) {
     .stApp { background-color: #f0f4f8 !important; }
@@ -65,6 +65,7 @@ st.markdown("""
     .cat1-header { background: linear-gradient(135deg,rgba(255,60,60,0.10),rgba(200,0,0,0.05)) !important; border: 1px solid rgba(255,60,60,0.3) !important; }
     .cat2-header { background: linear-gradient(135deg,rgba(255,140,0,0.10),rgba(200,100,0,0.05)) !important; border: 1px solid rgba(255,140,0,0.3) !important; }
     .cat3-header { background: linear-gradient(135deg,rgba(0,180,255,0.08),rgba(0,100,200,0.05)) !important; border: 1px solid rgba(0,180,255,0.3) !important; }
+    .no-mfr-box  { background: rgba(255,180,0,0.06) !important; border: 1px solid rgba(255,180,0,0.3) !important; }
 }
 .airs-header { display:flex; align-items:center; gap:16px; padding:20px 28px; margin-bottom:24px; border-radius:0 0 16px 16px; }
 .airs-logo-box { width:52px; height:52px; background:transparent; border-radius:12px; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
@@ -89,10 +90,10 @@ st.markdown("""
 .cat1-header { border-radius:12px; padding:14px 20px; margin-bottom:12px; }
 .cat2-header { border-radius:12px; padding:14px 20px; margin-bottom:12px; }
 .cat3-header { border-radius:12px; padding:14px 20px; margin-bottom:12px; }
+.no-mfr-box  { border-radius:12px; padding:16px 20px; margin-bottom:12px; }
 </style>
 """, unsafe_allow_html=True)
 
-# ── Header ───────────────────────────────────────────
 st.markdown(f"""
 <div class="airs-header">
     <div class="airs-logo-box">{logo_html}</div>
@@ -103,6 +104,180 @@ st.markdown(f"""
     <div class="airs-badge">v1.0</div>
 </div>
 """, unsafe_allow_html=True)
+
+# ════════════════════════════════════════════════════
+# DICOM 값 유효성 검증 규칙
+# ════════════════════════════════════════════════════
+def validate_value(tag_tuple, elem):
+    """
+    태그별 값 유효성 검증
+    반환: (is_valid: bool, issue: str)
+    is_valid=True  → 정상
+    is_valid=False → 값 있지만 비정상 (⚠️ Invalid)
+    """
+    if elem is None:
+        return True, ""  # 없는 태그는 여기서 판단 안 함
+
+    try:
+        val = elem.value
+        vr  = elem.VR
+
+        # ── 빈 문자열 / None 체크 ──────────────────
+        if val is None:
+            return False, "Empty value"
+        if isinstance(val, str) and val.strip() == "":
+            return False, "Empty string"
+        if isinstance(val, pydicom.sequence.Sequence) and len(val) == 0:
+            return False, "Empty sequence"
+
+        # ── 태그별 특수 검증 ───────────────────────
+        group, elem_id = tag_tuple
+
+        # ImagePositionPatient (0020,0032): DS, 반드시 3개 값 (X\Y\Z)
+        if (group, elem_id) == (0x0020, 0x0032):
+            vals = _to_list(val)
+            if len(vals) != 3:
+                return False, f"Expected 3 values (X\\Y\\Z), got {len(vals)}"
+            if all(_is_zero(v) for v in vals):
+                return False, "All zeros — likely placeholder"
+
+        # ImageOrientationPatient (0020,0037): DS, 반드시 6개 값
+        elif (group, elem_id) == (0x0020, 0x0037):
+            vals = _to_list(val)
+            if len(vals) != 6:
+                return False, f"Expected 6 values, got {len(vals)}"
+            if all(_is_zero(v) for v in vals):
+                return False, "All zeros — likely placeholder"
+
+        # PixelSpacing (0028,0030): DS, 2개 값, 양수
+        elif (group, elem_id) == (0x0028, 0x0030):
+            vals = _to_list(val)
+            if len(vals) != 2:
+                return False, f"Expected 2 values (row\\col spacing), got {len(vals)}"
+            if any(_is_zero(v) for v in vals):
+                return False, "Zero spacing value — invalid"
+            if any(float(v) < 0 for v in vals):
+                return False, "Negative spacing value — invalid"
+
+        # SliceThickness (0018,0050): DS, 양수
+        elif (group, elem_id) == (0x0018, 0x0050):
+            vals = _to_list(val)
+            if len(vals) >= 1 and _is_zero(vals[0]):
+                return False, "Zero thickness — likely placeholder"
+            if len(vals) >= 1 and float(vals[0]) < 0:
+                return False, "Negative thickness — invalid"
+
+        # SpacingBetweenSlices (0018,0088): DS, 양수
+        elif (group, elem_id) == (0x0018, 0x0088):
+            vals = _to_list(val)
+            if len(vals) >= 1 and _is_zero(vals[0]):
+                return False, "Zero spacing — likely placeholder"
+
+        # WindowCenter (0028,1050) / WindowWidth (0028,1051): DS, 0이면 의심
+        elif (group, elem_id) in [(0x0028, 0x1050), (0x0028, 0x1051)]:
+            vals = _to_list(val)
+            if len(vals) >= 1 and _is_zero(vals[0]):
+                return False, "Zero value — likely placeholder"
+
+        # InstanceNumber (0020,0013): IS, 음수 불가
+        elif (group, elem_id) == (0x0020, 0x0013):
+            try:
+                n = int(str(val).strip())
+                if n < 0:
+                    return False, f"Negative instance number: {n}"
+            except Exception:
+                return False, f"Non-integer value: {val}"
+
+        # SeriesNumber (0020,0011): IS
+        elif (group, elem_id) == (0x0020, 0x0011):
+            try:
+                int(str(val).strip())
+            except Exception:
+                return False, f"Non-integer value: {val}"
+
+        # BitsStored (0028,0101): US, 일반적으로 8 또는 16
+        elif (group, elem_id) == (0x0028, 0x0101):
+            try:
+                n = int(val)
+                if n not in [8, 10, 12, 16, 32]:
+                    return False, f"Unusual BitsStored value: {n} (expected 8/10/12/16/32)"
+            except Exception:
+                pass
+
+        # PixelRepresentation (0028,0103): US, 0 or 1
+        elif (group, elem_id) == (0x0028, 0x0103):
+            try:
+                n = int(val)
+                if n not in [0, 1]:
+                    return False, f"Invalid value: {n} (must be 0 or 1)"
+            except Exception:
+                pass
+
+        # Rows / Columns (0028,0010) / (0028,0011): US, 양수
+        elif (group, elem_id) in [(0x0028, 0x0010), (0x0028, 0x0011)]:
+            try:
+                n = int(val)
+                if n <= 0:
+                    return False, f"Non-positive value: {n}"
+            except Exception:
+                pass
+
+        # PatientPosition (0018,5100): CS, 유효한 값 목록
+        elif (group, elem_id) == (0x0018, 0x5100):
+            valid_positions = {
+                "HFP","HFS","HFDR","HFDL","FFDR","FFDL","FFP","FFS",
+                "LFP","LFS","RFP","RFS","AFDR","AFDL","PFDR","PFDL"
+            }
+            s = str(val).strip().upper()
+            if s not in valid_positions:
+                return False, f"Invalid PatientPosition: '{val}' (not in DICOM standard list)"
+
+        # ImageType (0008,0008): CS, 비어있으면 안 됨
+        elif (group, elem_id) == (0x0008, 0x0008):
+            vals = _to_list(val)
+            if len(vals) == 0:
+                return False, "Empty ImageType"
+            # 첫 번째 값은 ORIGINAL 또는 DERIVED
+            first = str(vals[0]).strip().upper()
+            if first not in ["ORIGINAL", "DERIVED", "MIXED"]:
+                return False, f"Unexpected first value: '{vals[0]}' (expected ORIGINAL/DERIVED/MIXED)"
+
+        # Manufacturer (0008,0070): LO, 비어있으면 경고
+        elif (group, elem_id) == (0x0008, 0x0070):
+            if str(val).strip() == "":
+                return False, "Empty manufacturer string"
+
+        # NumberOfAverages (0018,0083): DS, 양수
+        elif (group, elem_id) == (0x0018, 0x0083):
+            try:
+                f = float(str(_to_list(val)[0]))
+                if f <= 0:
+                    return False, f"Non-positive value: {f}"
+            except Exception:
+                pass
+
+    except Exception as e:
+        return False, f"Validation error: {e}"
+
+    return True, ""
+
+
+def _to_list(val):
+    """pydicom 값 → 리스트 변환"""
+    if isinstance(val, pydicom.multival.MultiValue):
+        return list(val)
+    if isinstance(val, (list, tuple)):
+        return list(val)
+    return [val]
+
+
+def _is_zero(v):
+    """값이 0 또는 0.0인지 확인"""
+    try:
+        return float(str(v).strip()) == 0.0
+    except Exception:
+        return False
+
 
 # ════════════════════════════════════════════════════
 # Tag Definitions
@@ -233,24 +408,25 @@ MANUFACTURER_KEYWORDS = {
 # ════════════════════════════════════════════════════
 # Core Functions
 # ════════════════════════════════════════════════════
-def get_tag_value(ds, tag_tuple):
+def get_tag_value_and_elem(ds, tag_tuple):
+    """태그 값 + elem 반환"""
     try:
         tag = pydicom.tag.Tag(tag_tuple[0], tag_tuple[1])
         if tag in ds:
             elem = ds[tag]
             if elem.VR == "SQ":
-                return f"[Sequence {len(elem.value)} item(s)]"
+                return f"[Sequence {len(elem.value)} item(s)]", elem
             val = elem.value
             if isinstance(val, bytes):
-                return f"[Binary {len(val)} bytes]"
+                return f"[Binary {len(val)} bytes]", elem
             if hasattr(val, '__iter__') and not isinstance(val, str):
                 joined = ", ".join(str(v) for v in val)
-                return joined[:100] + "..." if len(joined) > 100 else joined
+                return (joined[:100] + "..." if len(joined) > 100 else joined), elem
             s = str(val)
-            return s[:100] + "..." if len(s) > 100 else s
-        return None
+            return (s[:100] + "..." if len(s) > 100 else s), elem
+        return None, None
     except Exception:
-        return None
+        return None, None
 
 
 def tag_to_str(tag_tuple):
@@ -262,25 +438,24 @@ def detect_manufacturer(ds):
         tag = pydicom.tag.Tag(0x0008, 0x0070)
         if tag in ds:
             raw = str(ds[tag].value).strip()
+            if not raw:
+                return None, "Unknown"
             mfr = raw.lower()
             for name, keywords in MANUFACTURER_KEYWORDS.items():
                 if any(k in mfr for k in keywords):
                     return name, raw
-            return None, raw
+            return None, raw   # 인식 못한 제조사 — raw 값은 반환
     except Exception:
         pass
     return None, "Unknown"
 
 
 def is_valid_dicom(data: bytes) -> bool:
-    """DICOM 파일 여부 확인 (128바이트 프리앰블 + DICM 매직)"""
     try:
         if len(data) < 132:
             return False
-        # 표준 DICOM: 오프셋 128에 'DICM'
         if data[128:132] == b'DICM':
             return True
-        # force=True 로 읽어서 태그가 하나라도 있으면 DICOM으로 간주
         ds = pydicom.dcmread(io.BytesIO(data), force=True, stop_before_pixels=True)
         return len(ds) > 0
     except Exception:
@@ -288,40 +463,22 @@ def is_valid_dicom(data: bytes) -> bool:
 
 
 def load_files_from_upload(uploaded_file):
-    """
-    업로드 파일 → {filename: bytes}
-    수정사항:
-      - ZIP 내 디렉토리 엔트리 완전 제외 (is_dir() 체크)
-      - 확장자 없는 항목은 DICOM 매직 바이트로 검증
-      - __MACOSX, .DS_Store 등 숨김 파일 제외
-    """
     file_dict = {}
     name = uploaded_file.name.lower()
-
     if name.endswith(".zip"):
         raw_bytes = uploaded_file.read()
         with zipfile.ZipFile(io.BytesIO(raw_bytes)) as zf:
             for info in zf.infolist():
-                zname = info.filename
-
-                # ① 디렉토리 엔트리 제외
                 if info.is_dir():
                     continue
-
-                # ② 숨김/시스템 파일 제외
+                zname    = info.filename
                 basename = Path(zname).name
                 if basename.startswith("__") or basename.startswith(".") or basename == "":
                     continue
-
-                zname_lower = zname.lower()
-
-                # ③ .dcm / .dicom 확장자
-                if zname_lower.endswith(".dcm") or zname_lower.endswith(".dicom"):
+                zl = zname.lower()
+                if zl.endswith(".dcm") or zl.endswith(".dicom"):
                     file_dict[basename] = zf.read(zname)
-                    continue
-
-                # ④ 확장자 없는 파일 → DICOM 바이트 검증
-                if "." not in basename:
+                elif "." not in basename:
                     try:
                         data = zf.read(zname)
                         if is_valid_dicom(data):
@@ -330,25 +487,50 @@ def load_files_from_upload(uploaded_file):
                         pass
     else:
         file_dict[uploaded_file.name] = uploaded_file.read()
-
     return file_dict
+
+
+# ════════════════════════════════════════════════════
+# Status 결정 로직
+# ════════════════════════════════════════════════════
+# Status 종류:
+#   "✅  Present"        — 존재 + 값 유효
+#   "⚠️  Invalid Value"  — 존재하지만 값 비정상
+#   "❌  Missing"        — Mandatory 태그 없음
+#   "⚠️  Missing"        — Optional/Required 태그 없음
+
+def make_status(present, is_valid, issue, mandatory):
+    if not present:
+        return "❌  Missing" if mandatory else "⚠️  Missing"
+    if not is_valid:
+        return f"⚠️  Invalid: {issue}"
+    return "✅  Present"
 
 
 def validate_cat1(ds):
     results = []
     for t in CAT1_MANDATORY:
-        value   = get_tag_value(ds, t["tag"])
-        present = value is not None
+        value, elem = get_tag_value_and_elem(ds, t["tag"])
+        present     = value is not None
+        is_valid, issue = (validate_value(t["tag"], elem) if present else (True, ""))
+        status      = make_status(present, is_valid, issue, t["mandatory"])
+
+        # PASS/FAIL 판정용: mandatory이고 (없거나 invalid)
+        is_problem  = t["mandatory"] and (not present or not is_valid)
+
         results.append({
-            "Name":       t["name"],
-            "Tag":        tag_to_str(t["tag"]),
-            "VR":         t["vr"],
-            "Purpose":    t["purpose"],
-            "Type":       "🔴 Mandatory" if t["mandatory"] else "🟡 Optional",
-            "Value":      value if present else "MISSING",
-            "Status":     "✅  Present" if present else ("❌  Missing" if t["mandatory"] else "⚠️  Missing"),
-            "_present":   present,
-            "_mandatory": t["mandatory"],
+            "Name":         t["name"],
+            "Tag":          tag_to_str(t["tag"]),
+            "VR":           t["vr"],
+            "Purpose":      t["purpose"],
+            "Type":         "🔴 Mandatory" if t["mandatory"] else "🟡 Optional",
+            "Value":        value if present else "MISSING",
+            "Status":       status,
+            "_present":     present,
+            "_valid":       is_valid,
+            "_issue":       issue,
+            "_mandatory":   t["mandatory"],
+            "_is_problem":  is_problem,
         })
     return results
 
@@ -356,32 +538,38 @@ def validate_cat1(ds):
 def validate_cat2(ds):
     results = []
     for t in CAT2_TAGS:
-        value   = get_tag_value(ds, t["tag"])
-        present = value is not None
+        value, elem = get_tag_value_and_elem(ds, t["tag"])
+        present     = value is not None
+        is_valid, issue = (validate_value(t["tag"], elem) if present else (True, ""))
+        status      = make_status(present, is_valid, issue, False)
+
         results.append({
             "Name":     t["name"],
             "Tag":      tag_to_str(t["tag"]),
             "VR":       t["vr"],
             "Note":     t["note"],
             "Value":    value if present else "MISSING",
-            "Status":   "✅  Present" if present else "⚠️  Missing",
+            "Status":   status,
             "_present": present,
+            "_valid":   is_valid,
+            "_issue":   issue,
         })
     return results
 
 
 def validate_cat3(ds, mfr_name):
-    """
-    감지된 제조사 태그만 검증
-    mfr_name이 없으면 전체 검증
-    """
+    """감지된 제조사 태그만 검증. 미감지 시 빈 리스트 반환."""
+    if not mfr_name:
+        return []
     results = []
     for t in CAT3_TAGS:
-        # 감지된 제조사가 있으면 해당 제조사 태그만, 없으면 전체
-        if mfr_name and t["manufacturer"] != mfr_name:
+        if t["manufacturer"] != mfr_name:
             continue
-        value   = get_tag_value(ds, t["tag"])
-        present = value is not None
+        value, elem = get_tag_value_and_elem(ds, t["tag"])
+        present     = value is not None
+        is_valid, issue = (validate_value(t["tag"], elem) if present else (True, ""))
+        status      = make_status(present, is_valid, issue, False)
+
         results.append({
             "Manufacturer": t["manufacturer"],
             "Name":         t["name"],
@@ -389,8 +577,10 @@ def validate_cat3(ds, mfr_name):
             "VR":           t["vr"],
             "Note":         t["note"],
             "Value":        value if present else "MISSING",
-            "Status":       "✅  Present" if present else "⚠️  Missing",
+            "Status":       status,
             "_present":     present,
+            "_valid":       is_valid,
+            "_issue":       issue,
         })
     return results
 
@@ -404,35 +594,49 @@ def validate_single_file(fname, file_bytes):
     mfr_name, mfr_raw = detect_manufacturer(ds)
     cat1 = validate_cat1(ds)
     cat2 = validate_cat2(ds)
-    cat3 = validate_cat3(ds, mfr_name)   # 감지된 제조사만
+    cat3 = validate_cat3(ds, mfr_name)
 
+    # PASS/FAIL: mandatory 태그가 없거나 invalid
+    cat1_prob_total   = sum(1 for r in cat1 if r["_mandatory"])
+    cat1_prob_count   = sum(1 for r in cat1 if r["_is_problem"])
+    cat1_mand_present = sum(1 for r in cat1 if r["_mandatory"] and r["_present"] and r["_valid"])
+    cat1_mand_invalid = sum(1 for r in cat1 if r["_mandatory"] and r["_present"] and not r["_valid"])
     cat1_mand_missing = sum(1 for r in cat1 if r["_mandatory"] and not r["_present"])
-    cat1_mand_total   = sum(1 for r in cat1 if r["_mandatory"])
     cat1_opt_total    = sum(1 for r in cat1 if not r["_mandatory"])
-    cat1_opt_present  = sum(1 for r in cat1 if not r["_mandatory"] and r["_present"])
-    cat2_missing      = sum(1 for r in cat2 if not r["_present"])
-    cat3_missing      = sum(1 for r in cat3 if not r["_present"])
+    cat1_opt_present  = sum(1 for r in cat1 if not r["_mandatory"] and r["_present"] and r["_valid"])
+
+    cat2_present = sum(1 for r in cat2 if r["_present"] and r["_valid"])
+    cat2_invalid = sum(1 for r in cat2 if r["_present"] and not r["_valid"])
+    cat2_missing = sum(1 for r in cat2 if not r["_present"])
+
+    cat3_present = sum(1 for r in cat3 if r["_present"] and r["_valid"])
+    cat3_invalid = sum(1 for r in cat3 if r["_present"] and not r["_valid"])
+    cat3_missing = sum(1 for r in cat3 if not r["_present"])
 
     return {
         "filename":               fname,
         "error":                  None,
-        "status":                 "PASS" if cat1_mand_missing == 0 else "FAIL",
+        "status":                 "PASS" if cat1_prob_count == 0 else "FAIL",
         "mfr_name":               mfr_name,
         "mfr_raw":                mfr_raw,
         "ds":                     ds,
         "cat1":                   cat1,
         "cat2":                   cat2,
         "cat3":                   cat3,
-        "cat1_mandatory_total":   cat1_mand_total,
-        "cat1_mandatory_present": cat1_mand_total - cat1_mand_missing,
+        "cat1_mandatory_total":   cat1_prob_total,
+        "cat1_mandatory_present": cat1_mand_present,
+        "cat1_mandatory_invalid": cat1_mand_invalid,
         "cat1_mandatory_missing": cat1_mand_missing,
+        "cat1_mandatory_problem": cat1_prob_count,
         "cat1_optional_total":    cat1_opt_total,
         "cat1_optional_present":  cat1_opt_present,
         "cat2_total":             len(cat2),
-        "cat2_present":           len(cat2) - cat2_missing,
+        "cat2_present":           cat2_present,
+        "cat2_invalid":           cat2_invalid,
         "cat2_missing":           cat2_missing,
         "cat3_total":             len(cat3),
-        "cat3_present":           len(cat3) - cat3_missing,
+        "cat3_present":           cat3_present,
+        "cat3_invalid":           cat3_invalid,
         "cat3_missing":           cat3_missing,
     }
 
@@ -447,6 +651,8 @@ def style_df(df):
         s = str(row.get("Status", ""))
         if "❌" in s:
             return ["background-color: rgba(255,60,60,0.15)"] * len(row)
+        elif "Invalid" in s:
+            return ["background-color: rgba(255,100,0,0.15)"] * len(row)
         elif "⚠️" in s:
             return ["background-color: rgba(255,180,0,0.10)"] * len(row)
         else:
@@ -480,22 +686,28 @@ def build_export_df(result):
             "File": result["filename"], "Category": "1. Mandatory-Public",
             "Type": "Mandatory" if r["_mandatory"] else "Optional", "Manufacturer": "—",
             "Name": r["Name"], "Tag": r["Tag"], "VR": r["VR"], "Purpose/Note": r["Purpose"],
-            "Status": "Present" if r["_present"] else ("MISSING" if r["_mandatory"] else "Missing"),
-            "Value": r["Value"],
+            "Status": "Present" if (r["_present"] and r["_valid"])
+                      else ("INVALID" if (r["_present"] and not r["_valid"])
+                      else ("MISSING" if r["_mandatory"] else "Missing")),
+            "Value": r["Value"], "Issue": r["_issue"],
         })
     for r in result["cat2"]:
         rows.append({
             "File": result["filename"], "Category": "2. Required-Public",
             "Type": "Required", "Manufacturer": "—",
             "Name": r["Name"], "Tag": r["Tag"], "VR": r["VR"], "Purpose/Note": r["Note"],
-            "Status": "Present" if r["_present"] else "Missing", "Value": r["Value"],
+            "Status": "Present" if (r["_present"] and r["_valid"])
+                      else ("INVALID" if (r["_present"] and not r["_valid"]) else "Missing"),
+            "Value": r["Value"], "Issue": r["_issue"],
         })
     for r in result["cat3"]:
         rows.append({
             "File": result["filename"], "Category": "3. Required-Private-MRI",
             "Type": "Required", "Manufacturer": r["Manufacturer"],
             "Name": r["Name"], "Tag": r["Tag"], "VR": r["VR"], "Purpose/Note": r["Note"],
-            "Status": "Present" if r["_present"] else "Missing", "Value": r["Value"],
+            "Status": "Present" if (r["_present"] and r["_valid"])
+                      else ("INVALID" if (r["_present"] and not r["_valid"]) else "Missing"),
+            "Value": r["Value"], "Issue": r["_issue"],
         })
     return pd.DataFrame(rows)
 
@@ -508,19 +720,20 @@ def excel_export(df, summary_df=None):
         from openpyxl.styles import PatternFill
         for row in ws.iter_rows(min_row=2, max_row=ws.max_row):
             status = row[8].value if len(row) > 8 else ""
-            color  = "FFCCCC" if status == "MISSING" else "FFF3CC" if status == "Missing" else "CCFFDD"
-            fill   = PatternFill("solid", fgColor=color)
+            color  = ("FFCCCC" if status == "MISSING"
+                      else "FFE0CC" if status == "INVALID"
+                      else "FFF3CC" if status == "Missing"
+                      else "CCFFDD")
             for cell in row:
-                cell.fill = fill
+                cell.fill = PatternFill("solid", fgColor=color)
         if summary_df is not None:
             summary_df.to_excel(writer, index=False, sheet_name="Summary")
             ws2 = writer.sheets["Summary"]
             for row in ws2.iter_rows(min_row=2, max_row=ws2.max_row):
                 status = row[1].value if len(row) > 1 else ""
                 color  = "FFCCCC" if status == "FAIL" else "CCFFDD" if status == "PASS" else "FFE5CC"
-                fill   = PatternFill("solid", fgColor=color)
                 for cell in row:
-                    cell.fill = fill
+                    cell.fill = PatternFill("solid", fgColor=color)
     return buf.getvalue()
 
 
@@ -593,14 +806,12 @@ if uploaded:
     error_results = [r for r in all_results if r.get("error")]
     fail_results  = [r for r in valid_results if r["status"] == "FAIL"]
     pass_results  = [r for r in valid_results if r["status"] == "PASS"]
-    worst_files   = sorted(fail_results, key=lambda x: x["cat1_mandatory_missing"], reverse=True)
+    worst_files   = sorted(fail_results, key=lambda x: x["cat1_mandatory_problem"], reverse=True)
     total_pass    = len(pass_results)
     total_fail    = len(fail_results)
     total_error   = len(error_results)
 
-    # ════════════════════════════════════════════════
-    # Overall Summary
-    # ════════════════════════════════════════════════
+    # ── Overall Summary ───────────────────────────────
     st.markdown("""
     <div class="section-card">
       <div class="section-title">
@@ -609,7 +820,7 @@ if uploaded:
             font-weight:800;color:white;font-size:15px;flex-shrink:0;">2</div>
         Overall Summary
         <span style="font-size:13px;font-weight:400;opacity:0.6;margin-left:4px;">
-          — Based on Category 1 Mandatory tags
+          — Based on Category 1 Mandatory tags (missing + invalid)
         </span>
       </div>
     </div>
@@ -617,13 +828,13 @@ if uploaded:
 
     if total_fail == 0 and total_error == 0:
         oc, oi, ot = "overall-pass", "✅", "ALL PASS"
-        os_ = f"All {total_files} file(s) have all Mandatory-Public tags. SwiftMR processing is possible."
+        os_ = f"All {total_files} file(s) passed. SwiftMR processing is possible."
     elif total_fail == total_files:
         oc, oi, ot = "overall-fail", "❌", "ALL FAIL"
-        os_ = f"All {total_files} file(s) are missing Mandatory-Public tags. SwiftMR cannot process."
+        os_ = f"All {total_files} file(s) have missing or invalid Mandatory-Public tags."
     else:
         oc, oi, ot = "overall-warning", "⚠️", "PARTIAL FAIL"
-        os_ = f"{total_fail} of {total_files} file(s) are missing Mandatory-Public tags."
+        os_ = f"{total_fail} of {total_files} file(s) have missing or invalid Mandatory-Public tags."
 
     st.markdown(f"""
     <div class="summary-card {oc}">
@@ -651,9 +862,7 @@ if uploaded:
 
     st.markdown("<br>", unsafe_allow_html=True)
 
-    # ════════════════════════════════════════════════
-    # Most Problematic Files
-    # ════════════════════════════════════════════════
+    # ── Most Problematic Files ────────────────────────
     if worst_files:
         st.markdown("""
         <div class="section-card">
@@ -662,17 +871,18 @@ if uploaded:
                 border-radius:50%;display:flex;align-items:center;justify-content:center;
                 font-weight:800;color:white;font-size:15px;flex-shrink:0;">3</div>
             Most Problematic Files
-            <span style="font-size:13px;font-weight:400;opacity:0.6;margin-left:4px;">
-              — Sorted by Cat.1 Mandatory missing (worst first)
-            </span>
           </div>
         </div>
         """, unsafe_allow_html=True)
 
         for rank, r in enumerate(worst_files[:10], 1):
-            missing_tags  = [x for x in r["cat1"] if x["_mandatory"] and not x["_present"]]
-            missing_names = " · ".join([f'<b>{x["Name"]}</b>' for x in missing_tags])
-            cat3_label    = f"{r['cat3_present']}/{r['cat3_total']} ({r['mfr_name']})" if r["mfr_name"] else f"{r['cat3_present']}/{r['cat3_total']} (All)"
+            problem_tags = [x for x in r["cat1"] if x["_is_problem"]]
+            prob_names   = " · ".join([
+                f'<b>{x["Name"]}</b>'
+                + (f' <span style="font-size:10px;color:#ff8c00;">[Invalid]</span>' if x["_present"] and not x["_valid"] else "")
+                for x in problem_tags
+            ])
+            cat3_label = f"{r['cat3_present']}/{r['cat3_total']} ({r['mfr_name']})" if r["mfr_name"] else "N/A (not detected)"
             st.markdown(f"""
             <div class="file-problem-card">
                 <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px;">
@@ -680,16 +890,18 @@ if uploaded:
                     <span style="font-size:14px;font-weight:700;">{r['filename']}</span>
                     <span style="margin-left:auto;font-size:12px;background:rgba(255,60,60,0.2);
                         color:#ff4444;padding:2px 10px;border-radius:20px;font-weight:700;">
-                        ❌ Cat.1 Mandatory: {r['cat1_mandatory_missing']} Missing
+                        ❌ Cat.1: {r['cat1_mandatory_problem']} Problem(s)
                     </span>
                 </div>
                 <div style="font-size:12px;opacity:0.8;line-height:1.8;">
                     🏭 Manufacturer: <b>{r['mfr_raw']}</b>
-                    &nbsp;·&nbsp; Cat.1 Mandatory: {r['cat1_mandatory_present']}/{r['cat1_mandatory_total']}
+                    &nbsp;·&nbsp; Cat.1 Mandatory: {r['cat1_mandatory_present']}/{r['cat1_mandatory_total']} valid
                     &nbsp;·&nbsp; Cat.2: {r['cat2_present']}/{r['cat2_total']}
                     &nbsp;·&nbsp; Cat.3: {cat3_label}
                 </div>
-                <div style="font-size:12px;margin-top:6px;color:#ff6666;">Missing: {missing_names}</div>
+                <div style="font-size:12px;margin-top:6px;color:#ff6666;">
+                    Problems: {prob_names}
+                </div>
             </div>
             """, unsafe_allow_html=True)
 
@@ -706,9 +918,7 @@ if uploaded:
             </div>
             """, unsafe_allow_html=True)
 
-    # ════════════════════════════════════════════════
-    # File-by-File Detail
-    # ════════════════════════════════════════════════
+    # ── File-by-File Detail ───────────────────────────
     st.markdown("""
     <div class="section-card">
       <div class="section-title">
@@ -724,7 +934,8 @@ if uploaded:
         if r.get("error"):
             return f"⚠️  {r['filename']}  [ERROR]"
         icon = "✅" if r["status"] == "PASS" else "❌"
-        miss = f"  — Cat.1 Mandatory {r['cat1_mandatory_missing']} missing" if r["cat1_mandatory_missing"] > 0 else ""
+        prob = r.get("cat1_mandatory_problem", 0)
+        miss = f"  — {prob} problem(s)" if prob > 0 else ""
         return f"{icon}  {r['filename']}{miss}"
 
     dropdown_options = [make_label(r) for r in all_results]
@@ -738,9 +949,7 @@ if uploaded:
 
     selected_label  = st.selectbox(
         "Select a file to view detailed tag report",
-        options=dropdown_options,
-        index=default_idx,
-        key="file_selector"
+        options=dropdown_options, index=default_idx, key="file_selector"
     )
     selected_result = all_results[dropdown_options.index(selected_label)]
     st.markdown("<br>", unsafe_allow_html=True)
@@ -753,10 +962,11 @@ if uploaded:
         # 파일 상태 배너
         if r["status"] == "PASS":
             bc, bi, bt = "overall-pass", "✅", "PASS"
-            bs = "All Mandatory-Public tags present. SwiftMR processing is possible."
+            bs = "All Mandatory-Public tags are present and valid. SwiftMR processing is possible."
         else:
             bc, bi, bt = "overall-fail", "❌", "FAIL"
-            bs = f"{r['cat1_mandatory_missing']} Mandatory-Public tag(s) missing. SwiftMR cannot process."
+            bs = (f"{r['cat1_mandatory_missing']} missing, "
+                  f"{r['cat1_mandatory_invalid']} invalid Mandatory-Public tag(s). SwiftMR cannot process.")
 
         st.markdown(f"""
         <div class="summary-card {bc}" style="padding:16px 20px;margin-bottom:16px;">
@@ -767,60 +977,67 @@ if uploaded:
         </div>
         """, unsafe_allow_html=True)
 
-        # Manufacturer badge
-        mfr_display     = r["mfr_name"] if r["mfr_name"] else "Unknown / Not in supported list"
+        # Manufacturer
+        mfr_display     = r["mfr_name"] if r["mfr_name"] else "Not Detected"
         mfr_raw_display = r["mfr_raw"]  if r["mfr_raw"] != "Unknown" else "—"
+        mfr_color       = "#00d4ff" if r["mfr_name"] else "#ffb400"
         st.markdown(f"""
         <div style="margin-bottom:16px;">
-            <span class="manufacturer-badge">
-                🏭 Detected Manufacturer: <b>{mfr_display}</b>
+            <span class="manufacturer-badge" style="color:{mfr_color};">
+                🏭 Manufacturer: <b>{mfr_display}</b>
                 &nbsp;·&nbsp; Raw Value: <i>{mfr_raw_display}</i>
             </span>
         </div>
         """, unsafe_allow_html=True)
 
-        # Debug panel
+        # Debug
         with st.expander("🔍 Debug: All Tags in This DICOM File", expanded=False):
-            st.caption("All tags actually present in the uploaded DICOM file.")
             debug_df = get_all_tags_debug(r["ds"])
             st.dataframe(debug_df, use_container_width=True, hide_index=True, height=400)
             st.caption(f"Total tags found: **{len(debug_df)}**")
 
         # ── Category 1 ───────────────────────────────
-        mand_color = "#ff4444" if r["cat1_mandatory_missing"] > 0 else "#00c864"
+        mand_ok    = r["cat1_mandatory_present"]
+        mand_inv   = r["cat1_mandatory_invalid"]
+        mand_miss  = r["cat1_mandatory_missing"]
+        mand_total = r["cat1_mandatory_total"]
+        mand_color = "#00c864" if (mand_inv + mand_miss) == 0 else "#ff4444"
+
         st.markdown(f"""
         <div class="cat1-header">
             <div style="font-size:17px;font-weight:800;margin-bottom:6px;">
                 🔴 Category 1 — Mandatory-Public
             </div>
-            <div style="font-size:13px;opacity:0.85;line-height:1.8;">
-                Mandatory:
-                <span style="color:{mand_color};font-weight:700;">
-                    {r['cat1_mandatory_present']}/{r['cat1_mandatory_total']} Present
-                </span>
+            <div style="font-size:13px;opacity:0.85;line-height:1.9;">
+                Mandatory Valid: <span style="color:{mand_color};font-weight:700;">{mand_ok}/{mand_total}</span>
                 &nbsp;·&nbsp;
-                Optional:
-                <span style="color:#ffb400;font-weight:600;">
-                    {r['cat1_optional_present']}/{r['cat1_optional_total']} Present
-                </span>
+                <span style="color:#ff8c00;font-weight:600;">Invalid: {mand_inv}</span>
                 &nbsp;·&nbsp;
-                <span style="opacity:0.7;font-size:12px;">PASS/FAIL determined by Mandatory tags only</span>
+                <span style="color:#ff4444;font-weight:600;">Missing: {mand_miss}</span>
+                &nbsp;·&nbsp;
+                Optional: <span style="color:#ffb400;font-weight:600;">{r['cat1_optional_present']}/{r['cat1_optional_total']}</span>
+                &nbsp;·&nbsp;
+                <span style="opacity:0.6;font-size:12px;">PASS/FAIL = missing + invalid Mandatory</span>
             </div>
         </div>
         """, unsafe_allow_html=True)
 
-        missing_mand = [x for x in r["cat1"] if x["_mandatory"] and not x["_present"]]
-        if missing_mand:
+        # 문제 태그 강조 박스
+        problem_tags = [x for x in r["cat1"] if x["_is_problem"]]
+        if problem_tags:
             items = "".join([
-                f'<div style="font-size:13px;margin:3px 0;">• <b>{x["Name"]}</b> '
-                f'<span style="font-family:monospace;font-size:11px;opacity:0.6;">{x["Tag"]}</span></div>'
-                for x in missing_mand
+                f'<div style="font-size:13px;margin:4px 0;display:flex;align-items:center;gap:8px;">'
+                f'{"❌" if not x["_present"] else "⚠️"} <b>{x["Name"]}</b> '
+                f'<span style="font-family:monospace;font-size:11px;opacity:0.6;">{x["Tag"]}</span>'
+                + (f' <span style="color:#ff8c00;font-size:11px;">— {x["_issue"]}</span>' if x["_present"] and not x["_valid"] else "")
+                + "</div>"
+                for x in problem_tags
             ])
             st.markdown(f"""
             <div style="background:rgba(255,60,60,0.1);border:1.5px solid rgba(255,60,60,0.4);
                 border-left:4px solid #ff4444;border-radius:12px;padding:14px 20px;margin-bottom:12px;">
                 <div style="font-weight:800;color:#ff4444;margin-bottom:8px;font-size:14px;">
-                    ❌ Missing Mandatory Tags — SwiftMR Cannot Process This File
+                    ❌ Mandatory Tag Problems — SwiftMR Cannot Process This File
                 </div>{items}
             </div>
             """, unsafe_allow_html=True)
@@ -832,18 +1049,18 @@ if uploaded:
         st.markdown("<br>", unsafe_allow_html=True)
 
         # ── Category 2 ───────────────────────────────
-        cat2_color = "#ffb400" if r["cat2_missing"] > 0 else "#00c864"
+        cat2_color = "#00c864" if (r["cat2_invalid"] + r["cat2_missing"]) == 0 else "#ffb400"
         st.markdown(f"""
         <div class="cat2-header">
             <div style="font-size:17px;font-weight:800;margin-bottom:6px;">
                 🟠 Category 2 — Required-Public
             </div>
-            <div style="font-size:13px;opacity:0.85;line-height:1.8;">
-                <span style="color:{cat2_color};font-weight:700;">
-                    {r['cat2_present']}/{r['cat2_total']} Present
-                </span>
+            <div style="font-size:13px;opacity:0.85;line-height:1.9;">
+                Valid: <span style="color:{cat2_color};font-weight:700;">{r['cat2_present']}/{r['cat2_total']}</span>
                 &nbsp;·&nbsp;
-                <span style="opacity:0.7;font-size:12px;">Missing tags may limit some SwiftMR features</span>
+                <span style="color:#ff8c00;font-weight:600;">Invalid: {r['cat2_invalid']}</span>
+                &nbsp;·&nbsp;
+                <span style="color:#ffb400;font-weight:600;">Missing: {r['cat2_missing']}</span>
             </div>
         </div>
         """, unsafe_allow_html=True)
@@ -855,43 +1072,48 @@ if uploaded:
         st.markdown("<br>", unsafe_allow_html=True)
 
         # ── Category 3 ───────────────────────────────
-        cat3_color = "#ffb400" if r["cat3_missing"] > 0 else "#00c864"
-
-        # Cat.3 헤더 — HTML 없이 순수 Python 변수로만 구성
         if r["mfr_name"]:
-            cat3_scope_label = f"Showing tags for detected manufacturer: {r['mfr_name']}"
-            cat3_count_label = f"{r['cat3_present']}/{r['cat3_total']} Present"
-        else:
-            cat3_scope_label = "Manufacturer not detected — showing all manufacturer tags"
-            cat3_count_label = f"{r['cat3_present']}/{r['cat3_total']} Present (all manufacturers)"
-
-        st.markdown(f"""
-        <div class="cat3-header">
-            <div style="font-size:17px;font-weight:800;margin-bottom:6px;">
-                🔵 Category 3 — Required-Private-MRI
+            cat3_color = "#00c864" if (r["cat3_invalid"] + r["cat3_missing"]) == 0 else "#ffb400"
+            st.markdown(f"""
+            <div class="cat3-header">
+                <div style="font-size:17px;font-weight:800;margin-bottom:6px;">
+                    🔵 Category 3 — Required-Private-MRI
+                </div>
+                <div style="font-size:13px;opacity:0.85;line-height:1.9;">
+                    Manufacturer: <b>{r['mfr_name']}</b>
+                    &nbsp;·&nbsp;
+                    Valid: <span style="color:{cat3_color};font-weight:700;">{r['cat3_present']}/{r['cat3_total']}</span>
+                    &nbsp;·&nbsp;
+                    <span style="color:#ff8c00;font-weight:600;">Invalid: {r['cat3_invalid']}</span>
+                    &nbsp;·&nbsp;
+                    <span style="color:#ffb400;font-weight:600;">Missing: {r['cat3_missing']}</span>
+                </div>
             </div>
-            <div style="font-size:13px;opacity:0.85;line-height:1.8;">
-                <span style="color:{cat3_color};font-weight:700;">{cat3_count_label}</span>
-                &nbsp;·&nbsp;
-                <span style="opacity:0.7;font-size:12px;">{cat3_scope_label}</span>
-            </div>
-        </div>
-        """, unsafe_allow_html=True)
+            """, unsafe_allow_html=True)
 
-        df_cat3 = to_display_df(r["cat3"], ["Manufacturer","Name","Tag","VR","Note","Value","Status"])
-        st.dataframe(style_df(df_cat3), use_container_width=True, hide_index=True,
-                     height=min(50 + len(df_cat3) * 35, 700))
-
-        if r["mfr_name"]:
-            st.caption(f"💡 Only tags for detected manufacturer **{r['mfr_name']}** are shown.")
+            df_cat3 = to_display_df(r["cat3"], ["Manufacturer","Name","Tag","VR","Note","Value","Status"])
+            st.dataframe(style_df(df_cat3), use_container_width=True, hide_index=True,
+                         height=min(50 + len(df_cat3) * 35, 700))
+            st.caption(f"💡 Showing private tags for detected manufacturer: **{r['mfr_name']}**")
         else:
-            st.caption(f"ℹ️ Manufacturer raw value: **{r['mfr_raw']}** — not in supported list. Showing all manufacturer tags.")
+            st.markdown(f"""
+            <div class="no-mfr-box">
+                <div style="font-size:17px;font-weight:800;margin-bottom:8px;">
+                    🔵 Category 3 — Required-Private-MRI
+                </div>
+                <div style="font-size:13px;line-height:1.9;">
+                    ⚠️ <b>Manufacturer not detected</b> — Category 3 validation is skipped.<br>
+                    Raw Manufacturer value: <b>{r['mfr_raw']}</b><br>
+                    <span style="opacity:0.7;font-size:12px;">
+                        Supported manufacturers: Philips, Siemens, GE, Canon (Toshiba), Esaote, Fonar, Hyperfine, Paramed
+                    </span>
+                </div>
+            </div>
+            """, unsafe_allow_html=True)
 
         st.markdown("<br>", unsafe_allow_html=True)
 
-    # ════════════════════════════════════════════════
-    # Export
-    # ════════════════════════════════════════════════
+    # ── Export ────────────────────────────────────────
     st.markdown("""
     <div class="section-card">
       <div class="section-title">
@@ -927,33 +1149,34 @@ if uploaded:
     with export_tab2:
         valid_for_export = [r for r in all_results if not r.get("error")]
         if valid_for_export:
-            all_dfs   = [build_export_df(r) for r in valid_for_export]
-            df_all    = pd.concat(all_dfs, ignore_index=True)
+            df_all    = pd.concat([build_export_df(r) for r in valid_for_export], ignore_index=True)
             base_name = uploaded.name.replace(".zip","").replace(".dcm","")
-
             summary_rows = []
             for res in all_results:
                 if res.get("error"):
                     summary_rows.append({
                         "Filename": res["filename"], "Status": "ERROR", "Manufacturer": "—",
-                        "Cat1 Mandatory Present": "—", "Cat1 Mandatory Missing": "—",
-                        "Cat1 Optional Present": "—",
-                        "Cat2 Present": "—", "Cat2 Missing": "—",
-                        "Cat3 Present": "—", "Cat3 Missing": "—", "Error": res["error"],
+                        "Cat1 Valid": "—", "Cat1 Invalid": "—", "Cat1 Missing": "—",
+                        "Cat2 Valid": "—", "Cat2 Invalid": "—", "Cat2 Missing": "—",
+                        "Cat3 Valid": "—", "Cat3 Invalid": "—", "Cat3 Missing": "—",
+                        "Error": res["error"],
                     })
                 else:
                     summary_rows.append({
                         "Filename": res["filename"], "Status": res["status"],
                         "Manufacturer": res["mfr_raw"],
-                        "Cat1 Mandatory Present": res["cat1_mandatory_present"],
-                        "Cat1 Mandatory Missing": res["cat1_mandatory_missing"],
-                        "Cat1 Optional Present":  res["cat1_optional_present"],
-                        "Cat2 Present": res["cat2_present"], "Cat2 Missing": res["cat2_missing"],
-                        "Cat3 Present": res["cat3_present"], "Cat3 Missing": res["cat3_missing"],
+                        "Cat1 Valid":   res["cat1_mandatory_present"],
+                        "Cat1 Invalid": res["cat1_mandatory_invalid"],
+                        "Cat1 Missing": res["cat1_mandatory_missing"],
+                        "Cat2 Valid":   res["cat2_present"],
+                        "Cat2 Invalid": res["cat2_invalid"],
+                        "Cat2 Missing": res["cat2_missing"],
+                        "Cat3 Valid":   res["cat3_present"],
+                        "Cat3 Invalid": res["cat3_invalid"],
+                        "Cat3 Missing": res["cat3_missing"],
                         "Error": "",
                     })
             df_summary = pd.DataFrame(summary_rows)
-
             col1, col2 = st.columns(2)
             with col1:
                 st.download_button("⬇️ Download All CSV",
@@ -990,15 +1213,15 @@ with st.sidebar:
     <div style="font-size:13px;line-height:2.0;">
         <div style="margin-bottom:8px;">
             <span style="color:#ff4444;font-weight:700;">🔴 Cat.1 Mandatory-Public</span><br>
-            <span style="font-size:11px;opacity:0.7;">PASS/FAIL basis · Missing = cannot process</span>
+            <span style="font-size:11px;opacity:0.7;">PASS/FAIL · missing + invalid = problem</span>
         </div>
         <div style="margin-bottom:8px;">
             <span style="color:#ff8c00;font-weight:700;">🟠 Cat.2 Required-Public</span><br>
-            <span style="font-size:11px;opacity:0.7;">Public standard tags · Missing = limited features</span>
+            <span style="font-size:11px;opacity:0.7;">Public standard tags · value validated</span>
         </div>
         <div>
             <span style="color:#00d4ff;font-weight:700;">🔵 Cat.3 Required-Private-MRI</span><br>
-            <span style="font-size:11px;opacity:0.7;">Detected manufacturer tags only</span>
+            <span style="font-size:11px;opacity:0.7;">Detected manufacturer only · skipped if unknown</span>
         </div>
     </div>
     """, unsafe_allow_html=True)
@@ -1006,10 +1229,27 @@ with st.sidebar:
     st.divider()
     st.markdown('<div class="sidebar-section-title">📊 Status Legend</div>', unsafe_allow_html=True)
     st.markdown("""
-    <div style="font-size:13px;line-height:1.9;">
-        <span style="color:#ff4444;font-weight:700;">❌ Missing</span> — Mandatory tag absent (FAIL)<br>
-        <span style="color:#ffb400;font-weight:700;">⚠️ Missing</span> — Optional/Required tag absent<br>
-        <span style="color:#00c864;font-weight:700;">✅ Present</span> — Tag found in DICOM file
+    <div style="font-size:13px;line-height:2.0;">
+        <span style="color:#00c864;font-weight:700;">✅ Present</span> — Tag exists, value valid<br>
+        <span style="color:#ff8c00;font-weight:700;">⚠️ Invalid</span> — Tag exists, value abnormal<br>
+        <span style="color:#ff4444;font-weight:700;">❌ Missing</span> — Mandatory tag absent<br>
+        <span style="color:#ffb400;font-weight:700;">⚠️ Missing</span> — Optional tag absent
+    </div>
+    """, unsafe_allow_html=True)
+
+    st.divider()
+    st.markdown('<div class="sidebar-section-title">🔍 Value Validation Rules</div>', unsafe_allow_html=True)
+    st.markdown("""
+    <div style="font-size:11px;line-height:1.9;opacity:0.85;">
+        ImagePositionPatient → 3 values (X\\Y\\Z)<br>
+        ImageOrientationPatient → 6 values<br>
+        PixelSpacing → 2 positive values<br>
+        PatientPosition → DICOM standard list<br>
+        WindowCenter/Width → non-zero<br>
+        Rows/Columns → positive integer<br>
+        BitsStored → 8/10/12/16/32<br>
+        PixelRepresentation → 0 or 1<br>
+        ImageType → ORIGINAL/DERIVED/MIXED first
     </div>
     """, unsafe_allow_html=True)
 
