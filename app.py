@@ -758,8 +758,6 @@ st.markdown("""
         🗑️ Session data is released from memory when the session ends,
            but <b>server-level logging or caching by the hosting provider
            cannot be fully guaranteed by this application</b>.<br>
-        🔒 <b>For files containing real PHI, use only on a
-           self-hosted / on-premise deployment</b> of this tool.<br>
         ✅ Always use <b>de-identified or anonymized DICOM files</b>
            when using this cloud-hosted version.
     </div>
