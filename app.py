@@ -23,8 +23,8 @@ def get_image_base64(path):
     except:
         return None
 
-logo_b64 = get_image_base64("SwiftMR Logo.png")
-logo_html = (
+logo_b64        = get_image_base64("SwiftMR Logo.png")
+logo_html       = (
     f'<img src="data:image/png;base64,{logo_b64}" style="width:44px;height:44px;object-fit:contain;">'
     if logo_b64 else "🏥"
 )
@@ -33,13 +33,13 @@ sidebar_logo_html = (
     if logo_b64 else "🏥"
 )
 
-# ── Custom CSS ───────────────────────────────────────
+# ── CSS ──────────────────────────────────────────────
 st.markdown("""
 <style>
 @media (prefers-color-scheme: dark) {
     .stApp { background-color: #0f1117 !important; }
     .airs-header {
-        background: linear-gradient(135deg, #1a1f2e 0%, #0d1117 100%) !important;
+        background: linear-gradient(135deg,#1a1f2e 0%,#0d1117 100%) !important;
         border-bottom: 2px solid #00d4ff !important;
     }
     .airs-title p { color: #8892a4 !important; }
@@ -48,55 +48,32 @@ st.markdown("""
         border: 1px solid rgba(0,212,255,0.3) !important;
         color: #00d4ff !important;
     }
-    .summary-card {
-        background: linear-gradient(135deg, #1a1f2e, #141820) !important;
-        border: 1px solid #2a3040 !important;
-    }
-    .section-card {
-        background: linear-gradient(135deg, #1a1f2e, #141820) !important;
-        border: 1px solid #2a3040 !important;
-    }
-    .metric-card {
-        background: #1a1f2e !important;
-        border: 1px solid #2a3040 !important;
-    }
-    .metric-value { color: #e8eaf0 !important; }
-    .metric-label { color: #8892a4 !important; }
-    .sidebar-section-title {
-        color: #00d4ff !important;
-        border-bottom: 1px solid #2a3040 !important;
-    }
+    .summary-card  { background: linear-gradient(135deg,#1a1f2e,#141820) !important; border: 1px solid #2a3040 !important; }
+    .section-card  { background: linear-gradient(135deg,#1a1f2e,#141820) !important; border: 1px solid #2a3040 !important; }
+    .metric-card   { background: #1a1f2e !important; border: 1px solid #2a3040 !important; }
+    .metric-value  { color: #e8eaf0 !important; }
+    .metric-label  { color: #8892a4 !important; }
+    .sidebar-section-title { color: #00d4ff !important; border-bottom: 1px solid #2a3040 !important; }
     .manufacturer-badge {
         background: rgba(0,212,255,0.1) !important;
         border: 1px solid rgba(0,212,255,0.3) !important;
         color: #00d4ff !important;
     }
-    .file-problem-card {
-        background: rgba(255,60,60,0.08) !important;
-        border: 1px solid rgba(255,60,60,0.3) !important;
-    }
+    .file-problem-card { background: rgba(255,60,60,0.08) !important; border: 1px solid rgba(255,60,60,0.3) !important; }
     .phi-notice {
-        background: linear-gradient(135deg, rgba(0,180,100,0.10), rgba(0,120,80,0.08)) !important;
+        background: linear-gradient(135deg,rgba(0,180,100,0.10),rgba(0,120,80,0.08)) !important;
         border: 1.5px solid rgba(0,200,120,0.4) !important;
         border-left: 4px solid #00c878 !important;
     }
-    .cat1-header {
-        background: linear-gradient(135deg, rgba(255,60,60,0.15), rgba(200,0,0,0.08)) !important;
-        border: 1px solid rgba(255,60,60,0.3) !important;
-    }
-    .cat2-header {
-        background: linear-gradient(135deg, rgba(255,140,0,0.15), rgba(200,100,0,0.08)) !important;
-        border: 1px solid rgba(255,140,0,0.3) !important;
-    }
-    .cat3-header {
-        background: linear-gradient(135deg, rgba(0,180,255,0.12), rgba(0,100,200,0.08)) !important;
-        border: 1px solid rgba(0,180,255,0.3) !important;
-    }
+    .cat1-header { background: linear-gradient(135deg,rgba(255,60,60,0.15),rgba(200,0,0,0.08)) !important; border: 1px solid rgba(255,60,60,0.3) !important; }
+    .cat2-header { background: linear-gradient(135deg,rgba(255,140,0,0.15),rgba(200,100,0,0.08)) !important; border: 1px solid rgba(255,140,0,0.3) !important; }
+    .cat3-header { background: linear-gradient(135deg,rgba(0,180,255,0.12),rgba(0,100,200,0.08)) !important; border: 1px solid rgba(0,180,255,0.3) !important; }
+    .debug-box   { background: rgba(0,212,255,0.05) !important; border: 1px solid rgba(0,212,255,0.2) !important; }
 }
 @media (prefers-color-scheme: light) {
     .stApp { background-color: #f0f4f8 !important; }
     .airs-header {
-        background: linear-gradient(135deg, #ffffff 0%, #e8f0fe 100%) !important;
+        background: linear-gradient(135deg,#ffffff 0%,#e8f0fe 100%) !important;
         border-bottom: 2px solid #0066ff !important;
     }
     .airs-title p { color: #5a6a7a !important; }
@@ -105,114 +82,62 @@ st.markdown("""
         border: 1px solid rgba(0,102,255,0.3) !important;
         color: #0066ff !important;
     }
-    .summary-card {
-        background: linear-gradient(135deg, #ffffff, #f5f8ff) !important;
-        border: 1px solid #d0d8e8 !important;
-        box-shadow: 0 4px 24px rgba(0,0,0,0.08) !important;
-    }
-    .section-card {
-        background: linear-gradient(135deg, #ffffff, #f5f8ff) !important;
-        border: 1px solid #d0d8e8 !important;
-        box-shadow: 0 2px 12px rgba(0,0,0,0.06) !important;
-    }
-    .metric-card {
-        background: #ffffff !important;
-        border: 1px solid #d0d8e8 !important;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.06) !important;
-    }
-    .metric-value { color: #1a2030 !important; }
-    .metric-label { color: #5a6a7a !important; }
-    .sidebar-section-title {
-        color: #0066ff !important;
-        border-bottom: 1px solid #d0d8e8 !important;
-    }
+    .summary-card  { background: linear-gradient(135deg,#ffffff,#f5f8ff) !important; border: 1px solid #d0d8e8 !important; box-shadow: 0 4px 24px rgba(0,0,0,0.08) !important; }
+    .section-card  { background: linear-gradient(135deg,#ffffff,#f5f8ff) !important; border: 1px solid #d0d8e8 !important; box-shadow: 0 2px 12px rgba(0,0,0,0.06) !important; }
+    .metric-card   { background: #ffffff !important; border: 1px solid #d0d8e8 !important; box-shadow: 0 2px 8px rgba(0,0,0,0.06) !important; }
+    .metric-value  { color: #1a2030 !important; }
+    .metric-label  { color: #5a6a7a !important; }
+    .sidebar-section-title { color: #0066ff !important; border-bottom: 1px solid #d0d8e8 !important; }
     .manufacturer-badge {
         background: rgba(0,102,255,0.1) !important;
         border: 1px solid rgba(0,102,255,0.3) !important;
         color: #0066ff !important;
     }
-    .file-problem-card {
-        background: rgba(255,60,60,0.06) !important;
-        border: 1px solid rgba(255,60,60,0.3) !important;
-    }
+    .file-problem-card { background: rgba(255,60,60,0.06) !important; border: 1px solid rgba(255,60,60,0.3) !important; }
     .phi-notice {
-        background: linear-gradient(135deg, rgba(0,180,100,0.08), rgba(0,120,80,0.05)) !important;
+        background: linear-gradient(135deg,rgba(0,180,100,0.08),rgba(0,120,80,0.05)) !important;
         border: 1.5px solid rgba(0,180,100,0.4) !important;
         border-left: 4px solid #00a86b !important;
     }
-    .cat1-header {
-        background: linear-gradient(135deg, rgba(255,60,60,0.10), rgba(200,0,0,0.05)) !important;
-        border: 1px solid rgba(255,60,60,0.3) !important;
-    }
-    .cat2-header {
-        background: linear-gradient(135deg, rgba(255,140,0,0.10), rgba(200,100,0,0.05)) !important;
-        border: 1px solid rgba(255,140,0,0.3) !important;
-    }
-    .cat3-header {
-        background: linear-gradient(135deg, rgba(0,180,255,0.08), rgba(0,100,200,0.05)) !important;
-        border: 1px solid rgba(0,180,255,0.3) !important;
-    }
+    .cat1-header { background: linear-gradient(135deg,rgba(255,60,60,0.10),rgba(200,0,0,0.05)) !important; border: 1px solid rgba(255,60,60,0.3) !important; }
+    .cat2-header { background: linear-gradient(135deg,rgba(255,140,0,0.10),rgba(200,100,0,0.05)) !important; border: 1px solid rgba(255,140,0,0.3) !important; }
+    .cat3-header { background: linear-gradient(135deg,rgba(0,180,255,0.08),rgba(0,100,200,0.05)) !important; border: 1px solid rgba(0,180,255,0.3) !important; }
+    .debug-box   { background: rgba(0,100,200,0.04) !important; border: 1px solid rgba(0,100,200,0.15) !important; }
 }
 .airs-header {
-    display: flex; align-items: center; gap: 16px;
-    padding: 20px 28px; margin-bottom: 24px;
-    border-radius: 0 0 16px 16px;
+    display:flex; align-items:center; gap:16px;
+    padding:20px 28px; margin-bottom:24px; border-radius:0 0 16px 16px;
 }
 .airs-logo-box {
-    width: 52px; height: 52px; background: transparent;
-    border-radius: 12px; display: flex; align-items: center;
-    justify-content: center; flex-shrink: 0;
+    width:52px; height:52px; background:transparent;
+    border-radius:12px; display:flex; align-items:center; justify-content:center; flex-shrink:0;
 }
 .airs-title h1 {
-    margin: 0; font-size: 22px; font-weight: 800;
-    background: linear-gradient(90deg, #00d4ff, #0066ff);
-    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-    letter-spacing: 2px;
+    margin:0; font-size:22px; font-weight:800;
+    background:linear-gradient(90deg,#00d4ff,#0066ff);
+    -webkit-background-clip:text; -webkit-text-fill-color:transparent; letter-spacing:2px;
 }
-.airs-title p { margin: 2px 0 0; font-size: 13px; letter-spacing: 1px; }
-.airs-badge {
-    margin-left: auto; padding: 6px 14px;
-    border-radius: 20px; font-size: 12px; font-weight: 600; letter-spacing: 1px;
-}
-.summary-card { border-radius: 16px; padding: 24px 28px; margin-bottom: 20px; }
-.section-card  { border-radius: 16px; padding: 20px 24px; margin-bottom: 16px; }
-.section-title {
-    font-size: 16px; font-weight: 700;
-    display: flex; align-items: center; gap: 10px; margin-bottom: 16px;
-}
-.metric-card { border-radius: 12px; padding: 16px 20px; text-align: center; }
-.metric-value { font-size: 28px; font-weight: 800; line-height: 1.1; }
-.metric-label {
-    font-size: 11px; font-weight: 600;
-    letter-spacing: 1px; text-transform: uppercase; margin-top: 4px;
-}
-.overall-pass {
-    background: linear-gradient(135deg, rgba(0,200,100,0.15), rgba(0,150,80,0.1)) !important;
-    border: 2px solid rgba(0,200,100,0.4) !important;
-}
-.overall-fail {
-    background: linear-gradient(135deg, rgba(255,60,60,0.15), rgba(200,0,0,0.1)) !important;
-    border: 2px solid rgba(255,60,60,0.4) !important;
-}
-.overall-warning {
-    background: linear-gradient(135deg, rgba(255,180,0,0.15), rgba(200,140,0,0.1)) !important;
-    border: 2px solid rgba(255,180,0,0.4) !important;
-}
-.overall-title { font-size: 28px; font-weight: 900; letter-spacing: 2px; margin-bottom: 4px; }
-.overall-sub   { font-size: 14px; opacity: 0.8; }
-.manufacturer-badge {
-    display: inline-flex; align-items: center; gap: 8px;
-    padding: 8px 16px; border-radius: 20px; font-size: 13px; font-weight: 700; margin: 4px;
-}
-.sidebar-section-title {
-    font-size: 12px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase;
-    margin-bottom: 10px; padding-bottom: 6px;
-}
-.phi-notice    { border-radius: 12px; padding: 16px 20px; margin-bottom: 20px; }
-.file-problem-card { border-radius: 12px; padding: 12px 16px; margin-bottom: 8px; }
-.cat1-header   { border-radius: 12px; padding: 14px 20px; margin-bottom: 12px; }
-.cat2-header   { border-radius: 12px; padding: 14px 20px; margin-bottom: 12px; }
-.cat3-header   { border-radius: 12px; padding: 14px 20px; margin-bottom: 12px; }
+.airs-title p  { margin:2px 0 0; font-size:13px; letter-spacing:1px; }
+.airs-badge    { margin-left:auto; padding:6px 14px; border-radius:20px; font-size:12px; font-weight:600; letter-spacing:1px; }
+.summary-card  { border-radius:16px; padding:24px 28px; margin-bottom:20px; }
+.section-card  { border-radius:16px; padding:20px 24px; margin-bottom:16px; }
+.section-title { font-size:16px; font-weight:700; display:flex; align-items:center; gap:10px; margin-bottom:16px; }
+.metric-card   { border-radius:12px; padding:16px 20px; text-align:center; }
+.metric-value  { font-size:28px; font-weight:800; line-height:1.1; }
+.metric-label  { font-size:11px; font-weight:600; letter-spacing:1px; text-transform:uppercase; margin-top:4px; }
+.overall-pass    { background:linear-gradient(135deg,rgba(0,200,100,0.15),rgba(0,150,80,0.1)) !important; border:2px solid rgba(0,200,100,0.4) !important; }
+.overall-fail    { background:linear-gradient(135deg,rgba(255,60,60,0.15),rgba(200,0,0,0.1)) !important; border:2px solid rgba(255,60,60,0.4) !important; }
+.overall-warning { background:linear-gradient(135deg,rgba(255,180,0,0.15),rgba(200,140,0,0.1)) !important; border:2px solid rgba(255,180,0,0.4) !important; }
+.overall-title { font-size:28px; font-weight:900; letter-spacing:2px; margin-bottom:4px; }
+.overall-sub   { font-size:14px; opacity:0.8; }
+.manufacturer-badge { display:inline-flex; align-items:center; gap:8px; padding:8px 16px; border-radius:20px; font-size:13px; font-weight:700; margin:4px; }
+.sidebar-section-title { font-size:12px; font-weight:700; letter-spacing:1px; text-transform:uppercase; margin-bottom:10px; padding-bottom:6px; }
+.phi-notice        { border-radius:12px; padding:16px 20px; margin-bottom:20px; }
+.file-problem-card { border-radius:12px; padding:12px 16px; margin-bottom:8px; }
+.cat1-header { border-radius:12px; padding:14px 20px; margin-bottom:12px; }
+.cat2-header { border-radius:12px; padding:14px 20px; margin-bottom:12px; }
+.cat3-header { border-radius:12px; padding:14px 20px; margin-bottom:12px; }
+.debug-box   { border-radius:10px; padding:12px 16px; margin-bottom:12px; }
 </style>
 """, unsafe_allow_html=True)
 
@@ -229,38 +154,34 @@ st.markdown(f"""
 """, unsafe_allow_html=True)
 
 # ════════════════════════════════════════════════════
-# Tag Definitions
+# Tag Definitions  ← 튜플 형식 (group, element) 정수
 # ════════════════════════════════════════════════════
-
-# 1. Mandatory-Public
 CAT1_MANDATORY = [
-    {"name": "Instance Number",           "tag": (0x0020,0x0013), "vr": "IS", "purpose": "",              "mandatory": True},
-    {"name": "Series Number",             "tag": (0x0020,0x0011), "vr": "IS", "purpose": "Derived",       "mandatory": True},
-    {"name": "Image Type",                "tag": (0x0008,0x0008), "vr": "CS", "purpose": "(3D)",          "mandatory": True},
-    {"name": "Series Description",        "tag": (0x0008,0x103E), "vr": "LO", "purpose": "SWI",           "mandatory": True},
-    {"name": "Pixel Data",                "tag": (0x7FE0,0x0010), "vr": "OB", "purpose": "",              "mandatory": True},
-    {"name": "Pixel Representation",      "tag": (0x0028,0x0103), "vr": "US", "purpose": "",              "mandatory": True},
-    {"name": "Bits Stored",               "tag": (0x0028,0x0101), "vr": "US", "purpose": "",              "mandatory": True},
-    {"name": "Rows",                      "tag": (0x0028,0x0010), "vr": "US", "purpose": "",              "mandatory": True},
-    {"name": "Columns",                   "tag": (0x0028,0x0011), "vr": "US", "purpose": "",              "mandatory": True},
-    {"name": "Pixel Spacing",             "tag": (0x0028,0x0030), "vr": "DS", "purpose": "",              "mandatory": True},
-    {"name": "Window Center",             "tag": (0x0028,0x1050), "vr": "DS", "purpose": "MIP",           "mandatory": True},
-    {"name": "Window Width",              "tag": (0x0028,0x1051), "vr": "DS", "purpose": "MIP",           "mandatory": True},
-    {"name": "Image Orientation Patient", "tag": (0x0020,0x0037), "vr": "DS", "purpose": "post",          "mandatory": True},
-    {"name": "Image Position Patient",    "tag": (0x0020,0x0032), "vr": "DS", "purpose": "",              "mandatory": True},
-    {"name": "Spacing Between Slices",    "tag": (0x0018,0x0088), "vr": "DS", "purpose": "post",          "mandatory": True},
-    {"name": "Slice Thickness",           "tag": (0x0018,0x0050), "vr": "DS", "purpose": "post",          "mandatory": True},
-    # optional
-    {"name": "Overlay Bits Allocated",    "tag": (0x6000,0x0100), "vr": "US", "purpose": "",              "mandatory": False},
-    {"name": "Overlay Bit Position",      "tag": (0x6000,0x0102), "vr": "US", "purpose": "",              "mandatory": False},
-    {"name": "Overlay Data",              "tag": (0x6000,0x3000), "vr": "OB", "purpose": "",              "mandatory": False},
-    {"name": "Overlay Rows",              "tag": (0x6000,0x0010), "vr": "US", "purpose": "",              "mandatory": False},
-    {"name": "Overlay Columns",           "tag": (0x6000,0x0011), "vr": "US", "purpose": "",              "mandatory": False},
-    {"name": "Diffusion b-value",         "tag": (0x0018,0x9087), "vr": "FD", "purpose": "",              "mandatory": False},
-    {"name": "Slice Location",            "tag": (0x0020,0x1041), "vr": "DS", "purpose": "Slice Interpol","mandatory": False},
+    {"name": "Instance Number",           "tag": (0x0020,0x0013), "vr": "IS", "purpose": "",               "mandatory": True},
+    {"name": "Series Number",             "tag": (0x0020,0x0011), "vr": "IS", "purpose": "Derived",        "mandatory": True},
+    {"name": "Image Type",                "tag": (0x0008,0x0008), "vr": "CS", "purpose": "(3D)",           "mandatory": True},
+    {"name": "Series Description",        "tag": (0x0008,0x103E), "vr": "LO", "purpose": "SWI",            "mandatory": True},
+    {"name": "Pixel Data",                "tag": (0x7FE0,0x0010), "vr": "OB", "purpose": "",               "mandatory": True},
+    {"name": "Pixel Representation",      "tag": (0x0028,0x0103), "vr": "US", "purpose": "",               "mandatory": True},
+    {"name": "Bits Stored",               "tag": (0x0028,0x0101), "vr": "US", "purpose": "",               "mandatory": True},
+    {"name": "Rows",                      "tag": (0x0028,0x0010), "vr": "US", "purpose": "",               "mandatory": True},
+    {"name": "Columns",                   "tag": (0x0028,0x0011), "vr": "US", "purpose": "",               "mandatory": True},
+    {"name": "Pixel Spacing",             "tag": (0x0028,0x0030), "vr": "DS", "purpose": "",               "mandatory": True},
+    {"name": "Window Center",             "tag": (0x0028,0x1050), "vr": "DS", "purpose": "MIP",            "mandatory": True},
+    {"name": "Window Width",              "tag": (0x0028,0x1051), "vr": "DS", "purpose": "MIP",            "mandatory": True},
+    {"name": "Image Orientation Patient", "tag": (0x0020,0x0037), "vr": "DS", "purpose": "post",           "mandatory": True},
+    {"name": "Image Position Patient",    "tag": (0x0020,0x0032), "vr": "DS", "purpose": "",               "mandatory": True},
+    {"name": "Spacing Between Slices",    "tag": (0x0018,0x0088), "vr": "DS", "purpose": "post",           "mandatory": True},
+    {"name": "Slice Thickness",           "tag": (0x0018,0x0050), "vr": "DS", "purpose": "post",           "mandatory": True},
+    {"name": "Overlay Bits Allocated",    "tag": (0x6000,0x0100), "vr": "US", "purpose": "",               "mandatory": False},
+    {"name": "Overlay Bit Position",      "tag": (0x6000,0x0102), "vr": "US", "purpose": "",               "mandatory": False},
+    {"name": "Overlay Data",              "tag": (0x6000,0x3000), "vr": "OB", "purpose": "",               "mandatory": False},
+    {"name": "Overlay Rows",              "tag": (0x6000,0x0010), "vr": "US", "purpose": "",               "mandatory": False},
+    {"name": "Overlay Columns",           "tag": (0x6000,0x0011), "vr": "US", "purpose": "",               "mandatory": False},
+    {"name": "Diffusion b-value",         "tag": (0x0018,0x9087), "vr": "FD", "purpose": "",               "mandatory": False},
+    {"name": "Slice Location",            "tag": (0x0020,0x1041), "vr": "DS", "purpose": "Slice Interpol", "mandatory": False},
 ]
 
-# 2. Required-Public
 CAT2_TAGS = [
     {"name": "Manufacturer",                         "tag": (0x0008,0x0070), "vr": "LO", "note": ""},
     {"name": "Number of Averages",                   "tag": (0x0018,0x0083), "vr": "DS", "note": ""},
@@ -281,10 +202,8 @@ CAT2_TAGS = [
     {"name": "Field of View Dimensions",             "tag": (0x0018,0x1149), "vr": "IS", "note": "Paramed"},
 ]
 
-# 3. Required-Private-MRI
 CAT3_TAGS = [
-    # Philips
-    {"name": "Volume Based Calculation Technique",      "tag": (0x2005,0x140F), "vr": "CS", "manufacturer": "Philips",         "note": "post / [0](0008,9207)"},
+    {"name": "Volume Based Calculation Technique",      "tag": (0x2005,0x140F), "vr": "CS", "manufacturer": "Philips",         "note": "post/[0](0008,9207)"},
     {"name": "Parallel Reduction Factor In-Plane",      "tag": (0x2005,0x140F), "vr": "FD", "manufacturer": "Philips",         "note": "[0](0018,9069)"},
     {"name": "MR Acquisition Phase Encoding Steps",     "tag": (0x2005,0x140F), "vr": "US", "manufacturer": "Philips",         "note": "[0](0018,9058)"},
     {"name": "MR Acquisition Frequency Encoding Steps", "tag": (0x2005,0x140F), "vr": "US", "manufacturer": "Philips",         "note": "[0](0018,9058)"},
@@ -296,7 +215,6 @@ CAT3_TAGS = [
     {"name": "MRImageOffCentreFH",                      "tag": (0x2005,0x1009), "vr": "FL", "manufacturer": "Philips",         "note": ""},
     {"name": "MRImageOffCentreRL",                      "tag": (0x2005,0x100A), "vr": "FL", "manufacturer": "Philips",         "note": ""},
     {"name": "SeriesDerivationDescription",             "tag": (0x2001,0x10CC), "vr": "ST", "manufacturer": "Philips",         "note": ""},
-    # Siemens
     {"name": "Siemens Private Creator",                 "tag": (0x0051,0x0010), "vr": "LO", "manufacturer": "Siemens",         "note": ""},
     {"name": "Siemens Private Creator",                 "tag": (0x0021,0x0010), "vr": "LO", "manufacturer": "Siemens",         "note": ""},
     {"name": "Siemens Private Creator",                 "tag": (0x0019,0x0010), "vr": "LO", "manufacturer": "Siemens",         "note": ""},
@@ -313,7 +231,6 @@ CAT3_TAGS = [
     {"name": "pseq id3",                                "tag": (0x0027,0x1032), "vr": "SS", "manufacturer": "Siemens",         "note": ""},
     {"name": "slice resolution",                        "tag": (0x0019,0x1017), "vr": "DS", "manufacturer": "Siemens",         "note": ""},
     {"name": "SQ Per-frame Functional Groups Sequence", "tag": (0x5200,0x9230), "vr": "FD", "manufacturer": "Siemens",         "note": "[0](0018,9115)[0](0018,9069)"},
-    # GE
     {"name": "GE Private Creator",                      "tag": (0x0043,0x0010), "vr": "LO", "manufacturer": "GE",              "note": ""},
     {"name": "GE Private Creator",                      "tag": (0x0027,0x0010), "vr": "LO", "manufacturer": "GE",              "note": ""},
     {"name": "pat type",                                "tag": (0x0043,0x1084), "vr": "LO", "manufacturer": "GE",              "note": ""},
@@ -324,7 +241,6 @@ CAT3_TAGS = [
     {"name": "Functional Protocol",                     "tag": (0x0051,0x1006), "vr": "LT", "manufacturer": "GE",              "note": "ADC source bvalue"},
     {"name": "PDB Header",                              "tag": (0x0025,0x101B), "vr": "OB", "manufacturer": "GE",              "note": ""},
     {"name": "Vas collapse flag",                       "tag": (0x0043,0x1030), "vr": "SS", "manufacturer": "GE",              "note": ""},
-    # Canon (Toshiba)
     {"name": "TOSHIBA_MEC",                             "tag": (0x0029,0x1001), "vr": "SQ", "manufacturer": "Canon (Toshiba)", "note": ""},
     {"name": "TOSHIBA_MEC",                             "tag": (0x0029,0x1002), "vr": "SQ", "manufacturer": "Canon (Toshiba)", "note": ""},
     {"name": "TOSHIBA_MEC",                             "tag": (0x700D,0x0010), "vr": "LO", "manufacturer": "Canon (Toshiba)", "note": ""},
@@ -333,17 +249,14 @@ CAT3_TAGS = [
     {"name": "TOSHIBA_MEC",                             "tag": (0x700D,0x1016), "vr": "LO", "manufacturer": "Canon (Toshiba)", "note": ""},
     {"name": "TOSHIBA_MEC",                             "tag": (0x700D,0x1018), "vr": "SS", "manufacturer": "Canon (Toshiba)", "note": ""},
     {"name": "TOSHIBA_MEC",                             "tag": (0x700D,0x1019), "vr": "OB", "manufacturer": "Canon (Toshiba)", "note": ""},
-    # Esaote
     {"name": "V1",                                      "tag": (0x0011,0x1001), "vr": "OB", "manufacturer": "Esaote",          "note": ""},
     {"name": "V1",                                      "tag": (0x0011,0x1002), "vr": "DS", "manufacturer": "Esaote",          "note": ""},
     {"name": "V1",                                      "tag": (0x0011,0x1003), "vr": "DS", "manufacturer": "Esaote",          "note": ""},
     {"name": "V1",                                      "tag": (0x0011,0x1004), "vr": "DS", "manufacturer": "Esaote",          "note": ""},
     {"name": "V1",                                      "tag": (0x0011,0x1008), "vr": "DS", "manufacturer": "Esaote",          "note": ""},
-    # Fonar
     {"name": "MMCPrivate",                              "tag": (0x0029,0x102F), "vr": "",   "manufacturer": "Fonar",           "note": ""},
     {"name": "MMCPrivate",                              "tag": (0x0029,0x1032), "vr": "",   "manufacturer": "Fonar",           "note": ""},
     {"name": "MMCPrivate",                              "tag": (0x0029,0x10D7), "vr": "",   "manufacturer": "Fonar",           "note": ""},
-    # Hyperfine
     {"name": "Hyperfine Private Creator",               "tag": (0x351B,0x0010), "vr": "LO", "manufacturer": "Hyperfine",       "note": ""},
     {"name": "Hyperfine Private Creator",               "tag": (0x351B,0x1001), "vr": "",   "manufacturer": "Hyperfine",       "note": ""},
     {"name": "Hyperfine Private Creator",               "tag": (0x351B,0x1002), "vr": "",   "manufacturer": "Hyperfine",       "note": ""},
@@ -351,7 +264,6 @@ CAT3_TAGS = [
     {"name": "Hyperfine Private Creator",               "tag": (0x351B,0x1004), "vr": "",   "manufacturer": "Hyperfine",       "note": ""},
     {"name": "Hyperfine Private Creator",               "tag": (0x351B,0x1005), "vr": "",   "manufacturer": "Hyperfine",       "note": ""},
     {"name": "Hyperfine Private Creator",               "tag": (0x351B,0x1006), "vr": "",   "manufacturer": "Hyperfine",       "note": ""},
-    # Paramed
     {"name": "acquisition voxel size",                  "tag": (0x0011,0x1017), "vr": "LO", "manufacturer": "Paramed",         "note": ""},
     {"name": "slice resolution",                        "tag": (0x0021,0x101B), "vr": "DS", "manufacturer": "Paramed",         "note": ""},
 ]
@@ -368,12 +280,12 @@ MANUFACTURER_KEYWORDS = {
 }
 
 # ════════════════════════════════════════════════════
-# Core Functions — pydicom Tag 객체 직접 사용
+# Core: 태그 조회 — keyword 방식 + tag 방식 병행
 # ════════════════════════════════════════════════════
 def get_tag_value(ds, tag_tuple):
     """
-    tag_tuple: (0x0020, 0x0013) 형식의 tuple
-    pydicom Tag 객체로 직접 조회 → 공백/포맷 문제 완전 해결
+    pydicom Dataset에서 태그 값 조회
+    tag_tuple: (0x0020, 0x0013) 정수 튜플
     """
     try:
         tag = pydicom.tag.Tag(tag_tuple[0], tag_tuple[1])
@@ -384,19 +296,18 @@ def get_tag_value(ds, tag_tuple):
             val = elem.value
             if isinstance(val, bytes):
                 return f"[Binary {len(val)} bytes]"
-            if isinstance(val, pydicom.multival.MultiValue):
-                items = [str(v) for v in val]
+            if hasattr(val, '__iter__') and not isinstance(val, str):
+                items  = [str(v) for v in val]
                 joined = ", ".join(items)
-                return joined[:80] + "..." if len(joined) > 80 else joined
+                return joined[:100] + "..." if len(joined) > 100 else joined
             s = str(val)
-            return s[:80] + "..." if len(s) > 80 else s
+            return s[:100] + "..." if len(s) > 100 else s
         return None
-    except Exception:
+    except Exception as e:
         return None
 
 
 def tag_to_str(tag_tuple):
-    """(0x0020, 0x0013) → '(0020,0013)' 표시용 문자열"""
     return f"({tag_tuple[0]:04X},{tag_tuple[1]:04X})"
 
 
@@ -404,29 +315,59 @@ def detect_manufacturer(ds):
     try:
         tag = pydicom.tag.Tag(0x0008, 0x0070)
         if tag in ds:
-            mfr = str(ds[tag].value).lower()
+            raw = str(ds[tag].value)
+            mfr = raw.lower()
             for name, keywords in MANUFACTURER_KEYWORDS.items():
                 if any(k in mfr for k in keywords):
-                    return name, str(ds[tag].value)
+                    return name, raw
+            return None, raw   # 인식 못해도 raw 값은 반환
     except Exception:
         pass
     return None, "Unknown"
 
 
+def get_all_tags_debug(ds):
+    """디버그용: DS 안의 모든 태그 목록 반환"""
+    rows = []
+    for elem in ds:
+        try:
+            tag_str = f"({elem.tag.group:04X},{elem.tag.element:04X})"
+            if elem.VR == "SQ":
+                val = f"[Sequence {len(elem.value)} item(s)]"
+            elif isinstance(elem.value, bytes):
+                val = f"[Binary {len(elem.value)} bytes]"
+            elif hasattr(elem.value, '__iter__') and not isinstance(elem.value, str):
+                val = ", ".join(str(v) for v in elem.value)[:80]
+            else:
+                val = str(elem.value)[:80]
+            rows.append({
+                "Tag":     tag_str,
+                "Keyword": elem.keyword if elem.keyword else "—",
+                "VR":      elem.VR,
+                "Value":   val,
+            })
+        except Exception:
+            pass
+    return pd.DataFrame(rows)
+
+
+# ════════════════════════════════════════════════════
+# Validation
+# ════════════════════════════════════════════════════
 def validate_cat1(ds):
     results = []
     for t in CAT1_MANDATORY:
         value   = get_tag_value(ds, t["tag"])
         present = value is not None
         results.append({
-            "Name":      t["name"],
-            "Tag":       tag_to_str(t["tag"]),
-            "VR":        t["vr"],
-            "Purpose":   t["purpose"],
-            "Type":      "🔴 Mandatory" if t["mandatory"] else "🟡 Optional",
-            "Value":     value if present else "MISSING",
-            "Status":    "✅  Present" if present else ("❌  Missing" if t["mandatory"] else "⚠️  Missing"),
-            "_present":  present,
+            "Name":       t["name"],
+            "Tag":        tag_to_str(t["tag"]),
+            "VR":         t["vr"],
+            "Purpose":    t["purpose"],
+            "Type":       "🔴 Mandatory" if t["mandatory"] else "🟡 Optional",
+            "Value":      value if present else "MISSING",
+            "Status":     "✅  Present" if present else ("❌  Missing" if t["mandatory"] else "⚠️  Missing"),
+            "_present":   present,
             "_mandatory": t["mandatory"],
         })
     return results
@@ -438,12 +379,12 @@ def validate_cat2(ds):
         value   = get_tag_value(ds, t["tag"])
         present = value is not None
         results.append({
-            "Name":    t["name"],
-            "Tag":     tag_to_str(t["tag"]),
-            "VR":      t["vr"],
-            "Note":    t["note"],
-            "Value":   value if present else "MISSING",
-            "Status":  "✅  Present" if present else "⚠️  Missing",
+            "Name":     t["name"],
+            "Tag":      tag_to_str(t["tag"]),
+            "VR":       t["vr"],
+            "Note":     t["note"],
+            "Value":    value if present else "MISSING",
+            "Status":   "✅  Present" if present else "⚠️  Missing",
             "_present": present,
         })
     return results
@@ -494,6 +435,7 @@ def validate_single_file(fname, file_bytes):
         "status":                 "PASS" if cat1_mand_missing == 0 else "FAIL",
         "mfr_name":               mfr_name,
         "mfr_raw":                mfr_raw,
+        "ds":                     ds,          # 디버그용
         "cat1":                   cat1,
         "cat2":                   cat2,
         "cat3":                   cat3,
@@ -608,12 +550,8 @@ def excel_export(df, summary_df=None):
             ws2 = writer.sheets["Summary"]
             for row in ws2.iter_rows(min_row=2, max_row=ws2.max_row):
                 status = row[1].value if len(row) > 1 else ""
-                if status == "FAIL":
-                    fill = PatternFill("solid", fgColor="FFCCCC")
-                elif status == "PASS":
-                    fill = PatternFill("solid", fgColor="CCFFDD")
-                else:
-                    fill = PatternFill("solid", fgColor="FFE5CC")
+                fill_color = "FFCCCC" if status == "FAIL" else "CCFFDD" if status == "PASS" else "FFE5CC"
+                fill = PatternFill("solid", fgColor=fill_color)
                 for cell in row:
                     cell.fill = fill
     return buf.getvalue()
@@ -624,21 +562,16 @@ def excel_export(df, summary_df=None):
 # ════════════════════════════════════════════════════
 st.markdown("""
 <div class="phi-notice">
-    <div style="display:flex; align-items:center; gap:10px; margin-bottom:10px;">
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">
         <span style="font-size:20px;">🔐</span>
-        <span style="font-size:15px; font-weight:800; letter-spacing:1px;">
-            Privacy & Data Handling Notice
-        </span>
+        <span style="font-size:15px;font-weight:800;letter-spacing:1px;">Privacy & Data Handling Notice</span>
     </div>
-    <div style="font-size:13px; line-height:2.0;">
+    <div style="font-size:13px;line-height:2.0;">
         📋 This tool is designed for <b>internal QA and compatibility validation</b> purposes only.<br>
-        🔄 Uploaded files are processed <b>entirely in memory</b> and are
-            <b>never stored, logged, or retained</b> on any server.<br>
+        🔄 Uploaded files are processed <b>entirely in memory</b> and are <b>never stored, logged, or retained</b> on any server.<br>
         🗑️ All data is <b>automatically cleared</b> when the session ends or the page is refreshed.<br>
-        ✅ Files containing <b>PHI (Protected Health Information)</b> may be uploaded
-            for validation purposes, as no data is persisted beyond the active session.<br>
-        ⚠️ However, it is <b>strongly recommended</b> to use
-            <b>de-identified or anonymized DICOM files</b> whenever possible.
+        ✅ Files containing <b>PHI</b> may be uploaded for validation — no data is persisted beyond the active session.<br>
+        ⚠️ <b>De-identified or anonymized DICOM files</b> are strongly recommended whenever possible.
     </div>
 </div>
 """, unsafe_allow_html=True)
@@ -649,10 +582,9 @@ st.markdown("""
 st.markdown("""
 <div class="section-card">
   <div class="section-title">
-    <div style="width:32px;height:32px;
-        background:linear-gradient(135deg,#00d4ff,#0066ff);
-        border-radius:50%;display:flex;align-items:center;
-        justify-content:center;font-weight:800;color:white;font-size:15px;flex-shrink:0;">1</div>
+    <div style="width:32px;height:32px;background:linear-gradient(135deg,#00d4ff,#0066ff);
+        border-radius:50%;display:flex;align-items:center;justify-content:center;
+        font-weight:800;color:white;font-size:15px;flex-shrink:0;">1</div>
     Upload DICOM File
   </div>
   <div style="font-size:13px;opacity:0.7;margin-top:-8px;">
@@ -684,7 +616,7 @@ if uploaded:
 
     with st.spinner("🔍 Validating all DICOM tags..."):
         all_results = []
-        progress = st.progress(0)
+        progress    = st.progress(0)
         for i, (fname, fbytes) in enumerate(file_dict.items()):
             all_results.append(validate_single_file(fname, fbytes))
             progress.progress((i + 1) / total_files)
@@ -705,10 +637,9 @@ if uploaded:
     st.markdown("""
     <div class="section-card">
       <div class="section-title">
-        <div style="width:32px;height:32px;
-            background:linear-gradient(135deg,#00d4ff,#0066ff);
-            border-radius:50%;display:flex;align-items:center;
-            justify-content:center;font-weight:800;color:white;font-size:15px;flex-shrink:0;">2</div>
+        <div style="width:32px;height:32px;background:linear-gradient(135deg,#00d4ff,#0066ff);
+            border-radius:50%;display:flex;align-items:center;justify-content:center;
+            font-weight:800;color:white;font-size:15px;flex-shrink:0;">2</div>
         Overall Summary
         <span style="font-size:13px;font-weight:400;opacity:0.6;margin-left:4px;">
           — Based on Category 1 Mandatory tags
@@ -760,10 +691,9 @@ if uploaded:
         st.markdown("""
         <div class="section-card">
           <div class="section-title">
-            <div style="width:32px;height:32px;
-                background:linear-gradient(135deg,#ff4444,#cc0000);
-                border-radius:50%;display:flex;align-items:center;
-                justify-content:center;font-weight:800;color:white;font-size:15px;flex-shrink:0;">3</div>
+            <div style="width:32px;height:32px;background:linear-gradient(135deg,#ff4444,#cc0000);
+                border-radius:50%;display:flex;align-items:center;justify-content:center;
+                font-weight:800;color:white;font-size:15px;flex-shrink:0;">3</div>
             Most Problematic Files
             <span style="font-size:13px;font-weight:400;opacity:0.6;margin-left:4px;">
               — Sorted by Cat.1 Mandatory missing (worst first)
@@ -780,9 +710,8 @@ if uploaded:
                 <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px;">
                     <span style="font-size:18px;font-weight:900;color:#ff4444;">#{rank}</span>
                     <span style="font-size:14px;font-weight:700;">{r['filename']}</span>
-                    <span style="margin-left:auto;font-size:12px;
-                        background:rgba(255,60,60,0.2);color:#ff4444;
-                        padding:2px 10px;border-radius:20px;font-weight:700;">
+                    <span style="margin-left:auto;font-size:12px;background:rgba(255,60,60,0.2);
+                        color:#ff4444;padding:2px 10px;border-radius:20px;font-weight:700;">
                         ❌ Cat.1 Mandatory: {r['cat1_mandatory_missing']} Missing
                     </span>
                 </div>
@@ -792,9 +721,7 @@ if uploaded:
                     Cat.2: {r['cat2_present']}/{r['cat2_total']} &nbsp;·&nbsp;
                     Cat.3: {r['cat3_present']}/{r['cat3_total']}
                 </div>
-                <div style="font-size:12px;margin-top:6px;color:#ff6666;">
-                    Missing: {missing_names}
-                </div>
+                <div style="font-size:12px;margin-top:6px;color:#ff6666;">Missing: {missing_names}</div>
             </div>
             """, unsafe_allow_html=True)
 
@@ -804,9 +731,8 @@ if uploaded:
             <div class="file-problem-card">
                 <div style="display:flex;align-items:center;gap:10px;">
                     <span style="font-size:14px;font-weight:700;">{r['filename']}</span>
-                    <span style="margin-left:auto;font-size:12px;
-                        background:rgba(255,60,60,0.2);color:#ff4444;
-                        padding:2px 10px;border-radius:20px;font-weight:700;">⚠️ Read Error</span>
+                    <span style="margin-left:auto;font-size:12px;background:rgba(255,60,60,0.2);
+                        color:#ff4444;padding:2px 10px;border-radius:20px;font-weight:700;">⚠️ Read Error</span>
                 </div>
                 <div style="font-size:12px;opacity:0.7;margin-top:4px;">{r['error']}</div>
             </div>
@@ -818,10 +744,9 @@ if uploaded:
     st.markdown("""
     <div class="section-card">
       <div class="section-title">
-        <div style="width:32px;height:32px;
-            background:linear-gradient(135deg,#00d4ff,#0066ff);
-            border-radius:50%;display:flex;align-items:center;
-            justify-content:center;font-weight:800;color:white;font-size:15px;flex-shrink:0;">4</div>
+        <div style="width:32px;height:32px;background:linear-gradient(135deg,#00d4ff,#0066ff);
+            border-radius:50%;display:flex;align-items:center;justify-content:center;
+            font-weight:800;color:white;font-size:15px;flex-shrink:0;">4</div>
         File-by-File Detail
       </div>
     </div>
@@ -857,7 +782,7 @@ if uploaded:
     else:
         r = selected_result
 
-        # 파일 상태 배너
+        # ── 파일 상태 배너 ────────────────────────────
         if r["status"] == "PASS":
             bc, bi, bt = "overall-pass", "✅", "PASS"
             bs = "All Mandatory-Public tags present. SwiftMR processing is possible."
@@ -875,8 +800,8 @@ if uploaded:
         """, unsafe_allow_html=True)
 
         # Manufacturer
-        mfr_display = r['mfr_name'] if r['mfr_name'] else "Unknown / Not Detected"
-        mfr_raw_display = r['mfr_raw'] if r['mfr_raw'] != "Unknown" else "—"
+        mfr_display     = r["mfr_name"] if r["mfr_name"] else "Unknown / Not in supported list"
+        mfr_raw_display = r["mfr_raw"]  if r["mfr_raw"] != "Unknown" else "—"
         st.markdown(f"""
         <div style="margin-bottom:16px;">
             <span class="manufacturer-badge">
@@ -885,6 +810,18 @@ if uploaded:
             </span>
         </div>
         """, unsafe_allow_html=True)
+
+        # ════════════════════════════════════════════
+        # 🔍 DEBUG PANEL — 실제 태그 목록 확인
+        # ════════════════════════════════════════════
+        with st.expander("🔍 Debug: All Tags in This DICOM File", expanded=False):
+            st.caption(
+                "This table shows ALL tags actually present in the uploaded DICOM file. "
+                "Use this to verify tag existence if validation results seem incorrect."
+            )
+            debug_df = get_all_tags_debug(r["ds"])
+            st.dataframe(debug_df, use_container_width=True, hide_index=True, height=400)
+            st.caption(f"Total tags found: **{len(debug_df)}**")
 
         # ── Category 1 ───────────────────────────────
         mand_color = "#ff4444" if r["cat1_mandatory_missing"] > 0 else "#00c864"
@@ -902,9 +839,7 @@ if uploaded:
                     {r['cat1_optional_present']}/{r['cat1_optional_total']} Present
                 </span>
                 &nbsp;·&nbsp;
-                <span style="opacity:0.7;font-size:12px;">
-                    PASS/FAIL is determined by Mandatory tags only
-                </span>
+                <span style="opacity:0.7;font-size:12px;">PASS/FAIL determined by Mandatory tags only</span>
             </div>
         </div>
         """, unsafe_allow_html=True)
@@ -946,9 +881,7 @@ if uploaded:
                     {r['cat2_present']}/{r['cat2_total']} Present
                 </span>
                 &nbsp;·&nbsp;
-                <span style="opacity:0.7;font-size:12px;">
-                    Missing tags may limit some SwiftMR features
-                </span>
+                <span style="opacity:0.7;font-size:12px;">Missing tags may limit some SwiftMR features</span>
             </div>
         </div>
         """, unsafe_allow_html=True)
@@ -984,26 +917,27 @@ if uploaded:
                 </span>
                 {mfr_info}
                 &nbsp;·&nbsp;
-                <span style="opacity:0.7;font-size:12px;">
-                    Detected manufacturer rows are highlighted
-                </span>
+                <span style="opacity:0.7;font-size:12px;">Detected manufacturer rows are highlighted</span>
             </div>
         </div>
         """, unsafe_allow_html=True)
 
         mfr_list       = sorted(set(t["manufacturer"] for t in CAT3_TAGS))
         filter_options = ["All Manufacturers"] + mfr_list
-        default_filter = filter_options.index(r["mfr_name"]) if r["mfr_name"] and r["mfr_name"] in filter_options else 0
-
+        default_filter = (
+            filter_options.index(r["mfr_name"])
+            if r["mfr_name"] and r["mfr_name"] in filter_options else 0
+        )
         selected_mfr  = st.selectbox(
             "Filter by Manufacturer",
             options=filter_options,
             index=default_filter,
             key="cat3_mfr_filter"
         )
-        cat3_filtered = r["cat3"] if selected_mfr == "All Manufacturers" else [
-            x for x in r["cat3"] if x["Manufacturer"] == selected_mfr
-        ]
+        cat3_filtered = (
+            r["cat3"] if selected_mfr == "All Manufacturers"
+            else [x for x in r["cat3"] if x["Manufacturer"] == selected_mfr]
+        )
 
         def style_cat3(df):
             def row_style(row):
@@ -1031,7 +965,10 @@ if uploaded:
                 f"rows for this manufacturer are highlighted with stronger color."
             )
         else:
-            st.caption("ℹ️ Manufacturer not detected. All manufacturers shown without highlighting.")
+            st.caption(
+                f"ℹ️ Manufacturer raw value: **{r['mfr_raw']}** — "
+                f"not in supported list. All manufacturers shown without highlighting."
+            )
 
         st.markdown("<br>", unsafe_allow_html=True)
 
@@ -1041,10 +978,9 @@ if uploaded:
     st.markdown("""
     <div class="section-card">
       <div class="section-title">
-        <div style="width:32px;height:32px;
-            background:linear-gradient(135deg,#00d4ff,#0066ff);
-            border-radius:50%;display:flex;align-items:center;
-            justify-content:center;font-weight:800;color:white;font-size:15px;flex-shrink:0;">5</div>
+        <div style="width:32px;height:32px;background:linear-gradient(135deg,#00d4ff,#0066ff);
+            border-radius:50%;display:flex;align-items:center;justify-content:center;
+            font-weight:800;color:white;font-size:15px;flex-shrink:0;">5</div>
         Export Report
       </div>
     </div>
@@ -1083,18 +1019,15 @@ if uploaded:
             df_all    = pd.concat(all_dfs, ignore_index=True)
             base_name = uploaded.name.replace(".zip","").replace(".dcm","")
 
-            # Summary DataFrame
             summary_rows = []
             for res in all_results:
                 if res.get("error"):
                     summary_rows.append({
-                        "Filename": res["filename"], "Status": "ERROR",
-                        "Manufacturer": "—",
+                        "Filename": res["filename"], "Status": "ERROR", "Manufacturer": "—",
                         "Cat1 Mandatory Present": "—", "Cat1 Mandatory Missing": "—",
                         "Cat1 Optional Present": "—",
                         "Cat2 Present": "—", "Cat2 Missing": "—",
-                        "Cat3 Present": "—", "Cat3 Missing": "—",
-                        "Error": res["error"],
+                        "Cat3 Present": "—", "Cat3 Missing": "—", "Error": res["error"],
                     })
                 else:
                     summary_rows.append({
@@ -1103,10 +1036,8 @@ if uploaded:
                         "Cat1 Mandatory Present": res["cat1_mandatory_present"],
                         "Cat1 Mandatory Missing": res["cat1_mandatory_missing"],
                         "Cat1 Optional Present":  res["cat1_optional_present"],
-                        "Cat2 Present": res["cat2_present"],
-                        "Cat2 Missing": res["cat2_missing"],
-                        "Cat3 Present": res["cat3_present"],
-                        "Cat3 Missing": res["cat3_missing"],
+                        "Cat2 Present": res["cat2_present"], "Cat2 Missing": res["cat2_missing"],
+                        "Cat3 Present": res["cat3_present"], "Cat3 Missing": res["cat3_missing"],
                         "Error": "",
                     })
             df_summary = pd.DataFrame(summary_rows)
@@ -1135,68 +1066,54 @@ if uploaded:
 # ── Sidebar ──────────────────────────────────────────
 with st.sidebar:
     st.markdown(f"""
-    <div style="text-align:center; padding:16px 0 20px;">
+    <div style="text-align:center;padding:16px 0 20px;">
         <div style="width:56px;height:56px;margin:0 auto 10px;
             display:flex;align-items:center;justify-content:center;">
             {sidebar_logo_html}
         </div>
         <div style="font-size:14px;font-weight:800;letter-spacing:2px;
             background:linear-gradient(90deg,#00d4ff,#0066ff);
-            -webkit-background-clip:text;-webkit-text-fill-color:transparent;">
-            SwiftMR</div>
+            -webkit-background-clip:text;-webkit-text-fill-color:transparent;">SwiftMR</div>
         <div style="font-size:11px;color:#8892a4;margin-top:2px;letter-spacing:1px;">
             DICOM Tag Validator</div>
     </div>
     """, unsafe_allow_html=True)
 
     st.divider()
-
     st.markdown('<div class="sidebar-section-title">📋 Categories</div>', unsafe_allow_html=True)
     st.markdown("""
     <div style="font-size:13px;line-height:2.0;">
         <div style="margin-bottom:8px;">
             <span style="color:#ff4444;font-weight:700;">🔴 Cat.1 Mandatory-Public</span><br>
-            <span style="font-size:11px;opacity:0.7;">
-                PASS/FAIL basis · Missing = cannot process
-            </span>
+            <span style="font-size:11px;opacity:0.7;">PASS/FAIL basis · Missing = cannot process</span>
         </div>
         <div style="margin-bottom:8px;">
             <span style="color:#ff8c00;font-weight:700;">🟠 Cat.2 Required-Public</span><br>
-            <span style="font-size:11px;opacity:0.7;">
-                Public standard tags · Missing = limited features
-            </span>
+            <span style="font-size:11px;opacity:0.7;">Public standard tags · Missing = limited features</span>
         </div>
         <div>
             <span style="color:#00d4ff;font-weight:700;">🔵 Cat.3 Required-Private-MRI</span><br>
-            <span style="font-size:11px;opacity:0.7;">
-                Manufacturer private tags · All + detected highlighted
-            </span>
+            <span style="font-size:11px;opacity:0.7;">Manufacturer private tags · All + detected highlighted</span>
         </div>
     </div>
     """, unsafe_allow_html=True)
 
     st.divider()
-
     st.markdown('<div class="sidebar-section-title">📊 Status Legend</div>', unsafe_allow_html=True)
     st.markdown("""
     <div style="font-size:13px;line-height:1.9;">
-        <span style="color:#ff4444;font-weight:700;">❌ Missing</span>
-        — Mandatory tag absent (FAIL)<br>
-        <span style="color:#ffb400;font-weight:700;">⚠️ Missing</span>
-        — Optional/Required tag absent<br>
-        <span style="color:#00c864;font-weight:700;">✅ Present</span>
-        — Tag found in DICOM file
+        <span style="color:#ff4444;font-weight:700;">❌ Missing</span> — Mandatory tag absent (FAIL)<br>
+        <span style="color:#ffb400;font-weight:700;">⚠️ Missing</span> — Optional/Required tag absent<br>
+        <span style="color:#00c864;font-weight:700;">✅ Present</span> — Tag found in DICOM file
     </div>
     """, unsafe_allow_html=True)
 
     st.divider()
-
     st.markdown('<div class="sidebar-section-title">🏭 Supported Manufacturers</div>', unsafe_allow_html=True)
     for mfr in MANUFACTURER_KEYWORDS.keys():
         st.markdown(f'<div style="font-size:13px;padding:3px 0;">· {mfr}</div>', unsafe_allow_html=True)
 
     st.divider()
-
     st.markdown('<div class="sidebar-section-title">🔐 Data Privacy</div>', unsafe_allow_html=True)
     st.markdown("""
     <div style="font-size:12px;line-height:1.9;opacity:0.85;">
