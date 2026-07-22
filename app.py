@@ -3,9 +3,9 @@ import pydicom
 import pandas as pd
 import io
 import base64
+import zipfile
 import warnings
 from pathlib import Path
-from copy import deepcopy
 
 warnings.filterwarnings("ignore")
 
@@ -88,6 +88,18 @@ st.markdown("""
         border: 1px solid rgba(0,212,255,0.3) !important;
         color: #00d4ff !important;
     }
+    .file-problem-card {
+        background: rgba(255,60,60,0.08) !important;
+        border: 1px solid rgba(255,60,60,0.3) !important;
+    }
+    .file-warn-card {
+        background: rgba(255,180,0,0.08) !important;
+        border: 1px solid rgba(255,180,0,0.3) !important;
+    }
+    .file-ok-card {
+        background: rgba(0,200,100,0.05) !important;
+        border: 1px solid rgba(0,200,100,0.2) !important;
+    }
 }
 
 @media (prefers-color-scheme: light) {
@@ -145,6 +157,18 @@ st.markdown("""
         border: 1px solid rgba(0,102,255,0.3) !important;
         color: #0066ff !important;
     }
+    .file-problem-card {
+        background: rgba(255,60,60,0.06) !important;
+        border: 1px solid rgba(255,60,60,0.3) !important;
+    }
+    .file-warn-card {
+        background: rgba(255,180,0,0.06) !important;
+        border: 1px solid rgba(255,180,0,0.3) !important;
+    }
+    .file-ok-card {
+        background: rgba(0,200,100,0.04) !important;
+        border: 1px solid rgba(0,200,100,0.2) !important;
+    }
 }
 
 .airs-header {
@@ -194,11 +218,11 @@ st.markdown("""
     text-align: center;
 }
 .metric-value {
-    font-size: 32px; font-weight: 800;
+    font-size: 28px; font-weight: 800;
     line-height: 1.1;
 }
 .metric-label {
-    font-size: 12px; font-weight: 600;
+    font-size: 11px; font-weight: 600;
     letter-spacing: 1px; text-transform: uppercase;
     margin-top: 4px;
 }
@@ -284,6 +308,18 @@ st.markdown("""
     padding: 16px 20px;
     margin-bottom: 16px;
 }
+.file-problem-card {
+    border-radius: 12px; padding: 12px 16px;
+    margin-bottom: 8px;
+}
+.file-warn-card {
+    border-radius: 12px; padding: 12px 16px;
+    margin-bottom: 8px;
+}
+.file-ok-card {
+    border-radius: 12px; padding: 12px 16px;
+    margin-bottom: 8px;
+}
 </style>
 """, unsafe_allow_html=True)
 
@@ -299,8 +335,9 @@ st.markdown(f"""
 </div>
 """, unsafe_allow_html=True)
 
-# ── Tag Definitions ──────────────────────────────────
-
+# ════════════════════════════════════════════════════
+# Tag Definitions
+# ════════════════════════════════════════════════════
 REQUIRED_TAGS = [
     {"name": "Instance Number",           "tag": "(0020,0013)", "vr": "IS",  "purpose": ""},
     {"name": "Series Number",             "tag": "(0020,0011)", "vr": "IS",  "purpose": "Derived"},
@@ -318,83 +355,82 @@ REQUIRED_TAGS = [
     {"name": "Image Position Patient",    "tag": "(0020,0032)", "vr": "DS",  "purpose": ""},
     {"name": "Spacing Between Slices",    "tag": "(0018,0088)", "vr": "DS",  "purpose": "post"},
     {"name": "Slice Thickness",           "tag": "(0018,0050)", "vr": "DS",  "purpose": "post"},
-    {"name": "Image Position Patient",    "tag": "(0020,0032)", "vr": "DS",  "purpose": ""},
 ]
 
 OPTIONAL_TAGS = [
-    {"name": "Overlay Bits Allocated",              "tag": "(6000,0100)", "vr": "US",  "purpose": ""},
-    {"name": "Overlay Bit Position",                "tag": "(6000,0102)", "vr": "US",  "purpose": ""},
-    {"name": "Overlay Data",                        "tag": "(6000,3000)", "vr": "OB",  "purpose": ""},
-    {"name": "Overlay Rows",                        "tag": "(6000,0010)", "vr": "US",  "purpose": ""},
-    {"name": "Overlay Columns",                     "tag": "(6000,0011)", "vr": "US",  "purpose": ""},
-    {"name": "Diffusion b-value",                   "tag": "(0018,9087)", "vr": "FD",  "purpose": ""},
-    {"name": "Slice Location",                      "tag": "(0020,1041)", "vr": "DS",  "purpose": "Slice Interpol"},
-    {"name": "Manufacturer",                        "tag": "(0008,0070)", "vr": "LO",  "purpose": ""},
-    {"name": "Number of Averages",                  "tag": "(0018,0083)", "vr": "DS",  "purpose": ""},
-    {"name": "Percent Sampling",                    "tag": "(0018,0093)", "vr": "DS",  "purpose": ""},
-    {"name": "Acquisition Matrix",                  "tag": "(0018,1310)", "vr": "US",  "purpose": ""},
-    {"name": "Derivation Description",              "tag": "(0008,2111)", "vr": "ST",  "purpose": ""},
-    {"name": "In-Plane Phase Encoding Direction",   "tag": "(0018,1312)", "vr": "CS",  "purpose": ""},
-    {"name": "Percent Phase Field of View",         "tag": "(0018,0094)", "vr": "DS",  "purpose": ""},
-    {"name": "Request Attributes Sequence",         "tag": "(0040,0275)", "vr": "SQ",  "purpose": "Fonar"},
-    {"name": "Per-frame Functional Groups Sequence","tag": "(5200,9230)", "vr": "SQ",  "purpose": "Fonar"},
-    {"name": "Derivation Code Sequence",            "tag": "(0008,9215)", "vr": "SQ",  "purpose": "GE Subtraction"},
-    {"name": "Field of View Dimensions",            "tag": "(0018,1149)", "vr": "IS",  "purpose": "Paramed"},
+    {"name": "Overlay Bits Allocated",               "tag": "(6000,0100)", "vr": "US", "purpose": ""},
+    {"name": "Overlay Bit Position",                 "tag": "(6000,0102)", "vr": "US", "purpose": ""},
+    {"name": "Overlay Data",                         "tag": "(6000,3000)", "vr": "OB", "purpose": ""},
+    {"name": "Overlay Rows",                         "tag": "(6000,0010)", "vr": "US", "purpose": ""},
+    {"name": "Overlay Columns",                      "tag": "(6000,0011)", "vr": "US", "purpose": ""},
+    {"name": "Diffusion b-value",                    "tag": "(0018,9087)", "vr": "FD", "purpose": ""},
+    {"name": "Slice Location",                       "tag": "(0020,1041)", "vr": "DS", "purpose": "Slice Interpol"},
+    {"name": "Manufacturer",                         "tag": "(0008,0070)", "vr": "LO", "purpose": ""},
+    {"name": "Number of Averages",                   "tag": "(0018,0083)", "vr": "DS", "purpose": ""},
+    {"name": "Percent Sampling",                     "tag": "(0018,0093)", "vr": "DS", "purpose": ""},
+    {"name": "Acquisition Matrix",                   "tag": "(0018,1310)", "vr": "US", "purpose": ""},
+    {"name": "Derivation Description",               "tag": "(0008,2111)", "vr": "ST", "purpose": ""},
+    {"name": "In-Plane Phase Encoding Direction",    "tag": "(0018,1312)", "vr": "CS", "purpose": ""},
+    {"name": "Percent Phase Field of View",          "tag": "(0018,0094)", "vr": "DS", "purpose": ""},
+    {"name": "Request Attributes Sequence",          "tag": "(0040,0275)", "vr": "SQ", "purpose": "Fonar"},
+    {"name": "Per-frame Functional Groups Sequence", "tag": "(5200,9230)", "vr": "SQ", "purpose": "Fonar"},
+    {"name": "Derivation Code Sequence",             "tag": "(0008,9215)", "vr": "SQ", "purpose": "GE Subtraction"},
+    {"name": "Field of View Dimensions",             "tag": "(0018,1149)", "vr": "IS", "purpose": "Paramed"},
 ]
 
 MANUFACTURER_TAGS = {
     "Philips": [
-        {"name": "Volume Based Calculation Technique", "tag": "(2005,140F)", "vr": "CS"},
-        {"name": "Image Plane Number",                 "tag": "(2001,100A)", "vr": "IS"},
-        {"name": "MRSeriesNrOfSlices",                 "tag": "(2001,1018)", "vr": "SL"},
-        {"name": "Stack",                              "tag": "(2001,105F)", "vr": "SQ"},
-        {"name": "MRImageOffCentreAP",                 "tag": "(2005,1008)", "vr": "FL"},
-        {"name": "MRImageOffCentreFH",                 "tag": "(2005,1009)", "vr": "FL"},
-        {"name": "MRImageOffCentreRL",                 "tag": "(2005,100A)", "vr": "FL"},
-        {"name": "SeriesDerivationDescription",        "tag": "(2001,10CC)", "vr": "ST"},
-        {"name": "Philips Private Creator",            "tag": "(2005,0014)", "vr": "LO"},
-        {"name": "Parallel Reduction Factor In-Plane", "tag": "(2005,140F)", "vr": "FD"},
-        {"name": "MR Acquisition Phase Encoding Steps","tag": "(2005,140F)", "vr": "US"},
+        {"name": "Volume Based Calculation Technique",  "tag": "(2005,140F)", "vr": "CS"},
+        {"name": "Image Plane Number",                  "tag": "(2001,100A)", "vr": "IS"},
+        {"name": "MRSeriesNrOfSlices",                  "tag": "(2001,1018)", "vr": "SL"},
+        {"name": "Stack",                               "tag": "(2001,105F)", "vr": "SQ"},
+        {"name": "MRImageOffCentreAP",                  "tag": "(2005,1008)", "vr": "FL"},
+        {"name": "MRImageOffCentreFH",                  "tag": "(2005,1009)", "vr": "FL"},
+        {"name": "MRImageOffCentreRL",                  "tag": "(2005,100A)", "vr": "FL"},
+        {"name": "SeriesDerivationDescription",         "tag": "(2001,10CC)", "vr": "ST"},
+        {"name": "Philips Private Creator",             "tag": "(2005,0014)", "vr": "LO"},
+        {"name": "Parallel Reduction Factor In-Plane",  "tag": "(2005,140F)", "vr": "FD"},
+        {"name": "MR Acquisition Phase Encoding Steps", "tag": "(2005,140F)", "vr": "US"},
     ],
     "Siemens": [
-        {"name": "Siemens Private Creator",  "tag": "(0051,0010)", "vr": "LO"},
-        {"name": "Siemens Private Creator",  "tag": "(0021,0010)", "vr": "LO"},
-        {"name": "Siemens Private Creator",  "tag": "(0019,0010)", "vr": "LO"},
-        {"name": "pat factor",               "tag": "(0051,1011)", "vr": "LO"},
-        {"name": "pat factor",               "tag": "(0021,1009)", "vr": "LO"},
-        {"name": "acquisition matrix",       "tag": "(0051,100B)", "vr": "LO"},
-        {"name": "CSA HEADER1",              "tag": "(0029,1020)", "vr": "LO"},
-        {"name": "CSA HEADER2",              "tag": "(0021,1019)", "vr": "LO"},
-        {"name": "psd name1",                "tag": "(0019,109C)", "vr": "LO"},
-        {"name": "psd name2",                "tag": "(0019,109E)", "vr": "LO"},
-        {"name": "pseq id1",                 "tag": "(0019,1012)", "vr": "SS"},
-        {"name": "pseq id2",                 "tag": "(0025,1006)", "vr": "SS"},
-        {"name": "pseq id3",                 "tag": "(0027,1032)", "vr": "SS"},
-        {"name": "diffusion b-value",        "tag": "(0019,100C)", "vr": "IS"},
-        {"name": "SQ Per-frame Functional",  "tag": "(5200,9230)", "vr": "FD"},
+        {"name": "Siemens Private Creator", "tag": "(0051,0010)", "vr": "LO"},
+        {"name": "Siemens Private Creator", "tag": "(0021,0010)", "vr": "LO"},
+        {"name": "Siemens Private Creator", "tag": "(0019,0010)", "vr": "LO"},
+        {"name": "pat factor",              "tag": "(0051,1011)", "vr": "LO"},
+        {"name": "pat factor",              "tag": "(0021,1009)", "vr": "LO"},
+        {"name": "acquisition matrix",      "tag": "(0051,100B)", "vr": "LO"},
+        {"name": "CSA HEADER1",             "tag": "(0029,1020)", "vr": "LO"},
+        {"name": "CSA HEADER2",             "tag": "(0021,1019)", "vr": "LO"},
+        {"name": "psd name1",               "tag": "(0019,109C)", "vr": "LO"},
+        {"name": "psd name2",               "tag": "(0019,109E)", "vr": "LO"},
+        {"name": "pseq id1",                "tag": "(0019,1012)", "vr": "SS"},
+        {"name": "pseq id2",                "tag": "(0025,1006)", "vr": "SS"},
+        {"name": "pseq id3",                "tag": "(0027,1032)", "vr": "SS"},
+        {"name": "diffusion b-value",       "tag": "(0019,100C)", "vr": "IS"},
+        {"name": "SQ Per-frame Functional", "tag": "(5200,9230)", "vr": "FD"},
     ],
     "GE": [
-        {"name": "GE Private Creator",       "tag": "(0043,0010)", "vr": "LO"},
-        {"name": "GE Private Creator",       "tag": "(0027,0010)", "vr": "LO"},
-        {"name": "pat type",                 "tag": "(0043,1084)", "vr": "LO"},
-        {"name": "pat factor",               "tag": "(0043,1083)", "vr": "DS"},
-        {"name": "Image Type (real/imag)",   "tag": "(0043,102F)", "vr": "SS"},
-        {"name": "Vas collapse flag",        "tag": "(0043,1030)", "vr": "SS"},
-        {"name": "Functional Protocol",      "tag": "(0051,1006)", "vr": "LT"},
-        {"name": "PDB Header",               "tag": "(0025,101B)", "vr": "OB"},
-        {"name": "Derivation Code Sequence", "tag": "(0008,9215)", "vr": "SQ"},
-        {"name": "number of freq enc steps", "tag": "(0027,1060)", "vr": "FL"},
-        {"name": "number of phase enc steps","tag": "(0027,1061)", "vr": "FL"},
+        {"name": "GE Private Creator",        "tag": "(0043,0010)", "vr": "LO"},
+        {"name": "GE Private Creator",        "tag": "(0027,0010)", "vr": "LO"},
+        {"name": "pat type",                  "tag": "(0043,1084)", "vr": "LO"},
+        {"name": "pat factor",                "tag": "(0043,1083)", "vr": "DS"},
+        {"name": "Image Type (real/imag)",    "tag": "(0043,102F)", "vr": "SS"},
+        {"name": "Vas collapse flag",         "tag": "(0043,1030)", "vr": "SS"},
+        {"name": "Functional Protocol",       "tag": "(0051,1006)", "vr": "LT"},
+        {"name": "PDB Header",                "tag": "(0025,101B)", "vr": "OB"},
+        {"name": "Derivation Code Sequence",  "tag": "(0008,9215)", "vr": "SQ"},
+        {"name": "number of freq enc steps",  "tag": "(0027,1060)", "vr": "FL"},
+        {"name": "number of phase enc steps", "tag": "(0027,1061)", "vr": "FL"},
     ],
     "Canon (Toshiba)": [
-        {"name": "TOSHIBA_MEC",  "tag": "(0029,1001)", "vr": "SQ"},
-        {"name": "TOSHIBA_MEC",  "tag": "(0029,1002)", "vr": "SQ"},
-        {"name": "TOSHIBA_MEC",  "tag": "(700D,0010)", "vr": "LO"},
-        {"name": "TOSHIBA_MEC",  "tag": "(700D,1011)", "vr": "US"},
-        {"name": "TOSHIBA_MEC",  "tag": "(700D,1014)", "vr": "SL"},
-        {"name": "TOSHIBA_MEC",  "tag": "(700D,1016)", "vr": "LO"},
-        {"name": "TOSHIBA_MEC",  "tag": "(700D,1018)", "vr": "SS"},
-        {"name": "TOSHIBA_MEC",  "tag": "(700D,1019)", "vr": "OB"},
+        {"name": "TOSHIBA_MEC", "tag": "(0029,1001)", "vr": "SQ"},
+        {"name": "TOSHIBA_MEC", "tag": "(0029,1002)", "vr": "SQ"},
+        {"name": "TOSHIBA_MEC", "tag": "(700D,0010)", "vr": "LO"},
+        {"name": "TOSHIBA_MEC", "tag": "(700D,1011)", "vr": "US"},
+        {"name": "TOSHIBA_MEC", "tag": "(700D,1014)", "vr": "SL"},
+        {"name": "TOSHIBA_MEC", "tag": "(700D,1016)", "vr": "LO"},
+        {"name": "TOSHIBA_MEC", "tag": "(700D,1018)", "vr": "SS"},
+        {"name": "TOSHIBA_MEC", "tag": "(700D,1019)", "vr": "OB"},
     ],
     "Esaote": [
         {"name": "V1", "tag": "(0011,1001)", "vr": "OB"},
@@ -404,9 +440,9 @@ MANUFACTURER_TAGS = {
         {"name": "V1", "tag": "(0011,1008)", "vr": "DS"},
     ],
     "Fonar": [
-        {"name": "MMCPrivate", "tag": "(0029,102F)", "vr": ""},
-        {"name": "MMCPrivate", "tag": "(0029,1032)", "vr": ""},
-        {"name": "MMCPrivate", "tag": "(0029,10D7)", "vr": ""},
+        {"name": "MMCPrivate",                           "tag": "(0029,102F)", "vr": ""},
+        {"name": "MMCPrivate",                           "tag": "(0029,1032)", "vr": ""},
+        {"name": "MMCPrivate",                           "tag": "(0029,10D7)", "vr": ""},
         {"name": "Request Attributes Sequence",          "tag": "(0040,0275)", "vr": "SQ"},
         {"name": "Per-frame Functional Groups Sequence", "tag": "(5200,9230)", "vr": "SQ"},
     ],
@@ -426,26 +462,26 @@ MANUFACTURER_TAGS = {
 }
 
 MANUFACTURER_KEYWORDS = {
-    "Philips":        ["philips"],
-    "Siemens":        ["siemens"],
-    "GE":             ["ge medical", "ge healthcare", "general electric"],
-    "Canon (Toshiba)":["canon", "toshiba"],
-    "Esaote":         ["esaote"],
-    "Fonar":          ["fonar"],
-    "Hyperfine":      ["hyperfine"],
-    "Paramed":        ["paramed"],
+    "Philips":         ["philips"],
+    "Siemens":         ["siemens"],
+    "GE":              ["ge medical", "ge healthcare", "general electric"],
+    "Canon (Toshiba)": ["canon", "toshiba"],
+    "Esaote":          ["esaote"],
+    "Fonar":           ["fonar"],
+    "Hyperfine":       ["hyperfine"],
+    "Paramed":         ["paramed"],
 }
 
-# ── Utility Functions ────────────────────────────────
+# ════════════════════════════════════════════════════
+# Utility Functions
+# ════════════════════════════════════════════════════
 def parse_tag_str(tag_str):
-    """(GGGG,EEEE) → pydicom Tag"""
     tag_str = tag_str.strip("()")
     group, element = tag_str.split(",")
     return pydicom.tag.Tag(int(group, 16), int(element, 16))
 
 
 def get_tag_value(ds, tag_str):
-    """태그 값 반환, 없으면 None"""
     try:
         tag = parse_tag_str(tag_str)
         if tag in ds:
@@ -463,7 +499,6 @@ def get_tag_value(ds, tag_str):
 
 
 def detect_manufacturer(ds):
-    """제조사 자동 감지"""
     try:
         tag = pydicom.tag.Tag(0x0008, 0x0070)
         if tag in ds:
@@ -477,7 +512,6 @@ def detect_manufacturer(ds):
 
 
 def validate_tags(ds, tag_list, required=True):
-    """태그 검증 후 결과 반환"""
     results = []
     for t in tag_list:
         value = get_tag_value(ds, t["tag"])
@@ -494,8 +528,78 @@ def validate_tags(ds, tag_list, required=True):
     return results
 
 
+def validate_single_file(fname, file_bytes):
+    """단일 DICOM 파일 전체 검증 → dict 반환"""
+    try:
+        ds = pydicom.dcmread(io.BytesIO(file_bytes), force=True)
+    except Exception as e:
+        return {"filename": fname, "error": str(e)}
+
+    mfr_name, mfr_raw = detect_manufacturer(ds)
+    req_results = validate_tags(ds, REQUIRED_TAGS, required=True)
+    opt_results = validate_tags(ds, OPTIONAL_TAGS, required=False)
+    mfr_results = []
+    if mfr_name and mfr_name in MANUFACTURER_TAGS:
+        mfr_results = validate_tags(ds, MANUFACTURER_TAGS[mfr_name], required=False)
+
+    req_missing = sum(1 for r in req_results if not r["present"])
+    opt_missing = sum(1 for r in opt_results if not r["present"])
+
+    if req_missing == 0:
+        status = "PASS"
+    else:
+        status = "FAIL"
+
+    return {
+        "filename":    fname,
+        "error":       None,
+        "status":      status,
+        "ds":          ds,
+        "mfr_name":    mfr_name,
+        "mfr_raw":     mfr_raw,
+        "req_results": req_results,
+        "opt_results": opt_results,
+        "mfr_results": mfr_results,
+        "req_total":   len(req_results),
+        "req_present": len(req_results) - req_missing,
+        "req_missing": req_missing,
+        "opt_total":   len(opt_results),
+        "opt_present": len(opt_results) - opt_missing,
+        "opt_missing": opt_missing,
+        "mfr_total":   len(mfr_results),
+        "mfr_present": sum(1 for r in mfr_results if r["present"]),
+    }
+
+
+def load_files_from_upload(uploaded_file):
+    """업로드 파일 → {filename: bytes} dict 반환"""
+    file_dict = {}
+    name = uploaded_file.name.lower()
+
+    if name.endswith(".zip"):
+        with zipfile.ZipFile(io.BytesIO(uploaded_file.read())) as zf:
+            for zname in zf.namelist():
+                zname_lower = zname.lower()
+                # __MACOSX 등 숨김 폴더 제외
+                if zname_lower.startswith("__") or zname_lower.startswith("."):
+                    continue
+                if zname_lower.endswith(".dcm") or zname_lower.endswith(".dicom"):
+                    file_dict[Path(zname).name] = zf.read(zname)
+                # 확장자 없는 파일도 DICOM일 수 있음
+                elif "." not in Path(zname).name:
+                    try:
+                        data = zf.read(zname)
+                        pydicom.dcmread(io.BytesIO(data), force=True)
+                        file_dict[Path(zname).name] = data
+                    except Exception:
+                        pass
+    else:
+        file_dict[uploaded_file.name] = uploaded_file.read()
+
+    return file_dict
+
+
 def render_tag_table(results):
-    """태그 테이블 HTML 렌더링"""
     html = """
     <div class="tag-table-header">
         <span>Name</span>
@@ -533,40 +637,51 @@ def render_tag_table(results):
     return html
 
 
-def build_export_df(req_results, opt_results, mfr_results, mfr_name):
-    """CSV 내보내기용 DataFrame"""
+def build_export_df(result):
     rows = []
-    for r in req_results:
+    for r in result["req_results"]:
         rows.append({
+            "File":     result["filename"],
             "Category": "Required",
-            "Name": r["name"],
-            "Tag": r["tag"],
-            "VR": r["vr"],
-            "Purpose": r["purpose"],
-            "Status": "Present" if r["present"] else "MISSING",
-            "Value": r["value"],
+            "Name":     r["name"],
+            "Tag":      r["tag"],
+            "VR":       r["vr"],
+            "Purpose":  r["purpose"],
+            "Status":   "Present" if r["present"] else "MISSING",
+            "Value":    r["value"],
         })
-    for r in opt_results:
+    for r in result["opt_results"]:
         rows.append({
+            "File":     result["filename"],
             "Category": "Optional",
-            "Name": r["name"],
-            "Tag": r["tag"],
-            "VR": r["vr"],
-            "Purpose": r["purpose"],
-            "Status": "Present" if r["present"] else "Missing",
-            "Value": r["value"],
+            "Name":     r["name"],
+            "Tag":      r["tag"],
+            "VR":       r["vr"],
+            "Purpose":  r["purpose"],
+            "Status":   "Present" if r["present"] else "Missing",
+            "Value":    r["value"],
         })
-    for r in mfr_results:
+    for r in result["mfr_results"]:
         rows.append({
-            "Category": f"Manufacturer ({mfr_name})",
-            "Name": r["name"],
-            "Tag": r["tag"],
-            "VR": r["vr"],
-            "Purpose": r.get("purpose", ""),
-            "Status": "Present" if r["present"] else "Missing",
-            "Value": r["value"],
+            "File":     result["filename"],
+            "Category": f"Manufacturer ({result['mfr_name']})",
+            "Name":     r["name"],
+            "Tag":      r["tag"],
+            "VR":       r["vr"],
+            "Purpose":  r.get("purpose", ""),
+            "Status":   "Present" if r["present"] else "Missing",
+            "Value":    r["value"],
         })
     return pd.DataFrame(rows)
+
+
+def build_all_export_df(all_results):
+    dfs = []
+    for r in all_results:
+        if r.get("error"):
+            continue
+        dfs.append(build_export_df(r))
+    return pd.concat(dfs, ignore_index=True) if dfs else pd.DataFrame()
 
 
 # ════════════════════════════════════════════════════
@@ -598,75 +713,105 @@ if not phi_confirmed:
     st.warning("⛔ Please confirm the above statement before uploading any files.")
     st.stop()
 
-
 # ════════════════════════════════════════════════════
 # UPLOAD
 # ════════════════════════════════════════════════════
 st.markdown("""
 <div class="section-card">
   <div class="section-title">
-    <div style="width:32px;height:32px;background:linear-gradient(135deg,#00d4ff,#0066ff);
-        border-radius:50%;display:flex;align-items:center;justify-content:center;
-        font-weight:800;color:white;font-size:15px;flex-shrink:0;">1</div>
+    <div style="width:32px;height:32px;
+        background:linear-gradient(135deg,#00d4ff,#0066ff);
+        border-radius:50%;display:flex;align-items:center;
+        justify-content:center;font-weight:800;color:white;
+        font-size:15px;flex-shrink:0;">1</div>
     Upload DICOM File
+  </div>
+  <div style="font-size:13px;opacity:0.7;margin-top:-8px;">
+    Supports single <b>.dcm</b> file or <b>.zip</b> archive containing multiple DICOM files
   </div>
 </div>
 """, unsafe_allow_html=True)
 
 uploaded = st.file_uploader(
-    "Upload a DICOM file for tag validation",
-    type=["dcm", "DCM"],
-    help="Upload a single DICOM file to validate required tags for SwiftMR processing"
+    "Upload a DICOM file or ZIP archive",
+    type=["dcm", "DCM", "zip", "ZIP"],
+    help="Single .dcm file or .zip containing multiple DICOM files"
 )
 
 if uploaded:
-    file_bytes = uploaded.read()
-    try:
-        ds = pydicom.dcmread(io.BytesIO(file_bytes), force=True)
-        st.success(f"✅ Loaded: **{uploaded.name}** — {len(ds)} tags found")
-    except Exception as e:
-        st.error(f"❌ Failed to read DICOM file: {e}")
+    # ── 파일 로드 ─────────────────────────────────────
+    with st.spinner("📂 Loading files..."):
+        file_dict = load_files_from_upload(uploaded)
+
+    if not file_dict:
+        st.error("❌ No valid DICOM files found in the uploaded file.")
         st.stop()
 
-    # ── 제조사 감지 ──────────────────────────────────
-    mfr_name, mfr_raw = detect_manufacturer(ds)
+    total_files = len(file_dict)
+    st.success(
+        f"✅ **{uploaded.name}** — "
+        f"{'ZIP archive' if uploaded.name.lower().endswith('.zip') else 'Single DICOM'} | "
+        f"**{total_files}** DICOM file(s) detected"
+    )
 
-    # ── 태그 검증 ────────────────────────────────────
-    req_results = validate_tags(ds, REQUIRED_TAGS, required=True)
-    opt_results = validate_tags(ds, OPTIONAL_TAGS, required=False)
-    mfr_results = []
-    if mfr_name and mfr_name in MANUFACTURER_TAGS:
-        mfr_results = validate_tags(ds, MANUFACTURER_TAGS[mfr_name], required=False)
+    # ── 전체 검증 ─────────────────────────────────────
+    with st.spinner("🔍 Validating all DICOM tags..."):
+        all_results = []
+        progress = st.progress(0)
+        for i, (fname, fbytes) in enumerate(file_dict.items()):
+            all_results.append(validate_single_file(fname, fbytes))
+            progress.progress((i + 1) / total_files)
+        progress.empty()
 
-    # ── 통계 계산 ────────────────────────────────────
-    req_total   = len(req_results)
-    req_present = sum(1 for r in req_results if r["present"])
-    req_missing = req_total - req_present
+    # ── 통계 집계 ─────────────────────────────────────
+    valid_results  = [r for r in all_results if not r.get("error")]
+    error_results  = [r for r in all_results if r.get("error")]
+    fail_results   = [r for r in valid_results if r["status"] == "FAIL"]
+    pass_results   = [r for r in valid_results if r["status"] == "PASS"]
 
-    opt_total   = len(opt_results)
-    opt_present = sum(1 for r in opt_results if r["present"])
+    total_pass  = len(pass_results)
+    total_fail  = len(fail_results)
+    total_error = len(error_results)
 
-    mfr_total   = len(mfr_results)
-    mfr_present = sum(1 for r in mfr_results if r["present"])
+    # 가장 문제 있는 파일 (missing required tags 가장 많은 순)
+    worst_files = sorted(fail_results, key=lambda x: x["req_missing"], reverse=True)
 
-    # ── Overall Result ───────────────────────────────
-    if req_missing == 0:
+    # ════════════════════════════════════════════════
+    # SECTION 2: Overall Summary
+    # ════════════════════════════════════════════════
+    st.markdown("""
+    <div class="section-card">
+      <div class="section-title">
+        <div style="width:32px;height:32px;
+            background:linear-gradient(135deg,#00d4ff,#0066ff);
+            border-radius:50%;display:flex;align-items:center;
+            justify-content:center;font-weight:800;color:white;
+            font-size:15px;flex-shrink:0;">2</div>
+        Overall Summary
+      </div>
+    </div>
+    """, unsafe_allow_html=True)
+
+    # Overall Pass/Fail 판정
+    if total_fail == 0 and total_error == 0:
         overall_cls   = "overall-pass"
         overall_icon  = "✅"
-        overall_title = "PASS"
-        overall_sub   = "All required tags are present. SwiftMR processing is possible."
-    else:
+        overall_title = "ALL PASS"
+        overall_sub   = f"All {total_files} DICOM file(s) have all required tags. SwiftMR processing is possible."
+    elif total_fail == total_files:
         overall_cls   = "overall-fail"
         overall_icon  = "❌"
-        overall_title = "FAIL"
+        overall_title = "ALL FAIL"
+        overall_sub   = f"All {total_files} DICOM file(s) are missing required tags. SwiftMR cannot process."
+    else:
+        overall_cls   = "overall-warning"
+        overall_icon  = "⚠️"
+        overall_title = "PARTIAL FAIL"
         overall_sub   = (
-            f"{req_missing} required tag(s) are missing. "
-            "SwiftMR processing cannot proceed."
+            f"{total_fail} of {total_files} file(s) are missing required tags. "
+            "Please review the problematic files below."
         )
 
-    # ════════════════════════════════════════════════
-    # OVERALL SUMMARY
-    # ════════════════════════════════════════════════
     st.markdown(f"""
     <div class="summary-card {overall_cls}">
         <div class="overall-title">{overall_icon} {overall_title}</div>
@@ -674,176 +819,422 @@ if uploaded:
     </div>
     """, unsafe_allow_html=True)
 
-    # ── Metrics ──────────────────────────────────────
+    # Metrics
     c1, c2, c3, c4, c5 = st.columns(5)
-    metrics = [
-        (c1, str(req_present),  "Required Present",  "#00c864"),
-        (c2, str(req_missing),  "Required Missing",  "#ff4444"),
-        (c3, str(opt_present),  "Optional Present",  "#00d4ff"),
-        (c4, str(opt_total - opt_present), "Optional Missing", "#ffb400"),
-        (c5, mfr_raw if mfr_raw != "Unknown" else "—",
-             "Manufacturer", "#a78bfa"),
-    ]
-    for col, val, label, color in metrics:
-        with col:
-            st.markdown(f"""
-            <div class="metric-card">
-                <div class="metric-value" style="color:{color};">{val}</div>
-                <div class="metric-label">{label}</div>
-            </div>
-            """, unsafe_allow_html=True)
+    with c1:
+        st.markdown(f"""
+        <div class="metric-card">
+            <div class="metric-value" style="color:#00d4ff;">{total_files}</div>
+            <div class="metric-label">Total Files</div>
+        </div>""", unsafe_allow_html=True)
+    with c2:
+        st.markdown(f"""
+        <div class="metric-card">
+            <div class="metric-value" style="color:#00c864;">{total_pass}</div>
+            <div class="metric-label">✅ Pass</div>
+        </div>""", unsafe_allow_html=True)
+    with c3:
+        st.markdown(f"""
+        <div class="metric-card">
+            <div class="metric-value" style="color:#ff4444;">{total_fail}</div>
+            <div class="metric-label">❌ Fail</div>
+        </div>""", unsafe_allow_html=True)
+    with c4:
+        st.markdown(f"""
+        <div class="metric-card">
+            <div class="metric-value" style="color:#ffb400;">{total_error}</div>
+            <div class="metric-label">⚠️ Error</div>
+        </div>""", unsafe_allow_html=True)
+    with c5:
+        pass_rate = int(total_pass / total_files * 100) if total_files > 0 else 0
+        rate_color = "#00c864" if pass_rate == 100 else "#ffb400" if pass_rate > 0 else "#ff4444"
+        st.markdown(f"""
+        <div class="metric-card">
+            <div class="metric-value" style="color:{rate_color};">{pass_rate}%</div>
+            <div class="metric-label">Pass Rate</div>
+        </div>""", unsafe_allow_html=True)
 
     st.markdown("<br>", unsafe_allow_html=True)
 
-    # ── Manufacturer Badge ───────────────────────────
-    if mfr_name:
-        st.markdown(f"""
-        <div style="margin-bottom:16px;">
-            <span class="manufacturer-badge">
-                🏭 Detected Manufacturer: <b>{mfr_name}</b>
-                &nbsp;·&nbsp; Raw Value: <i>{mfr_raw}</i>
-            </span>
-        </div>
-        """, unsafe_allow_html=True)
-    else:
-        st.markdown("""
-        <div style="margin-bottom:16px;">
-            <span class="manufacturer-badge">
-                🏭 Manufacturer: <b>Unknown</b>
-                &nbsp;·&nbsp; Private tags not validated
-            </span>
-        </div>
-        """, unsafe_allow_html=True)
-
     # ════════════════════════════════════════════════
-    # SECTION 1: Required Tags
+    # SECTION 3: Most Problematic Files
     # ════════════════════════════════════════════════
-    req_color = "#ff4444" if req_missing > 0 else "#00c864"
-    st.markdown(f"""
-    <div class="section-card">
-        <div class="section-title">
-            🔴 Required Tags
-            <span style="font-size:13px;font-weight:600;color:{req_color};margin-left:8px;">
-                {req_present}/{req_total} Present
-            </span>
-        </div>
-        {render_tag_table(req_results)}
-    </div>
-    """, unsafe_allow_html=True)
-
-    # ── Missing Required Tags 강조 ───────────────────
-    missing_req = [r for r in req_results if not r["present"]]
-    if missing_req:
-        st.markdown("""
-        <div style="
-            background: rgba(255,60,60,0.1);
-            border: 1.5px solid rgba(255,60,60,0.4);
-            border-left: 4px solid #ff4444;
-            border-radius: 12px;
-            padding: 14px 20px;
-            margin: 8px 0 16px;
-        ">
-            <div style="font-weight:800;color:#ff4444;margin-bottom:8px;font-size:14px;">
-                ❌ Missing Required Tags — SwiftMR Cannot Process This File
-            </div>
-        """ + "".join([
-            f'<div style="font-size:13px;margin:4px 0;">• <b>{r["name"]}</b> '
-            f'<span style="font-family:monospace;font-size:11px;opacity:0.7;">{r["tag"]}</span></div>'
-            for r in missing_req
-        ]) + "</div>", unsafe_allow_html=True)
-
-    # ════════════════════════════════════════════════
-    # SECTION 2: Optional Tags
-    # ════════════════════════════════════════════════
-    st.markdown(f"""
-    <div class="section-card">
-        <div class="section-title">
-            🟡 Optional Tags
-            <span style="font-size:13px;font-weight:600;color:#ffb400;margin-left:8px;">
-                {opt_present}/{opt_total} Present
-            </span>
-        </div>
-        {render_tag_table(opt_results)}
-    </div>
-    """, unsafe_allow_html=True)
-
-    # ════════════════════════════════════════════════
-    # SECTION 3: Manufacturer Private Tags
-    # ════════════════════════════════════════════════
-    if mfr_name and mfr_results:
-        st.markdown(f"""
-        <div class="section-card">
-            <div class="section-title">
-                🏭 {mfr_name} Private Tags
-                <span style="font-size:13px;font-weight:600;color:#00d4ff;margin-left:8px;">
-                    {mfr_present}/{mfr_total} Present
-                </span>
-            </div>
-            {render_tag_table(mfr_results)}
-        </div>
-        """, unsafe_allow_html=True)
-    elif not mfr_name:
+    if worst_files:
         st.markdown("""
         <div class="section-card">
-            <div class="section-title">🏭 Manufacturer Private Tags</div>
-            <div style="font-size:13px;opacity:0.6;padding:8px 0;">
-                ℹ️ Manufacturer could not be detected.
-                Private tag validation is skipped.
-            </div>
+          <div class="section-title">
+            <div style="width:32px;height:32px;
+                background:linear-gradient(135deg,#ff4444,#cc0000);
+                border-radius:50%;display:flex;align-items:center;
+                justify-content:center;font-weight:800;color:white;
+                font-size:15px;flex-shrink:0;">3</div>
+            Most Problematic Files
+            <span style="font-size:13px;font-weight:500;opacity:0.7;margin-left:4px;">
+              — Sorted by missing required tags (worst first)
+            </span>
+          </div>
         </div>
         """, unsafe_allow_html=True)
 
+        for rank, r in enumerate(worst_files[:10], 1):  # 최대 10개
+            missing_tags = [x for x in r["req_results"] if not x["present"]]
+            missing_names = ", ".join([f'<b>{x["name"]}</b>' for x in missing_tags])
+
+            st.markdown(f"""
+            <div class="file-problem-card">
+                <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px;">
+                    <span style="font-size:18px;font-weight:900;color:#ff4444;">#{rank}</span>
+                    <span style="font-size:14px;font-weight:700;">{r['filename']}</span>
+                    <span style="margin-left:auto;font-size:12px;
+                        background:rgba(255,60,60,0.2);color:#ff4444;
+                        padding:2px 10px;border-radius:20px;font-weight:700;">
+                        ❌ {r['req_missing']} Required Missing
+                    </span>
+                </div>
+                <div style="font-size:12px;opacity:0.8;line-height:1.6;">
+                    🏭 Manufacturer: <b>{r['mfr_raw']}</b> &nbsp;·&nbsp;
+                    Required: {r['req_present']}/{r['req_total']} &nbsp;·&nbsp;
+                    Optional: {r['opt_present']}/{r['opt_total']}
+                </div>
+                <div style="font-size:12px;margin-top:6px;color:#ff6666;">
+                    Missing: {missing_names}
+                </div>
+            </div>
+            """, unsafe_allow_html=True)
+
+    # Error 파일 표시
+    if error_results:
+        st.markdown("<br>", unsafe_allow_html=True)
+        for r in error_results:
+            st.markdown(f"""
+            <div class="file-problem-card">
+                <div style="display:flex;align-items:center;gap:10px;">
+                    <span style="font-size:14px;font-weight:700;">{r['filename']}</span>
+                    <span style="margin-left:auto;font-size:12px;
+                        background:rgba(255,60,60,0.2);color:#ff4444;
+                        padding:2px 10px;border-radius:20px;font-weight:700;">
+                        ⚠️ Read Error
+                    </span>
+                </div>
+                <div style="font-size:12px;opacity:0.7;margin-top:4px;">
+                    {r['error']}
+                </div>
+            </div>
+            """, unsafe_allow_html=True)
+
     # ════════════════════════════════════════════════
-    # EXPORT
+    # SECTION 4: File-by-File Detail (Dropdown)
     # ════════════════════════════════════════════════
     st.markdown("""
     <div class="section-card">
-        <div class="section-title">📥 Export Report</div>
+      <div class="section-title">
+        <div style="width:32px;height:32px;
+            background:linear-gradient(135deg,#00d4ff,#0066ff);
+            border-radius:50%;display:flex;align-items:center;
+            justify-content:center;font-weight:800;color:white;
+            font-size:15px;flex-shrink:0;">4</div>
+        File-by-File Detail
+      </div>
     </div>
     """, unsafe_allow_html=True)
 
-    export_df = build_export_df(req_results, opt_results, mfr_results, mfr_name or "Unknown")
+    # 드롭다운 옵션 생성 (상태 아이콘 포함)
+    def make_label(r):
+        if r.get("error"):
+            return f"⚠️  {r['filename']}  [ERROR]"
+        icon = "✅" if r["status"] == "PASS" else "❌"
+        missing_info = f"  — {r['req_missing']} req missing" if r["req_missing"] > 0 else ""
+        return f"{icon}  {r['filename']}{missing_info}"
 
-    col1, col2 = st.columns(2)
-    with col1:
-        csv_data = export_df.to_csv(index=False).encode("utf-8")
-        st.download_button(
-            label="⬇️ Download CSV Report",
-            data=csv_data,
-            file_name=f"dicom_tag_report_{uploaded.name.replace('.dcm','')}.csv",
-            mime="text/csv",
-            use_container_width=True,
-        )
-    with col2:
-        excel_buf = io.BytesIO()
-        with pd.ExcelWriter(excel_buf, engine="openpyxl") as writer:
-            export_df.to_excel(writer, index=False, sheet_name="Tag Report")
+    dropdown_options = [make_label(r) for r in all_results]
 
-            ws = writer.sheets["Tag Report"]
-            from openpyxl.styles import PatternFill, Font
-            for row in ws.iter_rows(min_row=2, max_row=ws.max_row):
-                status = row[5].value
-                if status == "MISSING":
-                    for cell in row:
-                        cell.fill = PatternFill("solid", fgColor="FFCCCC")
-                elif status == "Missing":
-                    for cell in row:
-                        cell.fill = PatternFill("solid", fgColor="FFF3CC")
-                elif status == "Present":
-                    for cell in row:
-                        cell.fill = PatternFill("solid", fgColor="CCFFDD")
+    # 가장 문제 있는 파일을 기본 선택
+    default_idx = 0
+    if worst_files:
+        worst_fname = worst_files[0]["filename"]
+        for i, r in enumerate(all_results):
+            if r["filename"] == worst_fname:
+                default_idx = i
+                break
 
-        st.download_button(
-            label="⬇️ Download Excel Report",
-            data=excel_buf.getvalue(),
-            file_name=f"dicom_tag_report_{uploaded.name.replace('.dcm','')}.xlsx",
-            mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-            use_container_width=True,
-        )
+    selected_label = st.selectbox(
+        "Select a file to view detailed tag report",
+        options=dropdown_options,
+        index=default_idx,
+        key="file_selector"
+    )
 
-    # ── Raw DataFrame Preview ────────────────────────
-    with st.expander("📊 Preview Full Report Table", expanded=False):
-        st.dataframe(export_df, use_container_width=True, hide_index=True, height=400)
+    selected_result = all_results[dropdown_options.index(selected_label)]
+
+    st.markdown("<br>", unsafe_allow_html=True)
+
+    if selected_result.get("error"):
+        st.error(f"❌ Cannot read file: **{selected_result['filename']}**\n\n{selected_result['error']}")
+    else:
+        r = selected_result
+
+        # 파일 상태 배너
+        if r["status"] == "PASS":
+            banner_cls = "overall-pass"
+            banner_icon = "✅"
+            banner_title = "PASS"
+            banner_sub = "All required tags are present. SwiftMR processing is possible."
+        else:
+            banner_cls = "overall-fail"
+            banner_icon = "❌"
+            banner_title = "FAIL"
+            banner_sub = f"{r['req_missing']} required tag(s) missing. SwiftMR cannot process this file."
+
+        st.markdown(f"""
+        <div class="summary-card {banner_cls}" style="padding:16px 20px;margin-bottom:16px;">
+            <div style="font-size:20px;font-weight:900;letter-spacing:1px;margin-bottom:2px;">
+                {banner_icon} {banner_title} — {r['filename']}
+            </div>
+            <div style="font-size:13px;opacity:0.8;">{banner_sub}</div>
+        </div>
+        """, unsafe_allow_html=True)
+
+        # 파일 메트릭
+        fc1, fc2, fc3, fc4, fc5 = st.columns(5)
+        file_metrics = [
+            (fc1, str(r["req_present"]),  "Required Present",  "#00c864"),
+            (fc2, str(r["req_missing"]),  "Required Missing",  "#ff4444"),
+            (fc3, str(r["opt_present"]),  "Optional Present",  "#00d4ff"),
+            (fc4, str(r["opt_missing"]),  "Optional Missing",  "#ffb400"),
+            (fc5, r["mfr_raw"] if r["mfr_raw"] != "Unknown" else "—",
+             "Manufacturer", "#a78bfa"),
+        ]
+        for col, val, label, color in file_metrics:
+            with col:
+                st.markdown(f"""
+                <div class="metric-card">
+                    <div class="metric-value" style="color:{color};font-size:22px;">{val}</div>
+                    <div class="metric-label">{label}</div>
+                </div>""", unsafe_allow_html=True)
+
+        st.markdown("<br>", unsafe_allow_html=True)
+
+        # Manufacturer Badge
+        if r["mfr_name"]:
+            st.markdown(f"""
+            <div style="margin-bottom:16px;">
+                <span class="manufacturer-badge">
+                    🏭 Detected: <b>{r['mfr_name']}</b>
+                    &nbsp;·&nbsp; Raw: <i>{r['mfr_raw']}</i>
+                </span>
+            </div>
+            """, unsafe_allow_html=True)
+
+        # Missing Required Tags 강조 박스
+        missing_req = [x for x in r["req_results"] if not x["present"]]
+        if missing_req:
+            st.markdown("""
+            <div style="
+                background: rgba(255,60,60,0.1);
+                border: 1.5px solid rgba(255,60,60,0.4);
+                border-left: 4px solid #ff4444;
+                border-radius: 12px;
+                padding: 14px 20px;
+                margin-bottom: 16px;
+            ">
+                <div style="font-weight:800;color:#ff4444;margin-bottom:8px;font-size:14px;">
+                    ❌ Missing Required Tags — SwiftMR Cannot Process This File
+                </div>
+            """ + "".join([
+                f'<div style="font-size:13px;margin:4px 0;">'
+                f'• <b>{x["name"]}</b> '
+                f'<span style="font-family:monospace;font-size:11px;opacity:0.7;">{x["tag"]}</span>'
+                f'</div>'
+                for x in missing_req
+            ]) + "</div>", unsafe_allow_html=True)
+
+        # Required Tags 테이블
+        req_color = "#ff4444" if r["req_missing"] > 0 else "#00c864"
+        st.markdown(f"""
+        <div class="section-card">
+            <div class="section-title">
+                🔴 Required Tags
+                <span style="font-size:13px;font-weight:600;color:{req_color};margin-left:8px;">
+                    {r['req_present']}/{r['req_total']} Present
+                </span>
+            </div>
+            {render_tag_table(r['req_results'])}
+        </div>
+        """, unsafe_allow_html=True)
+
+        # Optional Tags 테이블
+        st.markdown(f"""
+        <div class="section-card">
+            <div class="section-title">
+                🟡 Optional Tags
+                <span style="font-size:13px;font-weight:600;color:#ffb400;margin-left:8px;">
+                    {r['opt_present']}/{r['opt_total']} Present
+                </span>
+            </div>
+            {render_tag_table(r['opt_results'])}
+        </div>
+        """, unsafe_allow_html=True)
+
+        # Manufacturer Private Tags 테이블
+        if r["mfr_name"] and r["mfr_results"]:
+            st.markdown(f"""
+            <div class="section-card">
+                <div class="section-title">
+                    🏭 {r['mfr_name']} Private Tags
+                    <span style="font-size:13px;font-weight:600;color:#00d4ff;margin-left:8px;">
+                        {r['mfr_present']}/{r['mfr_total']} Present
+                    </span>
+                </div>
+                {render_tag_table(r['mfr_results'])}
+            </div>
+            """, unsafe_allow_html=True)
+        elif not r["mfr_name"]:
+            st.markdown("""
+            <div class="section-card">
+                <div class="section-title">🏭 Manufacturer Private Tags</div>
+                <div style="font-size:13px;opacity:0.6;padding:8px 0;">
+                    ℹ️ Manufacturer could not be detected.
+                    Private tag validation is skipped.
+                </div>
+            </div>
+            """, unsafe_allow_html=True)
+
+    # ════════════════════════════════════════════════
+    # SECTION 5: Export
+    # ════════════════════════════════════════════════
+    st.markdown("""
+    <div class="section-card">
+      <div class="section-title">
+        <div style="width:32px;height:32px;
+            background:linear-gradient(135deg,#00d4ff,#0066ff);
+            border-radius:50%;display:flex;align-items:center;
+            justify-content:center;font-weight:800;color:white;
+            font-size:15px;flex-shrink:0;">5</div>
+        Export Report
+      </div>
+    </div>
+    """, unsafe_allow_html=True)
+
+    export_tab1, export_tab2 = st.tabs(["📄 Current File", "📦 All Files"])
+
+    with export_tab1:
+        if not selected_result.get("error"):
+            df_single = build_export_df(selected_result)
+            col1, col2 = st.columns(2)
+            with col1:
+                csv_data = df_single.to_csv(index=False).encode("utf-8")
+                st.download_button(
+                    label="⬇️ Download CSV",
+                    data=csv_data,
+                    file_name=f"tag_report_{selected_result['filename'].replace('.dcm','')}.csv",
+                    mime="text/csv",
+                    use_container_width=True,
+                )
+            with col2:
+                excel_buf = io.BytesIO()
+                with pd.ExcelWriter(excel_buf, engine="openpyxl") as writer:
+                    df_single.to_excel(writer, index=False, sheet_name="Tag Report")
+                    ws = writer.sheets["Tag Report"]
+                    from openpyxl.styles import PatternFill
+                    for row in ws.iter_rows(min_row=2, max_row=ws.max_row):
+                        status = row[6].value
+                        if status == "MISSING":
+                            for cell in row:
+                                cell.fill = PatternFill("solid", fgColor="FFCCCC")
+                        elif status == "Missing":
+                            for cell in row:
+                                cell.fill = PatternFill("solid", fgColor="FFF3CC")
+                        elif status == "Present":
+                            for cell in row:
+                                cell.fill = PatternFill("solid", fgColor="CCFFDD")
+                st.download_button(
+                    label="⬇️ Download Excel",
+                    data=excel_buf.getvalue(),
+                    file_name=f"tag_report_{selected_result['filename'].replace('.dcm','')}.xlsx",
+                    mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                    use_container_width=True,
+                )
+            with st.expander("📊 Preview Table", expanded=False):
+                st.dataframe(df_single, use_container_width=True, hide_index=True, height=400)
+
+    with export_tab2:
+        df_all = build_all_export_df(all_results)
+        if not df_all.empty:
+            col1, col2 = st.columns(2)
+            with col1:
+                csv_all = df_all.to_csv(index=False).encode("utf-8")
+                st.download_button(
+                    label="⬇️ Download All CSV",
+                    data=csv_all,
+                    file_name=f"tag_report_ALL_{uploaded.name.replace('.zip','').replace('.dcm','')}.csv",
+                    mime="text/csv",
+                    use_container_width=True,
+                )
+            with col2:
+                excel_all_buf = io.BytesIO()
+                with pd.ExcelWriter(excel_all_buf, engine="openpyxl") as writer:
+                    # 전체 시트
+                    df_all.to_excel(writer, index=False, sheet_name="All Files")
+                    ws = writer.sheets["All Files"]
+                    from openpyxl.styles import PatternFill
+                    for row in ws.iter_rows(min_row=2, max_row=ws.max_row):
+                        status = row[6].value
+                        if status == "MISSING":
+                            for cell in row:
+                                cell.fill = PatternFill("solid", fgColor="FFCCCC")
+                        elif status == "Missing":
+                            for cell in row:
+                                cell.fill = PatternFill("solid", fgColor="FFF3CC")
+                        elif status == "Present":
+                            for cell in row:
+                                cell.fill = PatternFill("solid", fgColor="CCFFDD")
+                    # Summary 시트
+                    summary_rows = []
+                    for res in all_results:
+                        if res.get("error"):
+                            summary_rows.append({
+                                "Filename": res["filename"],
+                                "Status": "ERROR",
+                                "Manufacturer": "—",
+                                "Required Present": "—",
+                                "Required Missing": "—",
+                                "Optional Present": "—",
+                                "Error": res["error"],
+                            })
+                        else:
+                            summary_rows.append({
+                                "Filename": res["filename"],
+                                "Status": res["status"],
+                                "Manufacturer": res["mfr_raw"],
+                                "Required Present": res["req_present"],
+                                "Required Missing": res["req_missing"],
+                                "Optional Present": res["opt_present"],
+                                "Error": "",
+                            })
+                    df_summary = pd.DataFrame(summary_rows)
+                    df_summary.to_excel(writer, index=False, sheet_name="Summary")
+                    ws2 = writer.sheets["Summary"]
+                    for row in ws2.iter_rows(min_row=2, max_row=ws2.max_row):
+                        status = row[1].value
+                        if status == "FAIL":
+                            for cell in row:
+                                cell.fill = PatternFill("solid", fgColor="FFCCCC")
+                        elif status == "PASS":
+                            for cell in row:
+                                cell.fill = PatternFill("solid", fgColor="CCFFDD")
+                        elif status == "ERROR":
+                            for cell in row:
+                                cell.fill = PatternFill("solid", fgColor="FFE5CC")
+
+                st.download_button(
+                    label="⬇️ Download All Excel",
+                    data=excel_all_buf.getvalue(),
+                    file_name=f"tag_report_ALL_{uploaded.name.replace('.zip','').replace('.dcm','')}.xlsx",
+                    mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                    use_container_width=True,
+                )
+            with st.expander("📊 Preview All Files Table", expanded=False):
+                st.dataframe(df_all, use_container_width=True, hide_index=True, height=400)
 
 
 # ── Sidebar ──────────────────────────────────────────
@@ -888,22 +1279,31 @@ with st.sidebar:
 
     st.divider()
 
+    st.markdown('<div class="sidebar-section-title">📁 Supported Upload</div>', unsafe_allow_html=True)
+    st.markdown("""
+    <div style="font-size:13px;line-height:1.8;">
+        📄 Single <b>.dcm</b> file<br>
+        📦 <b>.zip</b> archive with multiple DICOM files<br>
+        <span style="font-size:11px;opacity:0.6;">
+        (Extension-less DICOM files inside ZIP are also detected)
+        </span>
+    </div>
+    """, unsafe_allow_html=True)
+
+    st.divider()
+
     st.markdown('<div class="sidebar-section-title">🏭 Supported Manufacturers</div>', unsafe_allow_html=True)
     for mfr in MANUFACTURER_TAGS.keys():
-        st.markdown(f"""
-        <div style="font-size:13px;padding:3px 0;">
-            · {mfr}
-        </div>
-        """, unsafe_allow_html=True)
+        st.markdown(f'<div style="font-size:13px;padding:3px 0;">· {mfr}</div>', unsafe_allow_html=True)
 
     st.divider()
 
     st.markdown('<div class="sidebar-section-title">⚠️ Notes</div>', unsafe_allow_html=True)
     st.markdown("""
     <div style="font-size:13px;line-height:1.8;">
-        🔒 Files are processed in memory only<br>
+        🔒 Files processed in memory only<br>
         🚫 Do NOT upload real patient data (PHI)<br>
-        📦 Single DICOM file validation only<br>
+        📦 ZIP archive supported<br>
         🏭 Private tags validated per manufacturer
     </div>
     """, unsafe_allow_html=True)
