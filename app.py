@@ -62,23 +62,6 @@ st.markdown("""
     }
     .metric-value { color: #e8eaf0 !important; }
     .metric-label { color: #8892a4 !important; }
-    .tag-table-header {
-        background: #1e2535 !important;
-        color: #8892a4 !important;
-    }
-    .tag-row-present { background: rgba(0,200,100,0.05) !important; }
-    .tag-row-missing-req { background: rgba(255,60,60,0.08) !important; }
-    .tag-row-missing-opt { background: rgba(255,180,0,0.05) !important; }
-    .tag-name-text { color: #c8d0dc !important; }
-    .tag-code-text {
-        color: #00d4ff !important;
-        background: rgba(0,212,255,0.08) !important;
-    }
-    .tag-vr-text {
-        color: #8892a4 !important;
-        background: #1e2535 !important;
-    }
-    .tag-value-text { color: #a0aab8 !important; }
     .sidebar-section-title {
         color: #00d4ff !important;
         border-bottom: 1px solid #2a3040 !important;
@@ -92,13 +75,10 @@ st.markdown("""
         background: rgba(255,60,60,0.08) !important;
         border: 1px solid rgba(255,60,60,0.3) !important;
     }
-    .file-warn-card {
-        background: rgba(255,180,0,0.08) !important;
-        border: 1px solid rgba(255,180,0,0.3) !important;
-    }
-    .file-ok-card {
-        background: rgba(0,200,100,0.05) !important;
-        border: 1px solid rgba(0,200,100,0.2) !important;
+    .phi-notice {
+        background: linear-gradient(135deg, rgba(0,180,100,0.10), rgba(0,120,80,0.08)) !important;
+        border: 1.5px solid rgba(0,200,120,0.4) !important;
+        border-left: 4px solid #00c878 !important;
     }
 }
 
@@ -131,23 +111,6 @@ st.markdown("""
     }
     .metric-value { color: #1a2030 !important; }
     .metric-label { color: #5a6a7a !important; }
-    .tag-table-header {
-        background: #e8eef8 !important;
-        color: #5a6a7a !important;
-    }
-    .tag-row-present { background: rgba(0,180,80,0.04) !important; }
-    .tag-row-missing-req { background: rgba(255,60,60,0.06) !important; }
-    .tag-row-missing-opt { background: rgba(255,180,0,0.04) !important; }
-    .tag-name-text { color: #2a3a4a !important; }
-    .tag-code-text {
-        color: #0055cc !important;
-        background: rgba(0,102,255,0.08) !important;
-    }
-    .tag-vr-text {
-        color: #5a6a7a !important;
-        background: #e8eef8 !important;
-    }
-    .tag-value-text { color: #4a5a6a !important; }
     .sidebar-section-title {
         color: #0066ff !important;
         border-bottom: 1px solid #d0d8e8 !important;
@@ -161,20 +124,17 @@ st.markdown("""
         background: rgba(255,60,60,0.06) !important;
         border: 1px solid rgba(255,60,60,0.3) !important;
     }
-    .file-warn-card {
-        background: rgba(255,180,0,0.06) !important;
-        border: 1px solid rgba(255,180,0,0.3) !important;
-    }
-    .file-ok-card {
-        background: rgba(0,200,100,0.04) !important;
-        border: 1px solid rgba(0,200,100,0.2) !important;
+    .phi-notice {
+        background: linear-gradient(135deg, rgba(0,180,100,0.08), rgba(0,120,80,0.05)) !important;
+        border: 1.5px solid rgba(0,180,100,0.4) !important;
+        border-left: 4px solid #00a86b !important;
     }
 }
 
 .airs-header {
     display: flex; align-items: center; gap: 16px;
     padding: 20px 28px;
-    margin-bottom: 32px;
+    margin-bottom: 24px;
     border-radius: 0 0 16px 16px;
 }
 .airs-logo-box {
@@ -192,20 +152,15 @@ st.markdown("""
 }
 .airs-title p { margin: 2px 0 0; font-size: 13px; letter-spacing: 1px; }
 .airs-badge {
-    margin-left: auto;
-    padding: 6px 14px;
+    margin-left: auto; padding: 6px 14px;
     border-radius: 20px; font-size: 12px;
     font-weight: 600; letter-spacing: 1px;
 }
 .summary-card {
-    border-radius: 16px;
-    padding: 24px 28px;
-    margin-bottom: 20px;
+    border-radius: 16px; padding: 24px 28px; margin-bottom: 20px;
 }
 .section-card {
-    border-radius: 16px;
-    padding: 20px 24px;
-    margin-bottom: 16px;
+    border-radius: 16px; padding: 20px 24px; margin-bottom: 16px;
 }
 .section-title {
     font-size: 16px; font-weight: 700;
@@ -213,18 +168,12 @@ st.markdown("""
     margin-bottom: 16px;
 }
 .metric-card {
-    border-radius: 12px;
-    padding: 16px 20px;
-    text-align: center;
+    border-radius: 12px; padding: 16px 20px; text-align: center;
 }
-.metric-value {
-    font-size: 28px; font-weight: 800;
-    line-height: 1.1;
-}
+.metric-value { font-size: 28px; font-weight: 800; line-height: 1.1; }
 .metric-label {
     font-size: 11px; font-weight: 600;
-    letter-spacing: 1px; text-transform: uppercase;
-    margin-top: 4px;
+    letter-spacing: 1px; text-transform: uppercase; margin-top: 4px;
 }
 .overall-pass {
     background: linear-gradient(135deg, rgba(0,200,100,0.15), rgba(0,150,80,0.1)) !important;
@@ -243,82 +192,29 @@ st.markdown("""
     letter-spacing: 2px; margin-bottom: 4px;
 }
 .overall-sub { font-size: 14px; opacity: 0.8; }
-.tag-table-header {
-    display: grid;
-    grid-template-columns: 2fr 1.2fr 0.6fr 0.8fr 2fr 1fr;
-    padding: 8px 12px;
-    border-radius: 8px 8px 0 0;
-    font-size: 11px; font-weight: 700;
-    letter-spacing: 1px; text-transform: uppercase;
-    margin-bottom: 2px;
-}
-.tag-row {
-    display: grid;
-    grid-template-columns: 2fr 1.2fr 0.6fr 0.8fr 2fr 1fr;
-    padding: 8px 12px;
-    border-radius: 6px;
-    margin-bottom: 2px;
-    align-items: center;
-}
-.tag-name-text { font-size: 13px; font-weight: 500; }
-.tag-code-text {
-    font-family: monospace; font-size: 11px;
-    padding: 2px 6px; border-radius: 4px;
-    display: inline-block;
-}
-.tag-vr-text {
-    font-size: 11px; padding: 2px 6px;
-    border-radius: 4px; font-family: monospace;
-    display: inline-block;
-}
-.tag-value-text { font-size: 12px; }
-.status-badge {
-    display: inline-flex; align-items: center;
-    gap: 4px; padding: 3px 10px;
-    border-radius: 20px; font-size: 11px; font-weight: 700;
-}
-.status-present {
-    background: rgba(0,200,100,0.15);
-    color: #00c864; border: 1px solid rgba(0,200,100,0.3);
-}
-.status-missing-req {
-    background: rgba(255,60,60,0.15);
-    color: #ff4444; border: 1px solid rgba(255,60,60,0.3);
-}
-.status-missing-opt {
-    background: rgba(255,180,0,0.15);
-    color: #ffb400; border: 1px solid rgba(255,180,0,0.3);
-}
 .manufacturer-badge {
     display: inline-flex; align-items: center; gap: 8px;
     padding: 8px 16px; border-radius: 20px;
-    font-size: 13px; font-weight: 700;
-    margin: 4px;
+    font-size: 13px; font-weight: 700; margin: 4px;
 }
 .sidebar-section-title {
     font-size: 12px; font-weight: 700;
     letter-spacing: 1px; text-transform: uppercase;
     margin-bottom: 10px; padding-bottom: 6px;
 }
-.phi-warning {
-    background: linear-gradient(135deg, rgba(255,80,80,0.12), rgba(200,0,0,0.08));
-    border: 1.5px solid rgba(255,80,80,0.5);
-    border-left: 4px solid #ff4444;
+.phi-notice {
     border-radius: 12px;
     padding: 16px 20px;
-    margin-bottom: 16px;
+    margin-bottom: 20px;
 }
 .file-problem-card {
-    border-radius: 12px; padding: 12px 16px;
-    margin-bottom: 8px;
+    border-radius: 12px; padding: 12px 16px; margin-bottom: 8px;
 }
-.file-warn-card {
-    border-radius: 12px; padding: 12px 16px;
-    margin-bottom: 8px;
-}
-.file-ok-card {
-    border-radius: 12px; padding: 12px 16px;
-    margin-bottom: 8px;
+
+/* dataframe 스타일 */
+[data-testid="stDataFrame"] {
+    border-radius: 10px;
+    overflow: hidden;
 }
 </style>
 """, unsafe_allow_html=True)
@@ -339,22 +235,22 @@ st.markdown(f"""
 # Tag Definitions
 # ════════════════════════════════════════════════════
 REQUIRED_TAGS = [
-    {"name": "Instance Number",           "tag": "(0020,0013)", "vr": "IS",  "purpose": ""},
-    {"name": "Series Number",             "tag": "(0020,0011)", "vr": "IS",  "purpose": "Derived"},
-    {"name": "Image Type",                "tag": "(0008,0008)", "vr": "CS",  "purpose": "3D"},
-    {"name": "Series Description",        "tag": "(0008,103E)", "vr": "LO",  "purpose": "SWI"},
-    {"name": "Pixel Data",                "tag": "(7FE0,0010)", "vr": "OB",  "purpose": ""},
-    {"name": "Pixel Representation",      "tag": "(0028,0103)", "vr": "US",  "purpose": ""},
-    {"name": "Bits Stored",               "tag": "(0028,0101)", "vr": "US",  "purpose": ""},
-    {"name": "Rows",                      "tag": "(0028,0010)", "vr": "US",  "purpose": ""},
-    {"name": "Columns",                   "tag": "(0028,0011)", "vr": "US",  "purpose": ""},
-    {"name": "Pixel Spacing",             "tag": "(0028,0030)", "vr": "DS",  "purpose": ""},
-    {"name": "Window Center",             "tag": "(0028,1050)", "vr": "DS",  "purpose": "MIP"},
-    {"name": "Window Width",              "tag": "(0028,1051)", "vr": "DS",  "purpose": "MIP"},
-    {"name": "Image Orientation Patient", "tag": "(0020,0037)", "vr": "DS",  "purpose": "post"},
-    {"name": "Image Position Patient",    "tag": "(0020,0032)", "vr": "DS",  "purpose": ""},
-    {"name": "Spacing Between Slices",    "tag": "(0018,0088)", "vr": "DS",  "purpose": "post"},
-    {"name": "Slice Thickness",           "tag": "(0018,0050)", "vr": "DS",  "purpose": "post"},
+    {"name": "Instance Number",           "tag": "(0020,0013)", "vr": "IS", "purpose": ""},
+    {"name": "Series Number",             "tag": "(0020,0011)", "vr": "IS", "purpose": "Derived"},
+    {"name": "Image Type",                "tag": "(0008,0008)", "vr": "CS", "purpose": "3D"},
+    {"name": "Series Description",        "tag": "(0008,103E)", "vr": "LO", "purpose": "SWI"},
+    {"name": "Pixel Data",                "tag": "(7FE0,0010)", "vr": "OB", "purpose": ""},
+    {"name": "Pixel Representation",      "tag": "(0028,0103)", "vr": "US", "purpose": ""},
+    {"name": "Bits Stored",               "tag": "(0028,0101)", "vr": "US", "purpose": ""},
+    {"name": "Rows",                      "tag": "(0028,0010)", "vr": "US", "purpose": ""},
+    {"name": "Columns",                   "tag": "(0028,0011)", "vr": "US", "purpose": ""},
+    {"name": "Pixel Spacing",             "tag": "(0028,0030)", "vr": "DS", "purpose": ""},
+    {"name": "Window Center",             "tag": "(0028,1050)", "vr": "DS", "purpose": "MIP"},
+    {"name": "Window Width",              "tag": "(0028,1051)", "vr": "DS", "purpose": "MIP"},
+    {"name": "Image Orientation Patient", "tag": "(0020,0037)", "vr": "DS", "purpose": "post"},
+    {"name": "Image Position Patient",    "tag": "(0020,0032)", "vr": "DS", "purpose": ""},
+    {"name": "Spacing Between Slices",    "tag": "(0018,0088)", "vr": "DS", "purpose": "post"},
+    {"name": "Slice Thickness",           "tag": "(0018,0050)", "vr": "DS", "purpose": "post"},
 ]
 
 OPTIONAL_TAGS = [
@@ -529,7 +425,6 @@ def validate_tags(ds, tag_list, required=True):
 
 
 def validate_single_file(fname, file_bytes):
-    """단일 DICOM 파일 전체 검증 → dict 반환"""
     try:
         ds = pydicom.dcmread(io.BytesIO(file_bytes), force=True)
     except Exception as e:
@@ -545,15 +440,10 @@ def validate_single_file(fname, file_bytes):
     req_missing = sum(1 for r in req_results if not r["present"])
     opt_missing = sum(1 for r in opt_results if not r["present"])
 
-    if req_missing == 0:
-        status = "PASS"
-    else:
-        status = "FAIL"
-
     return {
         "filename":    fname,
         "error":       None,
-        "status":      status,
+        "status":      "PASS" if req_missing == 0 else "FAIL",
         "ds":          ds,
         "mfr_name":    mfr_name,
         "mfr_raw":     mfr_raw,
@@ -572,20 +462,16 @@ def validate_single_file(fname, file_bytes):
 
 
 def load_files_from_upload(uploaded_file):
-    """업로드 파일 → {filename: bytes} dict 반환"""
     file_dict = {}
     name = uploaded_file.name.lower()
-
     if name.endswith(".zip"):
         with zipfile.ZipFile(io.BytesIO(uploaded_file.read())) as zf:
             for zname in zf.namelist():
                 zname_lower = zname.lower()
-                # __MACOSX 등 숨김 폴더 제외
                 if zname_lower.startswith("__") or zname_lower.startswith("."):
                     continue
                 if zname_lower.endswith(".dcm") or zname_lower.endswith(".dicom"):
                     file_dict[Path(zname).name] = zf.read(zname)
-                # 확장자 없는 파일도 DICOM일 수 있음
                 elif "." not in Path(zname).name:
                     try:
                         data = zf.read(zname)
@@ -595,123 +481,120 @@ def load_files_from_upload(uploaded_file):
                         pass
     else:
         file_dict[uploaded_file.name] = uploaded_file.read()
-
     return file_dict
 
 
-def render_tag_table(results):
-    html = """
-    <div class="tag-table-header">
-        <span>Name</span>
-        <span>Tag</span>
-        <span>VR</span>
-        <span>Purpose</span>
-        <span>Value</span>
-        <span>Status</span>
-    </div>
-    """
+def results_to_df(results, category):
+    """검증 결과 → 표시용 DataFrame"""
+    rows = []
     for r in results:
         if r["present"]:
-            row_cls    = "tag-row tag-row-present"
-            status_cls = "status-badge status-present"
-            status_txt = "✅ Present"
+            status = "✅  Present"
         elif r["required"]:
-            row_cls    = "tag-row tag-row-missing-req"
-            status_cls = "status-badge status-missing-req"
-            status_txt = "❌ Missing"
+            status = "❌  Missing"
         else:
-            row_cls    = "tag-row tag-row-missing-opt"
-            status_cls = "status-badge status-missing-opt"
-            status_txt = "⚠️ Missing"
+            status = "⚠️  Missing"
+        rows.append({
+            "Name":    r["name"],
+            "Tag":     r["tag"],
+            "VR":      r["vr"],
+            "Purpose": r["purpose"],
+            "Value":   r["value"],
+            "Status":  status,
+        })
+    return pd.DataFrame(rows)
 
-        html += f"""
-        <div class="{row_cls}">
-            <span class="tag-name-text">{r['name']}</span>
-            <span class="tag-code-text">{r['tag']}</span>
-            <span class="tag-vr-text">{r['vr']}</span>
-            <span class="tag-value-text" style="font-size:11px;opacity:0.7;">{r['purpose']}</span>
-            <span class="tag-value-text">{r['value']}</span>
-            <span class="{status_cls}">{status_txt}</span>
-        </div>
-        """
-    return html
+
+def style_tag_df(df):
+    """DataFrame 행 색상 스타일링"""
+    def row_style(row):
+        if "❌" in row["Status"]:
+            return ["background-color: rgba(255,60,60,0.15)"] * len(row)
+        elif "⚠️" in row["Status"]:
+            return ["background-color: rgba(255,180,0,0.12)"] * len(row)
+        else:
+            return ["background-color: rgba(0,200,100,0.08)"] * len(row)
+    return df.style.apply(row_style, axis=1)
 
 
 def build_export_df(result):
     rows = []
     for r in result["req_results"]:
         rows.append({
-            "File":     result["filename"],
-            "Category": "Required",
-            "Name":     r["name"],
-            "Tag":      r["tag"],
-            "VR":       r["vr"],
-            "Purpose":  r["purpose"],
-            "Status":   "Present" if r["present"] else "MISSING",
-            "Value":    r["value"],
+            "File": result["filename"], "Category": "Required",
+            "Name": r["name"], "Tag": r["tag"], "VR": r["vr"],
+            "Purpose": r["purpose"],
+            "Status": "Present" if r["present"] else "MISSING",
+            "Value": r["value"],
         })
     for r in result["opt_results"]:
         rows.append({
-            "File":     result["filename"],
-            "Category": "Optional",
-            "Name":     r["name"],
-            "Tag":      r["tag"],
-            "VR":       r["vr"],
-            "Purpose":  r["purpose"],
-            "Status":   "Present" if r["present"] else "Missing",
-            "Value":    r["value"],
+            "File": result["filename"], "Category": "Optional",
+            "Name": r["name"], "Tag": r["tag"], "VR": r["vr"],
+            "Purpose": r["purpose"],
+            "Status": "Present" if r["present"] else "Missing",
+            "Value": r["value"],
         })
     for r in result["mfr_results"]:
         rows.append({
-            "File":     result["filename"],
+            "File": result["filename"],
             "Category": f"Manufacturer ({result['mfr_name']})",
-            "Name":     r["name"],
-            "Tag":      r["tag"],
-            "VR":       r["vr"],
-            "Purpose":  r.get("purpose", ""),
-            "Status":   "Present" if r["present"] else "Missing",
-            "Value":    r["value"],
+            "Name": r["name"], "Tag": r["tag"], "VR": r["vr"],
+            "Purpose": r.get("purpose", ""),
+            "Status": "Present" if r["present"] else "Missing",
+            "Value": r["value"],
         })
     return pd.DataFrame(rows)
 
 
 def build_all_export_df(all_results):
-    dfs = []
-    for r in all_results:
-        if r.get("error"):
-            continue
-        dfs.append(build_export_df(r))
+    dfs = [build_export_df(r) for r in all_results if not r.get("error")]
     return pd.concat(dfs, ignore_index=True) if dfs else pd.DataFrame()
 
 
+def excel_with_color(df):
+    buf = io.BytesIO()
+    with pd.ExcelWriter(buf, engine="openpyxl") as writer:
+        df.to_excel(writer, index=False, sheet_name="Tag Report")
+        ws = writer.sheets["Tag Report"]
+        from openpyxl.styles import PatternFill
+        for row in ws.iter_rows(min_row=2, max_row=ws.max_row):
+            status = row[6].value if len(row) > 6 else ""
+            if status == "MISSING":
+                fill = PatternFill("solid", fgColor="FFCCCC")
+            elif status == "Missing":
+                fill = PatternFill("solid", fgColor="FFF3CC")
+            else:
+                fill = PatternFill("solid", fgColor="CCFFDD")
+            for cell in row:
+                cell.fill = fill
+    return buf.getvalue()
+
+
 # ════════════════════════════════════════════════════
-# PHI WARNING
+# PHI NOTICE (수정된 문구)
 # ════════════════════════════════════════════════════
 st.markdown("""
-<div class="phi-warning">
-    <div style="display:flex; align-items:center; gap:10px; margin-bottom:8px;">
-        <span style="font-size:20px;">🔒</span>
-        <span style="font-size:15px; font-weight:800; color:#ff4444; letter-spacing:1px;">
-            HIPAA & GDPR WARNING
+<div class="phi-notice">
+    <div style="display:flex; align-items:center; gap:10px; margin-bottom:10px;">
+        <span style="font-size:20px;">🔐</span>
+        <span style="font-size:15px; font-weight:800; letter-spacing:1px;">
+            Privacy & Data Handling Notice
         </span>
     </div>
-    <div style="font-size:13px; line-height:1.8;">
-        ⚠️ This tool runs on <b>Streamlit Cloud (external server)</b>.<br>
-        ⚠️ <b>DO NOT upload files containing PHI (Protected Health Information)</b>.<br>
-        ⚠️ Uploading real patient data may violate <b>HIPAA</b> and <b>GDPR</b> regulations.<br>
-        ✅ Only use <b>fully anonymized or de-identified DICOM files</b>.
+    <div style="font-size:13px; line-height:2.0;">
+        📋 This tool is designed for <b>internal QA and compatibility validation</b> purposes only.<br>
+        🔄 Uploaded files are processed <b>entirely in memory</b> and are
+            <b>never stored, logged, or retained</b> on any server.<br>
+        🗑️ All data is <b>automatically cleared</b> when the session ends or the page is refreshed.<br>
+        ✅ Files containing <b>PHI (Protected Health Information)</b> may be uploaded
+            for validation purposes, as no data is persisted beyond the active session.<br>
+        ⚠️ However, it is <b>strongly recommended</b> to use
+            <b>de-identified or anonymized DICOM files</b> whenever possible
+            to minimize any risk of unintended data exposure.
     </div>
 </div>
 """, unsafe_allow_html=True)
-
-phi_confirmed = st.checkbox(
-    "✅ I confirm that this file does NOT contain any PHI (Protected Health Information) "
-    "and is fully anonymized.",
-    key="phi_confirm"
-)
-if not phi_confirmed:
-    st.warning("⛔ Please confirm the above statement before uploading any files.")
-    st.stop()
 
 # ════════════════════════════════════════════════════
 # UPLOAD
@@ -739,7 +622,6 @@ uploaded = st.file_uploader(
 )
 
 if uploaded:
-    # ── 파일 로드 ─────────────────────────────────────
     with st.spinner("📂 Loading files..."):
         file_dict = load_files_from_upload(uploaded)
 
@@ -754,7 +636,6 @@ if uploaded:
         f"**{total_files}** DICOM file(s) detected"
     )
 
-    # ── 전체 검증 ─────────────────────────────────────
     with st.spinner("🔍 Validating all DICOM tags..."):
         all_results = []
         progress = st.progress(0)
@@ -763,18 +644,15 @@ if uploaded:
             progress.progress((i + 1) / total_files)
         progress.empty()
 
-    # ── 통계 집계 ─────────────────────────────────────
-    valid_results  = [r for r in all_results if not r.get("error")]
-    error_results  = [r for r in all_results if r.get("error")]
-    fail_results   = [r for r in valid_results if r["status"] == "FAIL"]
-    pass_results   = [r for r in valid_results if r["status"] == "PASS"]
+    valid_results = [r for r in all_results if not r.get("error")]
+    error_results = [r for r in all_results if r.get("error")]
+    fail_results  = [r for r in valid_results if r["status"] == "FAIL"]
+    pass_results  = [r for r in valid_results if r["status"] == "PASS"]
+    worst_files   = sorted(fail_results, key=lambda x: x["req_missing"], reverse=True)
 
     total_pass  = len(pass_results)
     total_fail  = len(fail_results)
     total_error = len(error_results)
-
-    # 가장 문제 있는 파일 (missing required tags 가장 많은 순)
-    worst_files = sorted(fail_results, key=lambda x: x["req_missing"], reverse=True)
 
     # ════════════════════════════════════════════════
     # SECTION 2: Overall Summary
@@ -792,20 +670,16 @@ if uploaded:
     </div>
     """, unsafe_allow_html=True)
 
-    # Overall Pass/Fail 판정
     if total_fail == 0 and total_error == 0:
-        overall_cls   = "overall-pass"
-        overall_icon  = "✅"
+        overall_cls, overall_icon = "overall-pass", "✅"
         overall_title = "ALL PASS"
         overall_sub   = f"All {total_files} DICOM file(s) have all required tags. SwiftMR processing is possible."
     elif total_fail == total_files:
-        overall_cls   = "overall-fail"
-        overall_icon  = "❌"
+        overall_cls, overall_icon = "overall-fail", "❌"
         overall_title = "ALL FAIL"
         overall_sub   = f"All {total_files} DICOM file(s) are missing required tags. SwiftMR cannot process."
     else:
-        overall_cls   = "overall-warning"
-        overall_icon  = "⚠️"
+        overall_cls, overall_icon = "overall-warning", "⚠️"
         overall_title = "PARTIAL FAIL"
         overall_sub   = (
             f"{total_fail} of {total_files} file(s) are missing required tags. "
@@ -819,40 +693,23 @@ if uploaded:
     </div>
     """, unsafe_allow_html=True)
 
-    # Metrics
     c1, c2, c3, c4, c5 = st.columns(5)
-    with c1:
-        st.markdown(f"""
-        <div class="metric-card">
-            <div class="metric-value" style="color:#00d4ff;">{total_files}</div>
-            <div class="metric-label">Total Files</div>
-        </div>""", unsafe_allow_html=True)
-    with c2:
-        st.markdown(f"""
-        <div class="metric-card">
-            <div class="metric-value" style="color:#00c864;">{total_pass}</div>
-            <div class="metric-label">✅ Pass</div>
-        </div>""", unsafe_allow_html=True)
-    with c3:
-        st.markdown(f"""
-        <div class="metric-card">
-            <div class="metric-value" style="color:#ff4444;">{total_fail}</div>
-            <div class="metric-label">❌ Fail</div>
-        </div>""", unsafe_allow_html=True)
-    with c4:
-        st.markdown(f"""
-        <div class="metric-card">
-            <div class="metric-value" style="color:#ffb400;">{total_error}</div>
-            <div class="metric-label">⚠️ Error</div>
-        </div>""", unsafe_allow_html=True)
-    with c5:
-        pass_rate = int(total_pass / total_files * 100) if total_files > 0 else 0
-        rate_color = "#00c864" if pass_rate == 100 else "#ffb400" if pass_rate > 0 else "#ff4444"
-        st.markdown(f"""
-        <div class="metric-card">
-            <div class="metric-value" style="color:{rate_color};">{pass_rate}%</div>
-            <div class="metric-label">Pass Rate</div>
-        </div>""", unsafe_allow_html=True)
+    pass_rate  = int(total_pass / total_files * 100) if total_files > 0 else 0
+    rate_color = "#00c864" if pass_rate == 100 else "#ffb400" if pass_rate > 0 else "#ff4444"
+
+    for col, val, label, color in [
+        (c1, str(total_files), "Total Files",  "#00d4ff"),
+        (c2, str(total_pass),  "✅ Pass",       "#00c864"),
+        (c3, str(total_fail),  "❌ Fail",       "#ff4444"),
+        (c4, str(total_error), "⚠️ Error",      "#ffb400"),
+        (c5, f"{pass_rate}%",  "Pass Rate",    rate_color),
+    ]:
+        with col:
+            st.markdown(f"""
+            <div class="metric-card">
+                <div class="metric-value" style="color:{color};">{val}</div>
+                <div class="metric-label">{label}</div>
+            </div>""", unsafe_allow_html=True)
 
     st.markdown("<br>", unsafe_allow_html=True)
 
@@ -876,10 +733,9 @@ if uploaded:
         </div>
         """, unsafe_allow_html=True)
 
-        for rank, r in enumerate(worst_files[:10], 1):  # 최대 10개
-            missing_tags = [x for x in r["req_results"] if not x["present"]]
-            missing_names = ", ".join([f'<b>{x["name"]}</b>' for x in missing_tags])
-
+        for rank, r in enumerate(worst_files[:10], 1):
+            missing_tags  = [x for x in r["req_results"] if not x["present"]]
+            missing_names = " &nbsp;·&nbsp; ".join([f'<b>{x["name"]}</b>' for x in missing_tags])
             st.markdown(f"""
             <div class="file-problem-card">
                 <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px;">
@@ -897,14 +753,12 @@ if uploaded:
                     Optional: {r['opt_present']}/{r['opt_total']}
                 </div>
                 <div style="font-size:12px;margin-top:6px;color:#ff6666;">
-                    Missing: {missing_names}
+                    Missing Tags: {missing_names}
                 </div>
             </div>
             """, unsafe_allow_html=True)
 
-    # Error 파일 표시
     if error_results:
-        st.markdown("<br>", unsafe_allow_html=True)
         for r in error_results:
             st.markdown(f"""
             <div class="file-problem-card">
@@ -916,9 +770,7 @@ if uploaded:
                         ⚠️ Read Error
                     </span>
                 </div>
-                <div style="font-size:12px;opacity:0.7;margin-top:4px;">
-                    {r['error']}
-                </div>
+                <div style="font-size:12px;opacity:0.7;margin-top:4px;">{r['error']}</div>
             </div>
             """, unsafe_allow_html=True)
 
@@ -938,17 +790,16 @@ if uploaded:
     </div>
     """, unsafe_allow_html=True)
 
-    # 드롭다운 옵션 생성 (상태 아이콘 포함)
     def make_label(r):
         if r.get("error"):
             return f"⚠️  {r['filename']}  [ERROR]"
-        icon = "✅" if r["status"] == "PASS" else "❌"
+        icon         = "✅" if r["status"] == "PASS" else "❌"
         missing_info = f"  — {r['req_missing']} req missing" if r["req_missing"] > 0 else ""
         return f"{icon}  {r['filename']}{missing_info}"
 
     dropdown_options = [make_label(r) for r in all_results]
 
-    # 가장 문제 있는 파일을 기본 선택
+    # 가장 문제 있는 파일 기본 선택
     default_idx = 0
     if worst_files:
         worst_fname = worst_files[0]["filename"]
@@ -957,32 +808,30 @@ if uploaded:
                 default_idx = i
                 break
 
-    selected_label = st.selectbox(
+    selected_label  = st.selectbox(
         "Select a file to view detailed tag report",
         options=dropdown_options,
         index=default_idx,
         key="file_selector"
     )
-
     selected_result = all_results[dropdown_options.index(selected_label)]
 
     st.markdown("<br>", unsafe_allow_html=True)
 
     if selected_result.get("error"):
-        st.error(f"❌ Cannot read file: **{selected_result['filename']}**\n\n{selected_result['error']}")
+        st.error(
+            f"❌ Cannot read file: **{selected_result['filename']}**\n\n"
+            f"{selected_result['error']}"
+        )
     else:
         r = selected_result
 
         # 파일 상태 배너
         if r["status"] == "PASS":
-            banner_cls = "overall-pass"
-            banner_icon = "✅"
-            banner_title = "PASS"
+            banner_cls, banner_icon, banner_title = "overall-pass", "✅", "PASS"
             banner_sub = "All required tags are present. SwiftMR processing is possible."
         else:
-            banner_cls = "overall-fail"
-            banner_icon = "❌"
-            banner_title = "FAIL"
+            banner_cls, banner_icon, banner_title = "overall-fail", "❌", "FAIL"
             banner_sub = f"{r['req_missing']} required tag(s) missing. SwiftMR cannot process this file."
 
         st.markdown(f"""
@@ -996,15 +845,13 @@ if uploaded:
 
         # 파일 메트릭
         fc1, fc2, fc3, fc4, fc5 = st.columns(5)
-        file_metrics = [
-            (fc1, str(r["req_present"]),  "Required Present",  "#00c864"),
-            (fc2, str(r["req_missing"]),  "Required Missing",  "#ff4444"),
-            (fc3, str(r["opt_present"]),  "Optional Present",  "#00d4ff"),
-            (fc4, str(r["opt_missing"]),  "Optional Missing",  "#ffb400"),
-            (fc5, r["mfr_raw"] if r["mfr_raw"] != "Unknown" else "—",
-             "Manufacturer", "#a78bfa"),
-        ]
-        for col, val, label, color in file_metrics:
+        for col, val, label, color in [
+            (fc1, str(r["req_present"]), "Required Present", "#00c864"),
+            (fc2, str(r["req_missing"]), "Required Missing", "#ff4444"),
+            (fc3, str(r["opt_present"]), "Optional Present", "#00d4ff"),
+            (fc4, str(r["opt_missing"]), "Optional Missing", "#ffb400"),
+            (fc5, r["mfr_raw"] if r["mfr_raw"] != "Unknown" else "—", "Manufacturer", "#a78bfa"),
+        ]:
             with col:
                 st.markdown(f"""
                 <div class="metric-card">
@@ -1028,82 +875,87 @@ if uploaded:
         # Missing Required Tags 강조 박스
         missing_req = [x for x in r["req_results"] if not x["present"]]
         if missing_req:
-            st.markdown("""
-            <div style="
-                background: rgba(255,60,60,0.1);
-                border: 1.5px solid rgba(255,60,60,0.4);
-                border-left: 4px solid #ff4444;
-                border-radius: 12px;
-                padding: 14px 20px;
-                margin-bottom: 16px;
-            ">
-                <div style="font-weight:800;color:#ff4444;margin-bottom:8px;font-size:14px;">
-                    ❌ Missing Required Tags — SwiftMR Cannot Process This File
-                </div>
-            """ + "".join([
+            items_html = "".join([
                 f'<div style="font-size:13px;margin:4px 0;">'
                 f'• <b>{x["name"]}</b> '
                 f'<span style="font-family:monospace;font-size:11px;opacity:0.7;">{x["tag"]}</span>'
                 f'</div>'
                 for x in missing_req
-            ]) + "</div>", unsafe_allow_html=True)
+            ])
+            st.markdown(f"""
+            <div style="
+                background: rgba(255,60,60,0.1);
+                border: 1.5px solid rgba(255,60,60,0.4);
+                border-left: 4px solid #ff4444;
+                border-radius: 12px;
+                padding: 14px 20px; margin-bottom: 16px;">
+                <div style="font-weight:800;color:#ff4444;margin-bottom:8px;font-size:14px;">
+                    ❌ Missing Required Tags — SwiftMR Cannot Process This File
+                </div>
+                {items_html}
+            </div>
+            """, unsafe_allow_html=True)
 
-        # Required Tags 테이블
+        # ── Required Tags 테이블 ──────────────────────
         req_color = "#ff4444" if r["req_missing"] > 0 else "#00c864"
         st.markdown(f"""
-        <div class="section-card">
-            <div class="section-title">
-                🔴 Required Tags
-                <span style="font-size:13px;font-weight:600;color:{req_color};margin-left:8px;">
-                    {r['req_present']}/{r['req_total']} Present
-                </span>
-            </div>
-            {render_tag_table(r['req_results'])}
+        <div class="section-title" style="margin-top:8px;">
+            🔴 Required Tags
+            <span style="font-size:13px;font-weight:600;color:{req_color};margin-left:8px;">
+                {r['req_present']}/{r['req_total']} Present
+            </span>
         </div>
         """, unsafe_allow_html=True)
+        df_req = results_to_df(r["req_results"], "Required")
+        st.dataframe(
+            style_tag_df(df_req),
+            use_container_width=True,
+            hide_index=True,
+            height=min(50 + len(df_req) * 35, 600),
+        )
 
-        # Optional Tags 테이블
+        # ── Optional Tags 테이블 ─────────────────────
         st.markdown(f"""
-        <div class="section-card">
-            <div class="section-title">
-                🟡 Optional Tags
-                <span style="font-size:13px;font-weight:600;color:#ffb400;margin-left:8px;">
-                    {r['opt_present']}/{r['opt_total']} Present
-                </span>
-            </div>
-            {render_tag_table(r['opt_results'])}
+        <div class="section-title" style="margin-top:16px;">
+            🟡 Optional Tags
+            <span style="font-size:13px;font-weight:600;color:#ffb400;margin-left:8px;">
+                {r['opt_present']}/{r['opt_total']} Present
+            </span>
         </div>
         """, unsafe_allow_html=True)
+        df_opt = results_to_df(r["opt_results"], "Optional")
+        st.dataframe(
+            style_tag_df(df_opt),
+            use_container_width=True,
+            hide_index=True,
+            height=min(50 + len(df_opt) * 35, 600),
+        )
 
-        # Manufacturer Private Tags 테이블
+        # ── Manufacturer Private Tags 테이블 ─────────
         if r["mfr_name"] and r["mfr_results"]:
             st.markdown(f"""
-            <div class="section-card">
-                <div class="section-title">
-                    🏭 {r['mfr_name']} Private Tags
-                    <span style="font-size:13px;font-weight:600;color:#00d4ff;margin-left:8px;">
-                        {r['mfr_present']}/{r['mfr_total']} Present
-                    </span>
-                </div>
-                {render_tag_table(r['mfr_results'])}
+            <div class="section-title" style="margin-top:16px;">
+                🏭 {r['mfr_name']} Private Tags
+                <span style="font-size:13px;font-weight:600;color:#00d4ff;margin-left:8px;">
+                    {r['mfr_present']}/{r['mfr_total']} Present
+                </span>
             </div>
             """, unsafe_allow_html=True)
+            df_mfr = results_to_df(r["mfr_results"], "Manufacturer")
+            st.dataframe(
+                style_tag_df(df_mfr),
+                use_container_width=True,
+                hide_index=True,
+                height=min(50 + len(df_mfr) * 35, 600),
+            )
         elif not r["mfr_name"]:
-            st.markdown("""
-            <div class="section-card">
-                <div class="section-title">🏭 Manufacturer Private Tags</div>
-                <div style="font-size:13px;opacity:0.6;padding:8px 0;">
-                    ℹ️ Manufacturer could not be detected.
-                    Private tag validation is skipped.
-                </div>
-            </div>
-            """, unsafe_allow_html=True)
+            st.info("ℹ️ Manufacturer could not be detected. Private tag validation is skipped.")
 
     # ════════════════════════════════════════════════
     # SECTION 5: Export
     # ════════════════════════════════════════════════
     st.markdown("""
-    <div class="section-card">
+    <div class="section-card" style="margin-top:24px;">
       <div class="section-title">
         <div style="width:32px;height:32px;
             background:linear-gradient(135deg,#00d4ff,#0066ff);
@@ -1122,89 +974,66 @@ if uploaded:
             df_single = build_export_df(selected_result)
             col1, col2 = st.columns(2)
             with col1:
-                csv_data = df_single.to_csv(index=False).encode("utf-8")
                 st.download_button(
                     label="⬇️ Download CSV",
-                    data=csv_data,
+                    data=df_single.to_csv(index=False).encode("utf-8"),
                     file_name=f"tag_report_{selected_result['filename'].replace('.dcm','')}.csv",
                     mime="text/csv",
                     use_container_width=True,
                 )
             with col2:
-                excel_buf = io.BytesIO()
-                with pd.ExcelWriter(excel_buf, engine="openpyxl") as writer:
-                    df_single.to_excel(writer, index=False, sheet_name="Tag Report")
-                    ws = writer.sheets["Tag Report"]
-                    from openpyxl.styles import PatternFill
-                    for row in ws.iter_rows(min_row=2, max_row=ws.max_row):
-                        status = row[6].value
-                        if status == "MISSING":
-                            for cell in row:
-                                cell.fill = PatternFill("solid", fgColor="FFCCCC")
-                        elif status == "Missing":
-                            for cell in row:
-                                cell.fill = PatternFill("solid", fgColor="FFF3CC")
-                        elif status == "Present":
-                            for cell in row:
-                                cell.fill = PatternFill("solid", fgColor="CCFFDD")
                 st.download_button(
                     label="⬇️ Download Excel",
-                    data=excel_buf.getvalue(),
+                    data=excel_with_color(df_single),
                     file_name=f"tag_report_{selected_result['filename'].replace('.dcm','')}.xlsx",
                     mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
                     use_container_width=True,
                 )
-            with st.expander("📊 Preview Table", expanded=False):
-                st.dataframe(df_single, use_container_width=True, hide_index=True, height=400)
 
     with export_tab2:
         df_all = build_all_export_df(all_results)
         if not df_all.empty:
             col1, col2 = st.columns(2)
+            base_name  = uploaded.name.replace(".zip","").replace(".dcm","")
             with col1:
-                csv_all = df_all.to_csv(index=False).encode("utf-8")
                 st.download_button(
                     label="⬇️ Download All CSV",
-                    data=csv_all,
-                    file_name=f"tag_report_ALL_{uploaded.name.replace('.zip','').replace('.dcm','')}.csv",
+                    data=df_all.to_csv(index=False).encode("utf-8"),
+                    file_name=f"tag_report_ALL_{base_name}.csv",
                     mime="text/csv",
                     use_container_width=True,
                 )
             with col2:
-                excel_all_buf = io.BytesIO()
-                with pd.ExcelWriter(excel_all_buf, engine="openpyxl") as writer:
-                    # 전체 시트
+                # All Files Excel (Summary 시트 포함)
+                all_excel_buf = io.BytesIO()
+                with pd.ExcelWriter(all_excel_buf, engine="openpyxl") as writer:
                     df_all.to_excel(writer, index=False, sheet_name="All Files")
                     ws = writer.sheets["All Files"]
                     from openpyxl.styles import PatternFill
                     for row in ws.iter_rows(min_row=2, max_row=ws.max_row):
-                        status = row[6].value
+                        status = row[6].value if len(row) > 6 else ""
                         if status == "MISSING":
-                            for cell in row:
-                                cell.fill = PatternFill("solid", fgColor="FFCCCC")
+                            fill = PatternFill("solid", fgColor="FFCCCC")
                         elif status == "Missing":
-                            for cell in row:
-                                cell.fill = PatternFill("solid", fgColor="FFF3CC")
-                        elif status == "Present":
-                            for cell in row:
-                                cell.fill = PatternFill("solid", fgColor="CCFFDD")
+                            fill = PatternFill("solid", fgColor="FFF3CC")
+                        else:
+                            fill = PatternFill("solid", fgColor="CCFFDD")
+                        for cell in row:
+                            cell.fill = fill
+
                     # Summary 시트
                     summary_rows = []
                     for res in all_results:
                         if res.get("error"):
                             summary_rows.append({
-                                "Filename": res["filename"],
-                                "Status": "ERROR",
-                                "Manufacturer": "—",
-                                "Required Present": "—",
-                                "Required Missing": "—",
-                                "Optional Present": "—",
+                                "Filename": res["filename"], "Status": "ERROR",
+                                "Manufacturer": "—", "Required Present": "—",
+                                "Required Missing": "—", "Optional Present": "—",
                                 "Error": res["error"],
                             })
                         else:
                             summary_rows.append({
-                                "Filename": res["filename"],
-                                "Status": res["status"],
+                                "Filename": res["filename"], "Status": res["status"],
                                 "Manufacturer": res["mfr_raw"],
                                 "Required Present": res["req_present"],
                                 "Required Missing": res["req_missing"],
@@ -1217,22 +1046,22 @@ if uploaded:
                     for row in ws2.iter_rows(min_row=2, max_row=ws2.max_row):
                         status = row[1].value
                         if status == "FAIL":
-                            for cell in row:
-                                cell.fill = PatternFill("solid", fgColor="FFCCCC")
+                            fill = PatternFill("solid", fgColor="FFCCCC")
                         elif status == "PASS":
-                            for cell in row:
-                                cell.fill = PatternFill("solid", fgColor="CCFFDD")
-                        elif status == "ERROR":
-                            for cell in row:
-                                cell.fill = PatternFill("solid", fgColor="FFE5CC")
+                            fill = PatternFill("solid", fgColor="CCFFDD")
+                        else:
+                            fill = PatternFill("solid", fgColor="FFE5CC")
+                        for cell in row:
+                            cell.fill = fill
 
                 st.download_button(
                     label="⬇️ Download All Excel",
-                    data=excel_all_buf.getvalue(),
-                    file_name=f"tag_report_ALL_{uploaded.name.replace('.zip','').replace('.dcm','')}.xlsx",
+                    data=all_excel_buf.getvalue(),
+                    file_name=f"tag_report_ALL_{base_name}.xlsx",
                     mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
                     use_container_width=True,
                 )
+
             with st.expander("📊 Preview All Files Table", expanded=False):
                 st.dataframe(df_all, use_container_width=True, hide_index=True, height=400)
 
@@ -1265,7 +1094,7 @@ with st.sidebar:
             <span style="font-size:11px;opacity:0.7;">SwiftMR cannot process</span>
         </div>
         <div style="margin-bottom:6px;">
-            <span style="color:#ffb400;font-weight:700;">⚠️ WARNING</span>
+            <span style="color:#ffb400;font-weight:700;">⚠️ Missing</span>
             &nbsp;— Optional tag missing<br>
             <span style="font-size:11px;opacity:0.7;">Some features may be limited</span>
         </div>
@@ -1283,9 +1112,9 @@ with st.sidebar:
     st.markdown("""
     <div style="font-size:13px;line-height:1.8;">
         📄 Single <b>.dcm</b> file<br>
-        📦 <b>.zip</b> archive with multiple DICOM files<br>
+        📦 <b>.zip</b> archive (multiple DICOM files)<br>
         <span style="font-size:11px;opacity:0.6;">
-        (Extension-less DICOM files inside ZIP are also detected)
+            Extension-less DICOM inside ZIP also detected
         </span>
     </div>
     """, unsafe_allow_html=True)
@@ -1298,13 +1127,14 @@ with st.sidebar:
 
     st.divider()
 
-    st.markdown('<div class="sidebar-section-title">⚠️ Notes</div>', unsafe_allow_html=True)
+    st.markdown('<div class="sidebar-section-title">🔐 Data Privacy</div>', unsafe_allow_html=True)
     st.markdown("""
-    <div style="font-size:13px;line-height:1.8;">
-        🔒 Files processed in memory only<br>
-        🚫 Do NOT upload real patient data (PHI)<br>
-        📦 ZIP archive supported<br>
-        🏭 Private tags validated per manufacturer
+    <div style="font-size:12px;line-height:1.9;opacity:0.85;">
+        🔄 Processed <b>in memory only</b><br>
+        🗑️ Auto-cleared on session end<br>
+        💾 <b>No data stored</b> on server<br>
+        ✅ PHI files allowed (one-time use)<br>
+        ⚠️ De-identified files recommended
     </div>
     """, unsafe_allow_html=True)
 
