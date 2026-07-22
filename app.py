@@ -23,100 +23,52 @@ def get_image_base64(path):
     except:
         return None
 
-logo_b64        = get_image_base64("SwiftMR Logo.png")
-logo_html       = (
-    f'<img src="data:image/png;base64,{logo_b64}" style="width:44px;height:44px;object-fit:contain;">'
-    if logo_b64 else "🏥"
-)
-sidebar_logo_html = (
-    f'<img src="data:image/png;base64,{logo_b64}" style="width:48px;height:48px;object-fit:contain;">'
-    if logo_b64 else "🏥"
-)
+logo_b64          = get_image_base64("SwiftMR Logo.png")
+logo_html         = (f'<img src="data:image/png;base64,{logo_b64}" style="width:44px;height:44px;object-fit:contain;">' if logo_b64 else "🏥")
+sidebar_logo_html = (f'<img src="data:image/png;base64,{logo_b64}" style="width:48px;height:48px;object-fit:contain;">' if logo_b64 else "🏥")
 
 # ── CSS ──────────────────────────────────────────────
 st.markdown("""
 <style>
 @media (prefers-color-scheme: dark) {
     .stApp { background-color: #0f1117 !important; }
-    .airs-header {
-        background: linear-gradient(135deg,#1a1f2e 0%,#0d1117 100%) !important;
-        border-bottom: 2px solid #00d4ff !important;
-    }
+    .airs-header { background: linear-gradient(135deg,#1a1f2e 0%,#0d1117 100%) !important; border-bottom: 2px solid #00d4ff !important; }
     .airs-title p { color: #8892a4 !important; }
-    .airs-badge {
-        background: rgba(0,212,255,0.1) !important;
-        border: 1px solid rgba(0,212,255,0.3) !important;
-        color: #00d4ff !important;
-    }
+    .airs-badge { background: rgba(0,212,255,0.1) !important; border: 1px solid rgba(0,212,255,0.3) !important; color: #00d4ff !important; }
     .summary-card  { background: linear-gradient(135deg,#1a1f2e,#141820) !important; border: 1px solid #2a3040 !important; }
     .section-card  { background: linear-gradient(135deg,#1a1f2e,#141820) !important; border: 1px solid #2a3040 !important; }
     .metric-card   { background: #1a1f2e !important; border: 1px solid #2a3040 !important; }
     .metric-value  { color: #e8eaf0 !important; }
     .metric-label  { color: #8892a4 !important; }
     .sidebar-section-title { color: #00d4ff !important; border-bottom: 1px solid #2a3040 !important; }
-    .manufacturer-badge {
-        background: rgba(0,212,255,0.1) !important;
-        border: 1px solid rgba(0,212,255,0.3) !important;
-        color: #00d4ff !important;
-    }
+    .manufacturer-badge { background: rgba(0,212,255,0.1) !important; border: 1px solid rgba(0,212,255,0.3) !important; color: #00d4ff !important; }
     .file-problem-card { background: rgba(255,60,60,0.08) !important; border: 1px solid rgba(255,60,60,0.3) !important; }
-    .phi-notice {
-        background: linear-gradient(135deg,rgba(0,180,100,0.10),rgba(0,120,80,0.08)) !important;
-        border: 1.5px solid rgba(0,200,120,0.4) !important;
-        border-left: 4px solid #00c878 !important;
-    }
+    .phi-notice { background: linear-gradient(135deg,rgba(0,180,100,0.10),rgba(0,120,80,0.08)) !important; border: 1.5px solid rgba(0,200,120,0.4) !important; border-left: 4px solid #00c878 !important; }
     .cat1-header { background: linear-gradient(135deg,rgba(255,60,60,0.15),rgba(200,0,0,0.08)) !important; border: 1px solid rgba(255,60,60,0.3) !important; }
     .cat2-header { background: linear-gradient(135deg,rgba(255,140,0,0.15),rgba(200,100,0,0.08)) !important; border: 1px solid rgba(255,140,0,0.3) !important; }
     .cat3-header { background: linear-gradient(135deg,rgba(0,180,255,0.12),rgba(0,100,200,0.08)) !important; border: 1px solid rgba(0,180,255,0.3) !important; }
-    .debug-box   { background: rgba(0,212,255,0.05) !important; border: 1px solid rgba(0,212,255,0.2) !important; }
 }
 @media (prefers-color-scheme: light) {
     .stApp { background-color: #f0f4f8 !important; }
-    .airs-header {
-        background: linear-gradient(135deg,#ffffff 0%,#e8f0fe 100%) !important;
-        border-bottom: 2px solid #0066ff !important;
-    }
+    .airs-header { background: linear-gradient(135deg,#ffffff 0%,#e8f0fe 100%) !important; border-bottom: 2px solid #0066ff !important; }
     .airs-title p { color: #5a6a7a !important; }
-    .airs-badge {
-        background: rgba(0,102,255,0.1) !important;
-        border: 1px solid rgba(0,102,255,0.3) !important;
-        color: #0066ff !important;
-    }
+    .airs-badge { background: rgba(0,102,255,0.1) !important; border: 1px solid rgba(0,102,255,0.3) !important; color: #0066ff !important; }
     .summary-card  { background: linear-gradient(135deg,#ffffff,#f5f8ff) !important; border: 1px solid #d0d8e8 !important; box-shadow: 0 4px 24px rgba(0,0,0,0.08) !important; }
     .section-card  { background: linear-gradient(135deg,#ffffff,#f5f8ff) !important; border: 1px solid #d0d8e8 !important; box-shadow: 0 2px 12px rgba(0,0,0,0.06) !important; }
     .metric-card   { background: #ffffff !important; border: 1px solid #d0d8e8 !important; box-shadow: 0 2px 8px rgba(0,0,0,0.06) !important; }
     .metric-value  { color: #1a2030 !important; }
     .metric-label  { color: #5a6a7a !important; }
     .sidebar-section-title { color: #0066ff !important; border-bottom: 1px solid #d0d8e8 !important; }
-    .manufacturer-badge {
-        background: rgba(0,102,255,0.1) !important;
-        border: 1px solid rgba(0,102,255,0.3) !important;
-        color: #0066ff !important;
-    }
+    .manufacturer-badge { background: rgba(0,102,255,0.1) !important; border: 1px solid rgba(0,102,255,0.3) !important; color: #0066ff !important; }
     .file-problem-card { background: rgba(255,60,60,0.06) !important; border: 1px solid rgba(255,60,60,0.3) !important; }
-    .phi-notice {
-        background: linear-gradient(135deg,rgba(0,180,100,0.08),rgba(0,120,80,0.05)) !important;
-        border: 1.5px solid rgba(0,180,100,0.4) !important;
-        border-left: 4px solid #00a86b !important;
-    }
+    .phi-notice { background: linear-gradient(135deg,rgba(0,180,100,0.08),rgba(0,120,80,0.05)) !important; border: 1.5px solid rgba(0,180,100,0.4) !important; border-left: 4px solid #00a86b !important; }
     .cat1-header { background: linear-gradient(135deg,rgba(255,60,60,0.10),rgba(200,0,0,0.05)) !important; border: 1px solid rgba(255,60,60,0.3) !important; }
     .cat2-header { background: linear-gradient(135deg,rgba(255,140,0,0.10),rgba(200,100,0,0.05)) !important; border: 1px solid rgba(255,140,0,0.3) !important; }
     .cat3-header { background: linear-gradient(135deg,rgba(0,180,255,0.08),rgba(0,100,200,0.05)) !important; border: 1px solid rgba(0,180,255,0.3) !important; }
-    .debug-box   { background: rgba(0,100,200,0.04) !important; border: 1px solid rgba(0,100,200,0.15) !important; }
 }
-.airs-header {
-    display:flex; align-items:center; gap:16px;
-    padding:20px 28px; margin-bottom:24px; border-radius:0 0 16px 16px;
-}
-.airs-logo-box {
-    width:52px; height:52px; background:transparent;
-    border-radius:12px; display:flex; align-items:center; justify-content:center; flex-shrink:0;
-}
-.airs-title h1 {
-    margin:0; font-size:22px; font-weight:800;
-    background:linear-gradient(90deg,#00d4ff,#0066ff);
-    -webkit-background-clip:text; -webkit-text-fill-color:transparent; letter-spacing:2px;
-}
+.airs-header { display:flex; align-items:center; gap:16px; padding:20px 28px; margin-bottom:24px; border-radius:0 0 16px 16px; }
+.airs-logo-box { width:52px; height:52px; background:transparent; border-radius:12px; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+.airs-title h1 { margin:0; font-size:22px; font-weight:800; background:linear-gradient(90deg,#00d4ff,#0066ff); -webkit-background-clip:text; -webkit-text-fill-color:transparent; letter-spacing:2px; }
 .airs-title p  { margin:2px 0 0; font-size:13px; letter-spacing:1px; }
 .airs-badge    { margin-left:auto; padding:6px 14px; border-radius:20px; font-size:12px; font-weight:600; letter-spacing:1px; }
 .summary-card  { border-radius:16px; padding:24px 28px; margin-bottom:20px; }
@@ -137,7 +89,6 @@ st.markdown("""
 .cat1-header { border-radius:12px; padding:14px 20px; margin-bottom:12px; }
 .cat2-header { border-radius:12px; padding:14px 20px; margin-bottom:12px; }
 .cat3-header { border-radius:12px; padding:14px 20px; margin-bottom:12px; }
-.debug-box   { border-radius:10px; padding:12px 16px; margin-bottom:12px; }
 </style>
 """, unsafe_allow_html=True)
 
@@ -154,7 +105,7 @@ st.markdown(f"""
 """, unsafe_allow_html=True)
 
 # ════════════════════════════════════════════════════
-# Tag Definitions  ← 튜플 형식 (group, element) 정수
+# Tag Definitions
 # ════════════════════════════════════════════════════
 CAT1_MANDATORY = [
     {"name": "Instance Number",           "tag": (0x0020,0x0013), "vr": "IS", "purpose": "",               "mandatory": True},
@@ -280,13 +231,9 @@ MANUFACTURER_KEYWORDS = {
 }
 
 # ════════════════════════════════════════════════════
-# Core: 태그 조회 — keyword 방식 + tag 방식 병행
+# Core Functions
 # ════════════════════════════════════════════════════
 def get_tag_value(ds, tag_tuple):
-    """
-    pydicom Dataset에서 태그 값 조회
-    tag_tuple: (0x0020, 0x0013) 정수 튜플
-    """
     try:
         tag = pydicom.tag.Tag(tag_tuple[0], tag_tuple[1])
         if tag in ds:
@@ -297,13 +244,12 @@ def get_tag_value(ds, tag_tuple):
             if isinstance(val, bytes):
                 return f"[Binary {len(val)} bytes]"
             if hasattr(val, '__iter__') and not isinstance(val, str):
-                items  = [str(v) for v in val]
-                joined = ", ".join(items)
+                joined = ", ".join(str(v) for v in val)
                 return joined[:100] + "..." if len(joined) > 100 else joined
             s = str(val)
             return s[:100] + "..." if len(s) > 100 else s
         return None
-    except Exception as e:
+    except Exception:
         return None
 
 
@@ -315,45 +261,79 @@ def detect_manufacturer(ds):
     try:
         tag = pydicom.tag.Tag(0x0008, 0x0070)
         if tag in ds:
-            raw = str(ds[tag].value)
+            raw = str(ds[tag].value).strip()
             mfr = raw.lower()
             for name, keywords in MANUFACTURER_KEYWORDS.items():
                 if any(k in mfr for k in keywords):
                     return name, raw
-            return None, raw   # 인식 못해도 raw 값은 반환
+            return None, raw
     except Exception:
         pass
     return None, "Unknown"
 
 
-def get_all_tags_debug(ds):
-    """디버그용: DS 안의 모든 태그 목록 반환"""
-    rows = []
-    for elem in ds:
-        try:
-            tag_str = f"({elem.tag.group:04X},{elem.tag.element:04X})"
-            if elem.VR == "SQ":
-                val = f"[Sequence {len(elem.value)} item(s)]"
-            elif isinstance(elem.value, bytes):
-                val = f"[Binary {len(elem.value)} bytes]"
-            elif hasattr(elem.value, '__iter__') and not isinstance(elem.value, str):
-                val = ", ".join(str(v) for v in elem.value)[:80]
-            else:
-                val = str(elem.value)[:80]
-            rows.append({
-                "Tag":     tag_str,
-                "Keyword": elem.keyword if elem.keyword else "—",
-                "VR":      elem.VR,
-                "Value":   val,
-            })
-        except Exception:
-            pass
-    return pd.DataFrame(rows)
+def is_valid_dicom(data: bytes) -> bool:
+    """DICOM 파일 여부 확인 (128바이트 프리앰블 + DICM 매직)"""
+    try:
+        if len(data) < 132:
+            return False
+        # 표준 DICOM: 오프셋 128에 'DICM'
+        if data[128:132] == b'DICM':
+            return True
+        # force=True 로 읽어서 태그가 하나라도 있으면 DICOM으로 간주
+        ds = pydicom.dcmread(io.BytesIO(data), force=True, stop_before_pixels=True)
+        return len(ds) > 0
+    except Exception:
+        return False
 
 
-# ════════════════════════════════════════════════════
-# Validation
-# ════════════════════════════════════════════════════
+def load_files_from_upload(uploaded_file):
+    """
+    업로드 파일 → {filename: bytes}
+    수정사항:
+      - ZIP 내 디렉토리 엔트리 완전 제외 (is_dir() 체크)
+      - 확장자 없는 항목은 DICOM 매직 바이트로 검증
+      - __MACOSX, .DS_Store 등 숨김 파일 제외
+    """
+    file_dict = {}
+    name = uploaded_file.name.lower()
+
+    if name.endswith(".zip"):
+        raw_bytes = uploaded_file.read()
+        with zipfile.ZipFile(io.BytesIO(raw_bytes)) as zf:
+            for info in zf.infolist():
+                zname = info.filename
+
+                # ① 디렉토리 엔트리 제외
+                if info.is_dir():
+                    continue
+
+                # ② 숨김/시스템 파일 제외
+                basename = Path(zname).name
+                if basename.startswith("__") or basename.startswith(".") or basename == "":
+                    continue
+
+                zname_lower = zname.lower()
+
+                # ③ .dcm / .dicom 확장자
+                if zname_lower.endswith(".dcm") or zname_lower.endswith(".dicom"):
+                    file_dict[basename] = zf.read(zname)
+                    continue
+
+                # ④ 확장자 없는 파일 → DICOM 바이트 검증
+                if "." not in basename:
+                    try:
+                        data = zf.read(zname)
+                        if is_valid_dicom(data):
+                            file_dict[basename] = data
+                    except Exception:
+                        pass
+    else:
+        file_dict[uploaded_file.name] = uploaded_file.read()
+
+    return file_dict
+
+
 def validate_cat1(ds):
     results = []
     for t in CAT1_MANDATORY:
@@ -391,8 +371,15 @@ def validate_cat2(ds):
 
 
 def validate_cat3(ds, mfr_name):
+    """
+    감지된 제조사 태그만 검증
+    mfr_name이 없으면 전체 검증
+    """
     results = []
     for t in CAT3_TAGS:
+        # 감지된 제조사가 있으면 해당 제조사 태그만, 없으면 전체
+        if mfr_name and t["manufacturer"] != mfr_name:
+            continue
         value   = get_tag_value(ds, t["tag"])
         present = value is not None
         results.append({
@@ -404,7 +391,6 @@ def validate_cat3(ds, mfr_name):
             "Value":        value if present else "MISSING",
             "Status":       "✅  Present" if present else "⚠️  Missing",
             "_present":     present,
-            "_detected":    (mfr_name is not None and t["manufacturer"] == mfr_name),
         })
     return results
 
@@ -418,7 +404,7 @@ def validate_single_file(fname, file_bytes):
     mfr_name, mfr_raw = detect_manufacturer(ds)
     cat1 = validate_cat1(ds)
     cat2 = validate_cat2(ds)
-    cat3 = validate_cat3(ds, mfr_name)
+    cat3 = validate_cat3(ds, mfr_name)   # 감지된 제조사만
 
     cat1_mand_missing = sum(1 for r in cat1 if r["_mandatory"] and not r["_present"])
     cat1_mand_total   = sum(1 for r in cat1 if r["_mandatory"])
@@ -426,8 +412,6 @@ def validate_single_file(fname, file_bytes):
     cat1_opt_present  = sum(1 for r in cat1 if not r["_mandatory"] and r["_present"])
     cat2_missing      = sum(1 for r in cat2 if not r["_present"])
     cat3_missing      = sum(1 for r in cat3 if not r["_present"])
-    cat3_mfr          = [r for r in cat3 if r["_detected"]]
-    cat3_mfr_missing  = sum(1 for r in cat3_mfr if not r["_present"])
 
     return {
         "filename":               fname,
@@ -435,7 +419,7 @@ def validate_single_file(fname, file_bytes):
         "status":                 "PASS" if cat1_mand_missing == 0 else "FAIL",
         "mfr_name":               mfr_name,
         "mfr_raw":                mfr_raw,
-        "ds":                     ds,          # 디버그용
+        "ds":                     ds,
         "cat1":                   cat1,
         "cat2":                   cat2,
         "cat3":                   cat3,
@@ -450,33 +434,7 @@ def validate_single_file(fname, file_bytes):
         "cat3_total":             len(cat3),
         "cat3_present":           len(cat3) - cat3_missing,
         "cat3_missing":           cat3_missing,
-        "cat3_mfr_total":         len(cat3_mfr),
-        "cat3_mfr_present":       len(cat3_mfr) - cat3_mfr_missing,
-        "cat3_mfr_missing":       cat3_mfr_missing,
     }
-
-
-def load_files_from_upload(uploaded_file):
-    file_dict = {}
-    name = uploaded_file.name.lower()
-    if name.endswith(".zip"):
-        with zipfile.ZipFile(io.BytesIO(uploaded_file.read())) as zf:
-            for zname in zf.namelist():
-                zl = zname.lower()
-                if zl.startswith("__") or zl.startswith("."):
-                    continue
-                if zl.endswith(".dcm") or zl.endswith(".dicom"):
-                    file_dict[Path(zname).name] = zf.read(zname)
-                elif "." not in Path(zname).name:
-                    try:
-                        data = zf.read(zname)
-                        pydicom.dcmread(io.BytesIO(data), force=True)
-                        file_dict[Path(zname).name] = data
-                    except Exception:
-                        pass
-    else:
-        file_dict[uploaded_file.name] = uploaded_file.read()
-    return file_dict
 
 
 def to_display_df(results, cols):
@@ -496,15 +454,32 @@ def style_df(df):
     return df.style.apply(row_style, axis=1)
 
 
+def get_all_tags_debug(ds):
+    rows = []
+    for elem in ds:
+        try:
+            tag_str = f"({elem.tag.group:04X},{elem.tag.element:04X})"
+            if elem.VR == "SQ":
+                val = f"[Sequence {len(elem.value)} item(s)]"
+            elif isinstance(elem.value, bytes):
+                val = f"[Binary {len(elem.value)} bytes]"
+            elif hasattr(elem.value, '__iter__') and not isinstance(elem.value, str):
+                val = ", ".join(str(v) for v in elem.value)[:80]
+            else:
+                val = str(elem.value)[:80]
+            rows.append({"Tag": tag_str, "Keyword": elem.keyword or "—", "VR": elem.VR, "Value": val})
+        except Exception:
+            pass
+    return pd.DataFrame(rows)
+
+
 def build_export_df(result):
     rows = []
     for r in result["cat1"]:
         rows.append({
             "File": result["filename"], "Category": "1. Mandatory-Public",
-            "Type": "Mandatory" if r["_mandatory"] else "Optional",
-            "Manufacturer": "—",
-            "Name": r["Name"], "Tag": r["Tag"], "VR": r["VR"],
-            "Purpose/Note": r["Purpose"],
+            "Type": "Mandatory" if r["_mandatory"] else "Optional", "Manufacturer": "—",
+            "Name": r["Name"], "Tag": r["Tag"], "VR": r["VR"], "Purpose/Note": r["Purpose"],
             "Status": "Present" if r["_present"] else ("MISSING" if r["_mandatory"] else "Missing"),
             "Value": r["Value"],
         })
@@ -512,19 +487,15 @@ def build_export_df(result):
         rows.append({
             "File": result["filename"], "Category": "2. Required-Public",
             "Type": "Required", "Manufacturer": "—",
-            "Name": r["Name"], "Tag": r["Tag"], "VR": r["VR"],
-            "Purpose/Note": r["Note"],
-            "Status": "Present" if r["_present"] else "Missing",
-            "Value": r["Value"],
+            "Name": r["Name"], "Tag": r["Tag"], "VR": r["VR"], "Purpose/Note": r["Note"],
+            "Status": "Present" if r["_present"] else "Missing", "Value": r["Value"],
         })
     for r in result["cat3"]:
         rows.append({
             "File": result["filename"], "Category": "3. Required-Private-MRI",
             "Type": "Required", "Manufacturer": r["Manufacturer"],
-            "Name": r["Name"], "Tag": r["Tag"], "VR": r["VR"],
-            "Purpose/Note": r["Note"],
-            "Status": "Present" if r["_present"] else "Missing",
-            "Value": r["Value"],
+            "Name": r["Name"], "Tag": r["Tag"], "VR": r["VR"], "Purpose/Note": r["Note"],
+            "Status": "Present" if r["_present"] else "Missing", "Value": r["Value"],
         })
     return pd.DataFrame(rows)
 
@@ -537,12 +508,8 @@ def excel_export(df, summary_df=None):
         from openpyxl.styles import PatternFill
         for row in ws.iter_rows(min_row=2, max_row=ws.max_row):
             status = row[8].value if len(row) > 8 else ""
-            if status == "MISSING":
-                fill = PatternFill("solid", fgColor="FFCCCC")
-            elif status == "Missing":
-                fill = PatternFill("solid", fgColor="FFF3CC")
-            else:
-                fill = PatternFill("solid", fgColor="CCFFDD")
+            color  = "FFCCCC" if status == "MISSING" else "FFF3CC" if status == "Missing" else "CCFFDD"
+            fill   = PatternFill("solid", fgColor=color)
             for cell in row:
                 cell.fill = fill
         if summary_df is not None:
@@ -550,8 +517,8 @@ def excel_export(df, summary_df=None):
             ws2 = writer.sheets["Summary"]
             for row in ws2.iter_rows(min_row=2, max_row=ws2.max_row):
                 status = row[1].value if len(row) > 1 else ""
-                fill_color = "FFCCCC" if status == "FAIL" else "CCFFDD" if status == "PASS" else "FFE5CC"
-                fill = PatternFill("solid", fgColor=fill_color)
+                color  = "FFCCCC" if status == "FAIL" else "CCFFDD" if status == "PASS" else "FFE5CC"
+                fill   = PatternFill("solid", fgColor=color)
                 for cell in row:
                     cell.fill = fill
     return buf.getvalue()
@@ -705,6 +672,7 @@ if uploaded:
         for rank, r in enumerate(worst_files[:10], 1):
             missing_tags  = [x for x in r["cat1"] if x["_mandatory"] and not x["_present"]]
             missing_names = " · ".join([f'<b>{x["Name"]}</b>' for x in missing_tags])
+            cat3_label    = f"{r['cat3_present']}/{r['cat3_total']} ({r['mfr_name']})" if r["mfr_name"] else f"{r['cat3_present']}/{r['cat3_total']} (All)"
             st.markdown(f"""
             <div class="file-problem-card">
                 <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px;">
@@ -716,10 +684,10 @@ if uploaded:
                     </span>
                 </div>
                 <div style="font-size:12px;opacity:0.8;line-height:1.8;">
-                    🏭 Manufacturer: <b>{r['mfr_raw']}</b> &nbsp;·&nbsp;
-                    Cat.1 Mandatory: {r['cat1_mandatory_present']}/{r['cat1_mandatory_total']} &nbsp;·&nbsp;
-                    Cat.2: {r['cat2_present']}/{r['cat2_total']} &nbsp;·&nbsp;
-                    Cat.3: {r['cat3_present']}/{r['cat3_total']}
+                    🏭 Manufacturer: <b>{r['mfr_raw']}</b>
+                    &nbsp;·&nbsp; Cat.1 Mandatory: {r['cat1_mandatory_present']}/{r['cat1_mandatory_total']}
+                    &nbsp;·&nbsp; Cat.2: {r['cat2_present']}/{r['cat2_total']}
+                    &nbsp;·&nbsp; Cat.3: {cat3_label}
                 </div>
                 <div style="font-size:12px;margin-top:6px;color:#ff6666;">Missing: {missing_names}</div>
             </div>
@@ -782,7 +750,7 @@ if uploaded:
     else:
         r = selected_result
 
-        # ── 파일 상태 배너 ────────────────────────────
+        # 파일 상태 배너
         if r["status"] == "PASS":
             bc, bi, bt = "overall-pass", "✅", "PASS"
             bs = "All Mandatory-Public tags present. SwiftMR processing is possible."
@@ -799,7 +767,7 @@ if uploaded:
         </div>
         """, unsafe_allow_html=True)
 
-        # Manufacturer
+        # Manufacturer badge
         mfr_display     = r["mfr_name"] if r["mfr_name"] else "Unknown / Not in supported list"
         mfr_raw_display = r["mfr_raw"]  if r["mfr_raw"] != "Unknown" else "—"
         st.markdown(f"""
@@ -811,14 +779,9 @@ if uploaded:
         </div>
         """, unsafe_allow_html=True)
 
-        # ════════════════════════════════════════════
-        # 🔍 DEBUG PANEL — 실제 태그 목록 확인
-        # ════════════════════════════════════════════
+        # Debug panel
         with st.expander("🔍 Debug: All Tags in This DICOM File", expanded=False):
-            st.caption(
-                "This table shows ALL tags actually present in the uploaded DICOM file. "
-                "Use this to verify tag existence if validation results seem incorrect."
-            )
+            st.caption("All tags actually present in the uploaded DICOM file.")
             debug_df = get_all_tags_debug(r["ds"])
             st.dataframe(debug_df, use_container_width=True, hide_index=True, height=400)
             st.caption(f"Total tags found: **{len(debug_df)}**")
@@ -831,11 +794,13 @@ if uploaded:
                 🔴 Category 1 — Mandatory-Public
             </div>
             <div style="font-size:13px;opacity:0.85;line-height:1.8;">
-                Mandatory: <span style="color:{mand_color};font-weight:700;">
+                Mandatory:
+                <span style="color:{mand_color};font-weight:700;">
                     {r['cat1_mandatory_present']}/{r['cat1_mandatory_total']} Present
                 </span>
                 &nbsp;·&nbsp;
-                Optional: <span style="color:#ffb400;font-weight:600;">
+                Optional:
+                <span style="color:#ffb400;font-weight:600;">
                     {r['cat1_optional_present']}/{r['cat1_optional_total']} Present
                 </span>
                 &nbsp;·&nbsp;
@@ -861,11 +826,8 @@ if uploaded:
             """, unsafe_allow_html=True)
 
         df_cat1 = to_display_df(r["cat1"], ["Name","Tag","VR","Purpose","Type","Value","Status"])
-        st.dataframe(
-            style_df(df_cat1),
-            use_container_width=True, hide_index=True,
-            height=min(50 + len(df_cat1) * 35, 650),
-        )
+        st.dataframe(style_df(df_cat1), use_container_width=True, hide_index=True,
+                     height=min(50 + len(df_cat1) * 35, 650))
 
         st.markdown("<br>", unsafe_allow_html=True)
 
@@ -887,24 +849,21 @@ if uploaded:
         """, unsafe_allow_html=True)
 
         df_cat2 = to_display_df(r["cat2"], ["Name","Tag","VR","Note","Value","Status"])
-        st.dataframe(
-            style_df(df_cat2),
-            use_container_width=True, hide_index=True,
-            height=min(50 + len(df_cat2) * 35, 650),
-        )
+        st.dataframe(style_df(df_cat2), use_container_width=True, hide_index=True,
+                     height=min(50 + len(df_cat2) * 35, 650))
 
         st.markdown("<br>", unsafe_allow_html=True)
 
         # ── Category 3 ───────────────────────────────
         cat3_color = "#ffb400" if r["cat3_missing"] > 0 else "#00c864"
-        mfr_info   = ""
+
+        # Cat.3 헤더 — HTML 없이 순수 Python 변수로만 구성
         if r["mfr_name"]:
-            mfr_c    = "#ffb400" if r["cat3_mfr_missing"] > 0 else "#00c864"
-            mfr_info = (
-                f"&nbsp;·&nbsp; <b>{r['mfr_name']}</b> tags: "
-                f"<span style='color:{mfr_c};font-weight:700;'>"
-                f"{r['cat3_mfr_present']}/{r['cat3_mfr_total']} Present</span>"
-            )
+            cat3_scope_label = f"Showing tags for detected manufacturer: {r['mfr_name']}"
+            cat3_count_label = f"{r['cat3_present']}/{r['cat3_total']} Present"
+        else:
+            cat3_scope_label = "Manufacturer not detected — showing all manufacturer tags"
+            cat3_count_label = f"{r['cat3_present']}/{r['cat3_total']} Present (all manufacturers)"
 
         st.markdown(f"""
         <div class="cat3-header">
@@ -912,63 +871,21 @@ if uploaded:
                 🔵 Category 3 — Required-Private-MRI
             </div>
             <div style="font-size:13px;opacity:0.85;line-height:1.8;">
-                All manufacturers: <span style="color:{cat3_color};font-weight:700;">
-                    {r['cat3_present']}/{r['cat3_total']} Present
-                </span>
-                {mfr_info}
+                <span style="color:{cat3_color};font-weight:700;">{cat3_count_label}</span>
                 &nbsp;·&nbsp;
-                <span style="opacity:0.7;font-size:12px;">Detected manufacturer rows are highlighted</span>
+                <span style="opacity:0.7;font-size:12px;">{cat3_scope_label}</span>
             </div>
         </div>
         """, unsafe_allow_html=True)
 
-        mfr_list       = sorted(set(t["manufacturer"] for t in CAT3_TAGS))
-        filter_options = ["All Manufacturers"] + mfr_list
-        default_filter = (
-            filter_options.index(r["mfr_name"])
-            if r["mfr_name"] and r["mfr_name"] in filter_options else 0
-        )
-        selected_mfr  = st.selectbox(
-            "Filter by Manufacturer",
-            options=filter_options,
-            index=default_filter,
-            key="cat3_mfr_filter"
-        )
-        cat3_filtered = (
-            r["cat3"] if selected_mfr == "All Manufacturers"
-            else [x for x in r["cat3"] if x["Manufacturer"] == selected_mfr]
-        )
-
-        def style_cat3(df):
-            def row_style(row):
-                s        = str(row.get("Status", ""))
-                detected = row.get("Manufacturer", "") == r["mfr_name"]
-                if "⚠️" in s:
-                    bg = "rgba(255,180,0,0.18)" if detected else "rgba(255,180,0,0.08)"
-                elif "✅" in s:
-                    bg = "rgba(0,200,100,0.15)" if detected else "rgba(0,200,100,0.06)"
-                else:
-                    bg = ""
-                return [f"background-color: {bg}"] * len(row)
-            return df.style.apply(row_style, axis=1)
-
-        df_cat3 = to_display_df(cat3_filtered, ["Manufacturer","Name","Tag","VR","Note","Value","Status"])
-        st.dataframe(
-            style_cat3(df_cat3),
-            use_container_width=True, hide_index=True,
-            height=min(50 + len(df_cat3) * 35, 700),
-        )
+        df_cat3 = to_display_df(r["cat3"], ["Manufacturer","Name","Tag","VR","Note","Value","Status"])
+        st.dataframe(style_df(df_cat3), use_container_width=True, hide_index=True,
+                     height=min(50 + len(df_cat3) * 35, 700))
 
         if r["mfr_name"]:
-            st.caption(
-                f"💡 Detected manufacturer: **{r['mfr_name']}** — "
-                f"rows for this manufacturer are highlighted with stronger color."
-            )
+            st.caption(f"💡 Only tags for detected manufacturer **{r['mfr_name']}** are shown.")
         else:
-            st.caption(
-                f"ℹ️ Manufacturer raw value: **{r['mfr_raw']}** — "
-                f"not in supported list. All manufacturers shown without highlighting."
-            )
+            st.caption(f"ℹ️ Manufacturer raw value: **{r['mfr_raw']}** — not in supported list. Showing all manufacturer tags.")
 
         st.markdown("<br>", unsafe_allow_html=True)
 
@@ -994,21 +911,16 @@ if uploaded:
             col1, col2 = st.columns(2)
             base = selected_result["filename"].replace(".dcm","")
             with col1:
-                st.download_button(
-                    "⬇️ Download CSV",
+                st.download_button("⬇️ Download CSV",
                     data=df_export.to_csv(index=False).encode("utf-8"),
-                    file_name=f"tag_report_{base}.csv",
-                    mime="text/csv",
-                    use_container_width=True,
-                )
+                    file_name=f"tag_report_{base}.csv", mime="text/csv",
+                    use_container_width=True)
             with col2:
-                st.download_button(
-                    "⬇️ Download Excel",
+                st.download_button("⬇️ Download Excel",
                     data=excel_export(df_export),
                     file_name=f"tag_report_{base}.xlsx",
                     mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-                    use_container_width=True,
-                )
+                    use_container_width=True)
             with st.expander("📊 Preview", expanded=False):
                 st.dataframe(df_export, use_container_width=True, hide_index=True, height=400)
 
@@ -1044,21 +956,16 @@ if uploaded:
 
             col1, col2 = st.columns(2)
             with col1:
-                st.download_button(
-                    "⬇️ Download All CSV",
+                st.download_button("⬇️ Download All CSV",
                     data=df_all.to_csv(index=False).encode("utf-8"),
-                    file_name=f"tag_report_ALL_{base_name}.csv",
-                    mime="text/csv",
-                    use_container_width=True,
-                )
+                    file_name=f"tag_report_ALL_{base_name}.csv", mime="text/csv",
+                    use_container_width=True)
             with col2:
-                st.download_button(
-                    "⬇️ Download All Excel",
+                st.download_button("⬇️ Download All Excel",
                     data=excel_export(df_all, df_summary),
                     file_name=f"tag_report_ALL_{base_name}.xlsx",
                     mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-                    use_container_width=True,
-                )
+                    use_container_width=True)
             with st.expander("📊 Preview All Files", expanded=False):
                 st.dataframe(df_all, use_container_width=True, hide_index=True, height=400)
 
@@ -1067,15 +974,13 @@ if uploaded:
 with st.sidebar:
     st.markdown(f"""
     <div style="text-align:center;padding:16px 0 20px;">
-        <div style="width:56px;height:56px;margin:0 auto 10px;
-            display:flex;align-items:center;justify-content:center;">
+        <div style="width:56px;height:56px;margin:0 auto 10px;display:flex;align-items:center;justify-content:center;">
             {sidebar_logo_html}
         </div>
         <div style="font-size:14px;font-weight:800;letter-spacing:2px;
             background:linear-gradient(90deg,#00d4ff,#0066ff);
             -webkit-background-clip:text;-webkit-text-fill-color:transparent;">SwiftMR</div>
-        <div style="font-size:11px;color:#8892a4;margin-top:2px;letter-spacing:1px;">
-            DICOM Tag Validator</div>
+        <div style="font-size:11px;color:#8892a4;margin-top:2px;letter-spacing:1px;">DICOM Tag Validator</div>
     </div>
     """, unsafe_allow_html=True)
 
@@ -1093,7 +998,7 @@ with st.sidebar:
         </div>
         <div>
             <span style="color:#00d4ff;font-weight:700;">🔵 Cat.3 Required-Private-MRI</span><br>
-            <span style="font-size:11px;opacity:0.7;">Manufacturer private tags · All + detected highlighted</span>
+            <span style="font-size:11px;opacity:0.7;">Detected manufacturer tags only</span>
         </div>
     </div>
     """, unsafe_allow_html=True)
